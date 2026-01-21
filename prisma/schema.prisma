@@ -1,0 +1,103 @@
+generator client {
+    provider = "prisma-client-js"
+    binaryTargets = ["native"]
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum Role {
+  CAJERO
+  SUPERVISOR
+}
+
+enum PaymentMethod {
+  EFECTIVO
+  TARJETA
+  TRANSFERENCIA
+}
+
+enum DiscrepancyReason {
+  ERROR
+  GASTO
+  RETIRO
+  OTRO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(CAJERO)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  shifts    Shift[]
+  sales     Sale[]
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  products  Product[]
+}
+
+model Product {
+  id         String     @id @default(cuid())
+  code       String     @unique
+  ean        String?    @unique
+  name       String
+  price      Float
+  stock      Int        @default(0)
+  active     Boolean    @default(true)
+  categoryId String?
+  category   Category?  @relation(fields: [categoryId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  saleItems  SaleItem[]
+}
+
+model Shift {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id])
+  openedAt       DateTime  @default(now())
+  closedAt       DateTime?
+  initialCash    Float     @default(0)
+  declaredAmount Float?
+  expectedAmount Float?
+  discrepancy    Float?
+  discrepancyReason DiscrepancyReason?
+  discrepancyNote   String?
+  sales          Sale[]
+}
+
+model Sale {
+  id            String        @id @default(cuid())
+  number        Int           @default(autoincrement())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id])
+  shiftId       String
+  shift         Shift         @relation(fields: [shiftId], references: [id])
+  total         Float
+  paymentMethod PaymentMethod
+  cashReceived  Float?
+  change        Float?
+  createdAt     DateTime      @default(now())
+  items         SaleItem[]
+}
+
+model SaleItem {
+  id        String  @id @default(cuid())
+  saleId    String
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float
+  subtotal  Float
+}
