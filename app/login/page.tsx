@@ -44,11 +44,7 @@ function LoginForm() {
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
         </form>
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>Usuarios demo:</p>
-          <p className="font-mono">supervisor@el24.com / demo123</p>
-          <p className="font-mono">cajero@el24.com / demo123</p>
-        </div>
+
       </div>
     </div>
   );
