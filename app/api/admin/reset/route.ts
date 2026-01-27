@@ -25,6 +25,7 @@ export async function POST(req: Request) {
             // 1. Delete transactional data
             await tx.paymentDetail.deleteMany({});
             await tx.saleItem.deleteMany({});
+            await tx.settlement.deleteMany({});
             await tx.sale.deleteMany({});
             await tx.shift.deleteMany({});
 
