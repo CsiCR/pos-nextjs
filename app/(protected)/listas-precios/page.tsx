@@ -6,7 +6,7 @@ export default function ListasPreciosPage() {
     const [lists, setLists] = useState<any[]>([]);
     const [search, setSearch] = useState("");
     const [modal, setModal] = useState<any>(null);
-    const [form, setForm] = useState({ name: "", percentage: 0 });
+    const [form, setForm] = useState<{ name: string, percentage: string | number }>({ name: "", percentage: 0 });
     const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
@@ -36,7 +36,7 @@ export default function ListasPreciosPage() {
             const res = await fetch(url, {
                 method,
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(form)
+                body: JSON.stringify({ ...form, percentage: Number(form.percentage) })
             });
 
             if (res.ok) {
@@ -152,7 +152,7 @@ export default function ListasPreciosPage() {
                                     <input
                                         type="number"
                                         value={form.percentage}
-                                        onChange={e => setForm({ ...form, percentage: Number(e.target.value) })}
+                                        onChange={e => setForm({ ...form, percentage: e.target.value })}
                                         className="input input-lg font-bold pr-12"
                                         placeholder="0"
                                     />

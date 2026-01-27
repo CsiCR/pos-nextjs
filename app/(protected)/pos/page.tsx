@@ -64,7 +64,7 @@ export default function POSPage() {
       return;
     }
     const t = setTimeout(() => {
-      fetch(`/api/products?search=${search}`)
+      fetch(`/api/products?search=${search}&allStocks=true`)
         .then(r => r.json())
         .then(data => {
           setProducts(data);
@@ -334,7 +334,7 @@ export default function POSPage() {
             </div>
           )}
           {(products ?? []).slice(0, 15).map(p => {
-            const currentStock = p.stocks?.[0]?.quantity || 0;
+            const currentStock = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
             let displayPrice = p.basePrice;
             if (selectedPriceList) {
               const lp = p.prices?.find((lp: any) => lp.priceListId === selectedPriceList);

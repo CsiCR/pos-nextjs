@@ -209,7 +209,7 @@ export async function POST(req: Request) {
         saleData.priceList = { connect: { id: priceListId } };
       }
 
-      if (paymentMethod === "MIXTO" && paymentDetails && paymentDetails.length > 0) {
+      if (paymentDetails && paymentDetails.length > 0) {
         saleData.paymentDetails = {
           create: paymentDetails.map((pd: any) => ({
             method: pd.method as any,

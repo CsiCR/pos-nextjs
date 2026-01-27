@@ -85,7 +85,8 @@ export async function GET(req: Request) {
 
                 // Allocate payments
                 // If Mixed
-                if (sale.paymentMethod === "MIXTO" && sale.paymentDetails.length > 0) {
+                // If we have payment details (Mixed or Single with details stored)
+                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
                     sale.paymentDetails.forEach(pd => {
                         const method = pd.method;
                         const allocated = Number(pd.amount) * ratio;
@@ -143,7 +144,7 @@ export async function GET(req: Request) {
 
                 const ratio = myShareInSale / saleTotal;
 
-                if (sale.paymentMethod === "MIXTO" && sale.paymentDetails.length > 0) {
+                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
                     sale.paymentDetails.forEach(pd => {
                         const method = pd.method;
                         const allocated = Number(pd.amount) * ratio;

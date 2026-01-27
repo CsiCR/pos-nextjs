@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown } from "lucide-react";
 import { Ticket } from "@/components/Ticket";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { formatPrice, roundCurrency, formatDateTime, formatTime } from "@/lib/utils";
@@ -29,9 +30,9 @@ export default function HistorialPage() {
         return `${year}-${month}-${day}`;
     };
 
-    const [dateFilter, setDateFilter] = useState("today");
-    const [startDate, setStartDate] = useState(getLocalDate(new Date()));
-    const [endDate, setEndDate] = useState(getLocalDate(new Date()));
+    const [dateFilter, setDateFilter] = useState(searchParams.get("startDate") ? "custom" : "today");
+    const [startDate, setStartDate] = useState(searchParams.get("startDate") || getLocalDate(new Date()));
+    const [endDate, setEndDate] = useState(searchParams.get("endDate") || getLocalDate(new Date()));
     const [search, setSearch] = useState("");
     const [selectedSale, setSelectedSale] = useState<any>(null);
 
@@ -43,7 +44,9 @@ export default function HistorialPage() {
     const [columnFilters, setColumnFilters] = useState({
         ticket: "",
         product: "",
-        branch: "",
+        branch: searchParams.get("branchName") || "", // If passed by name, or we might need to fetch by ID if only ID passed. 
+        // Dashboard passes branchId. The table column filter is by text name. 
+        // Ideally we should sync these, but for now date persistence is the main request.
         seller: ""
     });
 
@@ -240,7 +243,25 @@ export default function HistorialPage() {
                                         </div>
                                         <div className="flex items-center gap-8">
                                             <div className="text-right">
-                                                <p className="text-2xl font-black text-blue-600">{formatPrice(sale.total, settings.useDecimals)}</p>
+                                                {Number(sale.discount) > 0 ? (
+                                                    <TooltipProvider>
+                                                        <Tooltip>
+                                                            <TooltipTrigger>
+                                                                <p className="text-2xl font-black text-blue-600 cursor-help border-b border-dotted border-blue-300">
+                                                                    {formatPrice(sale.total, settings.useDecimals)}
+                                                                </p>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent>
+                                                                <div className="text-xs">
+                                                                    <p>Subtotal: {formatPrice(Number(sale.total) + Number(sale.discount), settings.useDecimals)}</p>
+                                                                    <p className="text-red-500">Descuento: -{formatPrice(sale.discount, settings.useDecimals)}</p>
+                                                                </div>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                ) : (
+                                                    <p className="text-2xl font-black text-blue-600">{formatPrice(sale.total, settings.useDecimals)}</p>
+                                                )}
                                                 <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{sale.items?.length || 0} ítems</p>
                                             </div>
                                             <button onClick={() => setSelectedSale(sale)} className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-blue-600 hover:text-white transition-colors">
