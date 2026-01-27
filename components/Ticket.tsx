@@ -1,6 +1,6 @@
-"use client";
-import React from "react";
-import { Printer, X, MessageSquare } from "lucide-react";
+import React, { useState } from "react";
+import { Printer, X, MessageSquare, RefreshCcw } from "lucide-react";
+import { RefundModal } from "@/components/RefundModal";
 
 interface TicketProps {
     sale: any;
@@ -8,6 +8,8 @@ interface TicketProps {
 }
 
 export const Ticket = ({ sale, onClose }: TicketProps) => {
+    const [showRefundModal, setShowRefundModal] = useState(false);
+
     const handlePrint = () => {
         window.print();
     };
@@ -34,7 +36,9 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-sm flex flex-col max-h-[90vh]">
                 {/* Actions Header */}
                 <div className="flex items-center justify-between p-4 border-b no-print">
-                    <h3 className="font-bold text-gray-700">Comprobante de Venta</h3>
+                    <h3 className="font-bold text-gray-700">
+                        {sale.type === "REFUND" ? "Nota de Crédito" : "Comprobante de Venta"}
+                    </h3>
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition">
                         <X className="w-5 h-5 text-gray-500" />
                     </button>
@@ -45,14 +49,16 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
                     <div id="thermal-ticket" className="bg-white p-8 w-full shadow-sm border border-gray-100 font-mono text-black print:shadow-none print:border-none print:p-0" style={{ maxWidth: "80mm" }}>
                         <div className="text-center mb-6">
                             <h1 className="text-3xl font-black mb-1">EL 24</h1>
-                            <p className="text-[10px] leading-tight text-gray-500 uppercase">Control Interno de Venta</p>
+                            <p className="text-[10px] leading-tight text-gray-500 uppercase">
+                                {sale.type === "REFUND" ? "NOTA DE CRÉDITO / DEVOLUCIÓN" : "Control Interno de Venta"}
+                            </p>
                         </div>
 
                         <div className="border-t border-dashed border-gray-300 my-4"></div>
 
                         <div className="text-[10px] space-y-1 mb-4">
                             <div className="flex justify-between">
-                                <span>VENTA:</span>
+                                <span>{sale.type === "REFUND" ? "NC:" : "VENTA:"}</span>
                                 <span className="font-bold">#{sale.number || sale.id.slice(-6).toUpperCase()}</span>
                             </div>
                             <div className="flex justify-between">
@@ -80,6 +86,10 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
                             <tbody className="divide-y divide-dashed divide-gray-100">
                                 {sale.items.map((item: any) => (
                                     <tr key={item.id} className="align-top">
+                                        {/* Show absolute quantity for Refunds to avoid confusion on paper, or negative? 
+                                            Usually NC shows negative total but positive items or clear indication.
+                                            Let's show DB value (negative if refund) or absolute? 
+                                            Standard is: Quantity -1. Price 100. Subtotal -100. */}
                                         <td className="py-2 pr-2">{item.quantity}</td>
                                         <td className="py-2 pr-2 uppercase leading-tight">{item.product?.name || "Producto"}</td>
                                         <td className="py-2 text-right">${(item.subtotal || item.price * item.quantity).toLocaleString()}</td>
@@ -105,7 +115,7 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
                                     {sale.paymentDetails.map((pd: any, idx: number) => (
                                         <div key={idx} className="flex justify-between text-[9px] text-gray-500">
                                             <span>- {pd.method}</span>
-                                            <span>${pd.amount.toLocaleString()}</span>
+                                            <span>${Number(pd.amount).toLocaleString()}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -149,13 +159,22 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
                 </div>
 
                 {/* Action Buttons Footer */}
-                <div className="p-4 border-t grid grid-cols-2 gap-3 no-print">
-                    <button onClick={handlePrint} className="btn bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center gap-2 py-3 rounded-2xl font-bold">
-                        <Printer className="w-5 h-5" /> Imprimir
+                <div className="p-4 border-t flex flex-wrap gap-2 justify-center no-print">
+                    <button onClick={handlePrint} className="btn bg-gray-100 hover:bg-gray-200 text-gray-700 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-bold flex-1">
+                        <Printer className="w-4 h-4" /> Imprimir
                     </button>
-                    <button onClick={handleWhatsApp} className="btn bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2 py-3 rounded-2xl font-bold">
-                        <MessageSquare className="w-5 h-5" /> WhatsApp
+                    <button onClick={handleWhatsApp} className="btn bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-bold flex-1">
+                        <MessageSquare className="w-4 h-4" /> WhatsApp
                     </button>
+
+                    {sale.type !== "REFUND" && (
+                        <button
+                            onClick={() => setShowRefundModal(true)}
+                            className="btn bg-orange-100 hover:bg-orange-200 text-orange-700 flex items-center justify-center gap-2 py-2 px-4 rounded-xl font-bold flex-1"
+                        >
+                            <RefreshCcw className="w-4 h-4" /> Devolución
+                        </button>
+                    )}
                 </div>
             </div>
 
@@ -183,6 +202,17 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
           }
         }
       `}</style>
+
+            {showRefundModal && (
+                <RefundModal
+                    sale={sale}
+                    onClose={() => setShowRefundModal(false)}
+                    onSuccess={() => {
+                        setShowRefundModal(false);
+                        onClose(); // Close ticket to refresh list (or refetch? Close is simpler)
+                    }}
+                />
+            )}
         </div>
     );
 };

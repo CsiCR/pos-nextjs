@@ -155,9 +155,18 @@ model Shift {
   sales          Sale[]
 }
 
+enum SaleType {
+  SALE
+  REFUND
+}
+
 model Sale {
   id            String        @id @default(cuid())
   number        Int           @default(autoincrement())
+  type          SaleType      @default(SALE)
+  relatedSaleId String?
+  relatedSale   Sale?         @relation("RefundRelation", fields: [relatedSaleId], references: [id])
+  refunds       Sale[]        @relation("RefundRelation")
   userId        String
   user          User          @relation(fields: [userId], references: [id])
   branchId      String?

@@ -1,0 +1,459 @@
+[
+  {
+    "id": "cmkwpbq1r000kla04tflz5u0a",
+    "number": 71,
+    "userId": "cmksv5qgf0006vdscp9blvoyz",
+    "branchId": "cmkttrw6w0001vdrghk0p06mn",
+    "shiftId": "cmkwp9shz0001jp04apn4py6w",
+    "priceListId": null,
+    "total": "1000",
+    "discount": "0",
+    "paymentMethod": "EFECTIVO",
+    "cashReceived": "1000",
+    "change": "0",
+    "adjustment": "0",
+    "notes": null,
+    "createdAt": "2026-01-27T14:38:31.839Z",
+    "items": [
+      {
+        "id": "cmkwpbq1r000mla04809iyy6p",
+        "saleId": "cmkwpbq1r000kla04tflz5u0a",
+        "productId": "cmkwp5gcg0004la04yup2tkgq",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "500",
+        "discount": "0",
+        "subtotal": "500",
+        "product": {
+          "id": "cmkwp5gcg0004la04yup2tkgq",
+          "code": "INT1769524419328220",
+          "ean": "7780002002",
+          "name": "remera mujer",
+          "basePrice": "500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp5gbz0000la04nn1mspxr",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrw6w0001vdrghk0p06mn",
+          "createdAt": "2026-01-27T14:33:39.329Z",
+          "updatedAt": "2026-01-27T14:33:39.329Z",
+          "branch": {
+            "id": "cmkttrw6w0001vdrghk0p06mn",
+            "name": "Pelusitas Kids",
+            "address": "Local 1",
+            "phone": "654321",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:46.232Z",
+            "updatedAt": "2026-01-27T13:34:17.998Z"
+          }
+        }
+      },
+      {
+        "id": "cmkwpbq1r000lla04a9l16j16",
+        "saleId": "cmkwpbq1r000kla04tflz5u0a",
+        "productId": "cmkwp2qub0005jm040gngqao8",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "500",
+        "discount": "0",
+        "subtotal": "500",
+        "product": {
+          "id": "cmkwp2qub0005jm040gngqao8",
+          "code": "INT1769524292962695",
+          "ean": "6680002002",
+          "name": "mouse",
+          "basePrice": "500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp2qtq0000jm04kisx840i",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrutq0000vdrgw02owi6c",
+          "createdAt": "2026-01-27T14:31:32.963Z",
+          "updatedAt": "2026-01-27T14:31:32.963Z",
+          "branch": {
+            "id": "cmkttrutq0000vdrgw02owi6c",
+            "name": "Computación",
+            "address": "Local 2",
+            "phone": "123456",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:44.462Z",
+            "updatedAt": "2026-01-27T13:36:05.826Z"
+          }
+        }
+      }
+    ],
+    "branch": {
+      "id": "cmkttrw6w0001vdrghk0p06mn",
+      "name": "Pelusitas Kids",
+      "address": "Local 1",
+      "phone": "654321",
+      "active": true,
+      "createdAt": "2026-01-25T14:19:46.232Z",
+      "updatedAt": "2026-01-27T13:34:17.998Z"
+    },
+    "paymentDetails": [
+      {
+        "id": "cmkwpbq1r000nla0403ioxta5",
+        "saleId": "cmkwpbq1r000kla04tflz5u0a",
+        "method": "EFECTIVO",
+        "amount": "1000",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:38:31.839Z"
+      }
+    ]
+  },
+  {
+    "id": "cmkwpe6kg0006l504n8gnaeu6",
+    "number": 72,
+    "userId": "cmkpcvgnf0005vdx0mabcjbe3",
+    "branchId": "cmkttrutq0000vdrgw02owi6c",
+    "shiftId": "cmkwpdngo0001l504bejhgmhm",
+    "priceListId": null,
+    "total": "1700",
+    "discount": "0",
+    "paymentMethod": "DEBITO",
+    "cashReceived": null,
+    "change": null,
+    "adjustment": "0",
+    "notes": null,
+    "createdAt": "2026-01-27T14:40:26.561Z",
+    "items": [
+      {
+        "id": "cmkwpe6kh0008l504uhpm063v",
+        "saleId": "cmkwpe6kg0006l504n8gnaeu6",
+        "productId": "cmkwp5gcg0004la04yup2tkgq",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "500",
+        "discount": "0",
+        "subtotal": "500",
+        "product": {
+          "id": "cmkwp5gcg0004la04yup2tkgq",
+          "code": "INT1769524419328220",
+          "ean": "7780002002",
+          "name": "remera mujer",
+          "basePrice": "500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp5gbz0000la04nn1mspxr",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrw6w0001vdrghk0p06mn",
+          "createdAt": "2026-01-27T14:33:39.329Z",
+          "updatedAt": "2026-01-27T14:33:39.329Z",
+          "branch": {
+            "id": "cmkttrw6w0001vdrghk0p06mn",
+            "name": "Pelusitas Kids",
+            "address": "Local 1",
+            "phone": "654321",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:46.232Z",
+            "updatedAt": "2026-01-27T13:34:17.998Z"
+          }
+        }
+      },
+      {
+        "id": "cmkwpe6kh0007l504wgd9bqg4",
+        "saleId": "cmkwpe6kg0006l504n8gnaeu6",
+        "productId": "cmkwp2quu000djm04yiqlehv6",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "1200",
+        "discount": "0",
+        "subtotal": "1200",
+        "product": {
+          "id": "cmkwp2quu000djm04yiqlehv6",
+          "code": "INT1769524292981880",
+          "ean": "6680004004",
+          "name": "cpu",
+          "basePrice": "1200",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp2qus000cjm04fydx1qcf",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrutq0000vdrgw02owi6c",
+          "createdAt": "2026-01-27T14:31:32.982Z",
+          "updatedAt": "2026-01-27T14:31:32.982Z",
+          "branch": {
+            "id": "cmkttrutq0000vdrgw02owi6c",
+            "name": "Computación",
+            "address": "Local 2",
+            "phone": "123456",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:44.462Z",
+            "updatedAt": "2026-01-27T13:36:05.826Z"
+          }
+        }
+      }
+    ],
+    "branch": {
+      "id": "cmkttrutq0000vdrgw02owi6c",
+      "name": "Computación",
+      "address": "Local 2",
+      "phone": "123456",
+      "active": true,
+      "createdAt": "2026-01-25T14:19:44.462Z",
+      "updatedAt": "2026-01-27T13:36:05.826Z"
+    },
+    "paymentDetails": [
+      {
+        "id": "cmkwpe6kh0009l504knkntvh0",
+        "saleId": "cmkwpe6kg0006l504n8gnaeu6",
+        "method": "DEBITO",
+        "amount": "1700",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:40:26.561Z"
+      }
+    ]
+  },
+  {
+    "id": "cmkwppxsd0002l104qkn7i425",
+    "number": 73,
+    "userId": "cmksv5qgf0006vdscp9blvoyz",
+    "branchId": "cmkttrw6w0001vdrghk0p06mn",
+    "shiftId": "cmkwp9shz0001jp04apn4py6w",
+    "priceListId": null,
+    "total": "1500",
+    "discount": "0",
+    "paymentMethod": "MIXTO",
+    "cashReceived": "500",
+    "change": "0",
+    "adjustment": "0",
+    "notes": null,
+    "createdAt": "2026-01-27T14:49:35.053Z",
+    "items": [
+      {
+        "id": "cmkwppxsd0003l104brx12w65",
+        "saleId": "cmkwppxsd0002l104qkn7i425",
+        "productId": "cmkwp2qv3000hjm04dk83zysa",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "1500",
+        "discount": "0",
+        "subtotal": "1500",
+        "product": {
+          "id": "cmkwp2qv3000hjm04dk83zysa",
+          "code": "INT1769524292991889",
+          "ean": null,
+          "name": "notebook",
+          "basePrice": "1500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp2qv2000gjm04bnxma9q4",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrutq0000vdrgw02owi6c",
+          "createdAt": "2026-01-27T14:31:32.992Z",
+          "updatedAt": "2026-01-27T14:31:32.992Z",
+          "branch": {
+            "id": "cmkttrutq0000vdrgw02owi6c",
+            "name": "Computación",
+            "address": "Local 2",
+            "phone": "123456",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:44.462Z",
+            "updatedAt": "2026-01-27T13:36:05.826Z"
+          }
+        }
+      }
+    ],
+    "branch": {
+      "id": "cmkttrw6w0001vdrghk0p06mn",
+      "name": "Pelusitas Kids",
+      "address": "Local 1",
+      "phone": "654321",
+      "active": true,
+      "createdAt": "2026-01-25T14:19:46.232Z",
+      "updatedAt": "2026-01-27T13:34:17.998Z"
+    },
+    "paymentDetails": [
+      {
+        "id": "cmkwppxsd0004l104i7d0x1qz",
+        "saleId": "cmkwppxsd0002l104qkn7i425",
+        "method": "EFECTIVO",
+        "amount": "500",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:49:35.053Z"
+      },
+      {
+        "id": "cmkwppxsd0005l104g1eexqdc",
+        "saleId": "cmkwppxsd0002l104qkn7i425",
+        "method": "TRANSFERENCIA",
+        "amount": "1000",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:49:35.053Z"
+      }
+    ]
+  },
+  {
+    "id": "cmkwpx9r20008l1049d2lu01c",
+    "number": 74,
+    "userId": "cmkpcvgnf0005vdx0mabcjbe3",
+    "branchId": "cmkttrutq0000vdrgw02owi6c",
+    "shiftId": "cmkwpdngo0001l504bejhgmhm",
+    "priceListId": null,
+    "total": "1000",
+    "discount": "0",
+    "paymentMethod": "TRANSFERENCIA",
+    "cashReceived": null,
+    "change": null,
+    "adjustment": "0",
+    "notes": null,
+    "createdAt": "2026-01-27T14:55:17.151Z",
+    "items": [
+      {
+        "id": "cmkwpx9r30009l1042noxhlnm",
+        "saleId": "cmkwpx9r20008l1049d2lu01c",
+        "productId": "cmkwp2qub0005jm040gngqao8",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "2",
+        "price": "500",
+        "discount": "0",
+        "subtotal": "1000",
+        "product": {
+          "id": "cmkwp2qub0005jm040gngqao8",
+          "code": "INT1769524292962695",
+          "ean": "6680002002",
+          "name": "mouse",
+          "basePrice": "500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp2qtq0000jm04kisx840i",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrutq0000vdrgw02owi6c",
+          "createdAt": "2026-01-27T14:31:32.963Z",
+          "updatedAt": "2026-01-27T14:31:32.963Z",
+          "branch": {
+            "id": "cmkttrutq0000vdrgw02owi6c",
+            "name": "Computación",
+            "address": "Local 2",
+            "phone": "123456",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:44.462Z",
+            "updatedAt": "2026-01-27T13:36:05.826Z"
+          }
+        }
+      }
+    ],
+    "branch": {
+      "id": "cmkttrutq0000vdrgw02owi6c",
+      "name": "Computación",
+      "address": "Local 2",
+      "phone": "123456",
+      "active": true,
+      "createdAt": "2026-01-25T14:19:44.462Z",
+      "updatedAt": "2026-01-27T13:36:05.826Z"
+    },
+    "paymentDetails": [
+      {
+        "id": "cmkwpx9r3000al104c98sbtr2",
+        "saleId": "cmkwpx9r20008l1049d2lu01c",
+        "method": "TRANSFERENCIA",
+        "amount": "1000",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:55:17.151Z"
+      }
+    ]
+  },
+  {
+    "id": "cmkwpzm7i000fl104510zjpya",
+    "number": 75,
+    "userId": "cmksv5qgf0006vdscp9blvoyz",
+    "branchId": "cmkttrw6w0001vdrghk0p06mn",
+    "shiftId": "cmkwp9shz0001jp04apn4py6w",
+    "priceListId": null,
+    "total": "2700",
+    "discount": "0",
+    "paymentMethod": "TRANSFERENCIA",
+    "cashReceived": null,
+    "change": null,
+    "adjustment": "0",
+    "notes": null,
+    "createdAt": "2026-01-27T14:57:06.606Z",
+    "items": [
+      {
+        "id": "cmkwpzm7i000hl10419bgez4z",
+        "saleId": "cmkwpzm7i000fl104510zjpya",
+        "productId": "cmkwp5gcx000ala04robfnvek",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "1200",
+        "discount": "0",
+        "subtotal": "1200",
+        "product": {
+          "id": "cmkwp5gcx000ala04robfnvek",
+          "code": "INT1769524419345470",
+          "ean": "7780004004",
+          "name": "vaquero",
+          "basePrice": "1200",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp5gbz0000la04nn1mspxr",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrw6w0001vdrghk0p06mn",
+          "createdAt": "2026-01-27T14:33:39.346Z",
+          "updatedAt": "2026-01-27T14:33:39.346Z",
+          "branch": {
+            "id": "cmkttrw6w0001vdrghk0p06mn",
+            "name": "Pelusitas Kids",
+            "address": "Local 1",
+            "phone": "654321",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:46.232Z",
+            "updatedAt": "2026-01-27T13:34:17.998Z"
+          }
+        }
+      },
+      {
+        "id": "cmkwpzm7i000gl104ltbsj3zs",
+        "saleId": "cmkwpzm7i000fl104510zjpya",
+        "productId": "cmkwp2qtw0002jm04sam4ymts",
+        "unitId": "cmkwp2qtt0001jm04fy0q3r9q",
+        "quantity": "1",
+        "price": "1500",
+        "discount": "0",
+        "subtotal": "1500",
+        "product": {
+          "id": "cmkwp2qtw0002jm04sam4ymts",
+          "code": "INT1769524292947424",
+          "ean": "6680001001",
+          "name": "pen drive",
+          "basePrice": "1500",
+          "minStock": "5",
+          "active": true,
+          "categoryId": "cmkwp2qtq0000jm04kisx840i",
+          "baseUnitId": "cmkwp2qtt0001jm04fy0q3r9q",
+          "branchId": "cmkttrutq0000vdrgw02owi6c",
+          "createdAt": "2026-01-27T14:31:32.948Z",
+          "updatedAt": "2026-01-27T14:31:32.948Z",
+          "branch": {
+            "id": "cmkttrutq0000vdrgw02owi6c",
+            "name": "Computación",
+            "address": "Local 2",
+            "phone": "123456",
+            "active": true,
+            "createdAt": "2026-01-25T14:19:44.462Z",
+            "updatedAt": "2026-01-27T13:36:05.826Z"
+          }
+        }
+      }
+    ],
+    "branch": {
+      "id": "cmkttrw6w0001vdrghk0p06mn",
+      "name": "Pelusitas Kids",
+      "address": "Local 1",
+      "phone": "654321",
+      "active": true,
+      "createdAt": "2026-01-25T14:19:46.232Z",
+      "updatedAt": "2026-01-27T13:34:17.998Z"
+    },
+    "paymentDetails": [
+      {
+        "id": "cmkwpzm7i000il10471w6qm0f",
+        "saleId": "cmkwpzm7i000fl104510zjpya",
+        "method": "TRANSFERENCIA",
+        "amount": "2700",
+        "transactionId": null,
+        "createdAt": "2026-01-27T14:57:06.606Z"
+      }
+    ]
+  }
+]

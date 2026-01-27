@@ -6,10 +6,14 @@ import { ReactNode } from "react";
 export function ProtectedContent({ children }: { children: ReactNode }) {
   return (
     <SessionProvider>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Navbar />
-        <main className="max-w-7xl mx-auto p-4">{children}</main>
+        <main className="max-w-7xl mx-auto p-4 flex-1 w-full">{children}</main>
+        <footer className="text-center py-4 text-[10px] text-gray-400 uppercase tracking-widest">
+          <p>© {new Date().getFullYear()} El 24 - Sistema de Punto de Venta</p>
+          <p className="font-bold">Versión 1.0.0</p>
+        </footer>
       </div>
-    </SessionProvider>
+    </SessionProvider >
   );
 }
