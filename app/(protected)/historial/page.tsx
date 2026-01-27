@@ -30,9 +30,20 @@ export default function HistorialPage() {
         return `${year}-${month}-${day}`;
     };
 
-    const [dateFilter, setDateFilter] = useState(searchParams.get("startDate") ? "custom" : "today");
-    const [startDate, setStartDate] = useState(searchParams.get("startDate") || getLocalDate(new Date()));
-    const [endDate, setEndDate] = useState(searchParams.get("endDate") || getLocalDate(new Date()));
+    const [dateFilter, setDateFilter] = useState(searchParams.get("startDate") ? "custom" : "month");
+    const [startDate, setStartDate] = useState(() => {
+        const param = searchParams.get("startDate");
+        if (param) return param;
+        // Default to first day of month
+        const today = new Date();
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+        const y = firstDay.getFullYear();
+        const m = String(firstDay.getMonth() + 1).padStart(2, '0');
+        const d = String(firstDay.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    });
+    // Allow empty end date (open range)
+    const [endDate, setEndDate] = useState(searchParams.get("endDate") || "");
     const [search, setSearch] = useState("");
     const [selectedSale, setSelectedSale] = useState<any>(null);
 
@@ -225,15 +236,18 @@ export default function HistorialPage() {
                         ) : (
                             <div className="grid gap-3">
                                 {filteredSales.map(sale => (
-                                    <div key={sale.id} className="group bg-white rounded-2xl p-4 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all flex items-center justify-between">
+                                    <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex items-center justify-between ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
                                         <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 shrink-0">
-                                                <Hash className="w-6 h-6" />
+                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${sale.type === 'REFUND' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                                {sale.type === 'REFUND' ? <ArrowUpDown className="w-6 h-6" /> : <Hash className="w-6 h-6" />}
                                             </div>
                                             <div>
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-black text-lg text-gray-800">#{sale.number || sale.id.slice(-6).toUpperCase()}</span>
+                                                    <span className={`font-black text-lg ${sale.type === 'REFUND' ? 'text-red-700' : 'text-gray-800'}`}>
+                                                        #{sale.number || sale.id.slice(-6).toUpperCase()}
+                                                    </span>
                                                     <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">{sale.paymentMethod}</span>
+                                                    {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase">NOTA CRÉDITO</span>}
                                                 </div>
                                                 <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
                                                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
@@ -243,24 +257,27 @@ export default function HistorialPage() {
                                         </div>
                                         <div className="flex items-center gap-8">
                                             <div className="text-right">
-                                                {Number(sale.discount) > 0 ? (
+                                                {Number(sale.discount) !== 0 || Number(sale.adjustment) !== 0 ? (
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger>
-                                                                <p className="text-2xl font-black text-blue-600 cursor-help border-b border-dotted border-blue-300">
+                                                                <p className={`text-2xl font-black cursor-help border-b border-dotted ${sale.type === 'REFUND' ? 'text-red-600 border-red-300' : 'text-blue-600 border-blue-300'}`}>
                                                                     {formatPrice(sale.total, settings.useDecimals)}
                                                                 </p>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <div className="text-xs">
-                                                                    <p>Subtotal: {formatPrice(Number(sale.total) + Number(sale.discount), settings.useDecimals)}</p>
-                                                                    <p className="text-red-500">Descuento: -{formatPrice(sale.discount, settings.useDecimals)}</p>
+                                                                    <p>Subtotal: {formatPrice(Number(sale.total) + Number(sale.discount) - Number(sale.adjustment), settings.useDecimals)}</p>
+                                                                    {Number(sale.discount) > 0 && <p className="text-red-500">Descuento: -{formatPrice(sale.discount, settings.useDecimals)}</p>}
+                                                                    {Number(sale.adjustment) !== 0 && <p className="text-gray-500">Ajuste: {Number(sale.adjustment) > 0 ? '+' : ''}{formatPrice(sale.adjustment, settings.useDecimals)}</p>}
                                                                 </div>
                                                             </TooltipContent>
                                                         </Tooltip>
                                                     </TooltipProvider>
                                                 ) : (
-                                                    <p className="text-2xl font-black text-blue-600">{formatPrice(sale.total, settings.useDecimals)}</p>
+                                                    <p className={`text-2xl font-black ${sale.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
+                                                        {formatPrice(sale.total, settings.useDecimals)}
+                                                    </p>
                                                 )}
                                                 <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{sale.items?.length || 0} ítems</p>
                                             </div>

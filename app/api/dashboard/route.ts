@@ -96,7 +96,8 @@ export async function GET(req: Request) {
 
     for (const sale of allSales) {
       const saleTotal = Number(sale.total);
-      if (saleTotal <= 0) continue;
+      // Allow negative totals for Refunds
+      // if (saleTotal <= 0) continue;
 
       totalSales += saleTotal;
       totalCount++;

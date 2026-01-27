@@ -17,12 +17,26 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
 
   // Filters State
-  const [filters, setFilters] = useState({
-    startDate: "",
-    endDate: "",
-    branchId: "",
-    userId: "",
-    paymentMethod: ""
+  const [filters, setFilters] = useState(() => {
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const y = firstDay.getFullYear();
+    const m = String(firstDay.getMonth() + 1).padStart(2, '0');
+    const d = String(firstDay.getDate()).padStart(2, '0');
+    return {
+      startDate: `${y}-${m}-${d}`,
+      endDate: "", // User requested "fin en blanco" (empty end date for open range or today?) 
+      // User said: "fin en blanco". But Dashboard StatLinks use filters.endDate || getLocalDate(new Date()) fallback.
+      // If I leave it empty here, the link generation needs to handle it.
+      // The current link generation code is: 
+      // href={`/historial?...&endDate=${filters.endDate || getLocalDate(new Date())}...`}
+      // This means if I leave it empty, it defaults to TODAY in the link.
+      // This matches the user request indirectly (default view shows up to today).
+      // Let's keep endDate empty in state but verify link logic.
+      branchId: "",
+      userId: "",
+      paymentMethod: ""
+    };
   });
 
   // Resources for Selects
@@ -63,7 +77,12 @@ export default function DashboardPage() {
   };
 
   const clearFilters = () => {
-    setFilters({ startDate: "", endDate: "", branchId: "", userId: "", paymentMethod: "" });
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const y = firstDay.getFullYear();
+    const m = String(firstDay.getMonth() + 1).padStart(2, '0');
+    const d = String(firstDay.getDate()).padStart(2, '0');
+    setFilters({ startDate: `${y}-${m}-${d}`, endDate: "", branchId: "", userId: "", paymentMethod: "" });
   };
 
   if (loading && !data) return <div className="text-center py-20">Cargando dashboard...</div>;
@@ -177,7 +196,7 @@ export default function DashboardPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Link href={`/historial?view=items&startDate=${filters.startDate || getLocalDate(new Date())}&endDate=${filters.endDate || getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
+            <Link href={`/historial?view=items&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={DollarSign} label="Ventas Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} ventas`} color="blue" />
             </Link>
             <Link href={`/historial?view=items&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
