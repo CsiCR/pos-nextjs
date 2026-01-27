@@ -4,54 +4,112 @@ import { Search, Package } from "lucide-react";
 
 export default function VerificadorPage() {
   const [search, setSearch] = useState("");
-  const [product, setProduct] = useState<any>(null);
+  const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!search) { setProduct(null); return; }
+    if (!search) { setResults([]); return; }
     const t = setTimeout(async () => {
       setLoading(true);
-      const res = await fetch(`/api/products?search=${search}`);
-      const data = await res.json();
-      setProduct(data?.[0] || null);
+      try {
+        const res = await fetch(`/api/products?search=${search}&allStocks=true`);
+        const data = await res.json();
+        setResults(Array.isArray(data) ? data : []);
+      } catch (e) {
+        console.error("Error buscando productos:", e);
+      }
       setLoading(false);
     }, 300);
     return () => clearTimeout(t);
   }, [search]);
 
+  // Capturar Enter del escáner para limpiar la búsqueda después de ver el resultado
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && results.length === 1) {
+      // Si solo hay uno, ya se está viendo.
+    }
+  };
+
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Verificador de Precios</h1>
-        <p className="text-gray-500">Escanea o escribe el código del producto</p>
+        <h1 className="text-4xl font-black mb-2 text-gray-900">Verificador de Precios</h1>
+        <p className="text-gray-500 font-medium">Escanea un producto o escribe su nombre</p>
       </div>
 
-      <div className="relative mb-8">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6" />
-        <input ref={inputRef} type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Código o nombre del producto..." className="input input-lg pl-14 text-center" autoFocus />
+      <div className="relative mb-10">
+        <div className="absolute left-5 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600">
+          <Search className="w-5 h-5" />
+        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Código, EAN o Nombre..."
+          className="input input-lg pl-16 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl"
+          autoFocus
+        />
       </div>
 
-      {loading && <div className="text-center py-12 text-gray-400">Buscando...</div>}
+      {loading && (
+        <div className="flex flex-col items-center py-20 animate-pulse">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-4" />
+          <p className="text-gray-400 font-bold uppercase tracking-widest text-xs">Buscando en el catálogo...</p>
+        </div>
+      )}
 
-      {!loading && product && (
-        <div className="card text-center py-12">
-          <Package className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-          <p className="text-sm text-gray-400 font-mono mb-2">{product.code}</p>
-          <h2 className="text-2xl font-bold mb-4">{product.name}</h2>
-          <p className="text-6xl font-bold text-blue-600 mb-4">${product.price?.toLocaleString()}</p>
-          <div className="flex justify-center gap-4 text-sm text-gray-500">
-            <span>Stock: {product.stock}</span>
-            {product.category && <span>Categoría: {product.category.name}</span>}
+      {!loading && results.length > 0 && (
+        <div className={results.length === 1 ? "max-w-lg mx-auto" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
+          {results.map((product) => {
+            const totalStock = product.stocks?.reduce((sum: number, s: any) => sum + Number(s.quantity), 0) || 0;
+            return (
+              <div key={product.id} className="card bg-white border border-gray-100 shadow-xl overflow-hidden group hover:border-blue-500 transition-all duration-300 rounded-3xl p-8">
+                <div className="flex flex-col items-center text-center">
+                  <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                    <Package className="w-10 h-10 text-blue-600" />
+                  </div>
+                  <p className="text-xs text-gray-400 font-mono tracking-tighter mb-1 uppercase">{product.code}</p>
+                  <h2 className="text-2xl font-black text-gray-900 mb-6 min-h-[3rem] flex items-center">{product.name}</h2>
+
+                  <div className="bg-blue-600 w-full py-6 rounded-2xl shadow-lg shadow-blue-100 mb-6">
+                    <p className="text-5xl font-black text-white">${product.basePrice?.toLocaleString()}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 w-full">
+                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Stock Total</p>
+                      <p className={`font-bold ${totalStock <= 0 ? 'text-red-500' : 'text-green-600'}`}>
+                        {totalStock} {product.baseUnit?.symbol || 'un'}
+                      </p>
+                    </div>
+                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
+                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Categoría</p>
+                      <p className="font-bold text-gray-700 truncate">
+                        {product.category?.name || "General"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {
+        !loading && search && results.length === 0 && (
+          <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl py-20 text-center">
+            <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <Package className="w-8 h-8 text-gray-300" />
+            </div>
+            <p className="text-gray-400 font-bold">No encontramos ningún producto que coincida</p>
+            <button onClick={() => setSearch("")} className="mt-4 text-blue-600 font-bold hover:underline">Limpiar búsqueda</button>
           </div>
-        </div>
-      )}
-
-      {!loading && search && !product && (
-        <div className="card text-center py-12">
-          <p className="text-gray-400">Producto no encontrado</p>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 }

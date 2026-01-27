@@ -2,22 +2,24 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X } from "lucide-react";
+import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X, Tag, Settings, ArrowRightLeft } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
   const { data: session } = useSession() || {};
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const isSupervisor = session?.user?.role === "SUPERVISOR";
+  const isSupervisor = (session?.user as any)?.role === "SUPERVISOR" || (session?.user as any)?.role === "ADMIN";
 
   const links = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/pos", label: "POS", icon: ShoppingCart },
-    { href: "/verificador", label: "Verificador", icon: Search },
+    { href: "/historial", label: "Historial", icon: Clock },
+    { href: "/verificador", label: "Precios", icon: Search },
     ...(isSupervisor ? [
-      { href: "/productos", label: "Productos", icon: Package },
-      { href: "/usuarios", label: "Usuarios", icon: Users },
+      { href: "/productos", label: "Stock", icon: Package },
+      { href: "/clearing", label: "Clearing", icon: ArrowRightLeft },
+      { href: "/configuracion", label: "Configuración", icon: Settings }, // Updated label and icon
     ] : []),
     { href: "/turnos", label: "Turnos", icon: Clock },
   ];

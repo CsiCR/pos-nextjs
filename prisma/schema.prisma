@@ -9,14 +9,19 @@ datasource db {
 }
 
 enum Role {
-  CAJERO
+  ADMIN
   SUPERVISOR
+  CAJERO
+  GERENTE
 }
 
 enum PaymentMethod {
   EFECTIVO
+  DEBITO
+  CREDITO
   TARJETA
   TRANSFERENCIA
+  MIXTO
 }
 
 enum DiscrepancyReason {
@@ -33,10 +38,45 @@ model User {
   name      String
   role      Role     @default(CAJERO)
   active    Boolean  @default(true)
+  branchId  String?
+  branch    Branch?  @relation(fields: [branchId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   shifts    Shift[]
   sales     Sale[]
+  createdSettlements   Settlement[] @relation("SettlementCreator")
+  confirmedSettlements Settlement[] @relation("SettlementConfirmer")
+}
+
+model Branch {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  address   String?
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  users     User[]
+  stocks    Stock[]
+  shifts    Shift[]
+  sales     Sale[]
+  ownedProducts Product[] @relation("ProductOwner")
+  sourceSettlements Settlement[] @relation("SettlementSource")
+  targetSettlements Settlement[] @relation("SettlementTarget")
+}
+
+model MeasurementUnit {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "Kilogramo", "Bolsa"
+  symbol      String   @unique // e.g., "kg", "bls"
+  decimals    Int      @default(2) // Number of decimal places for display (0 for discrete, 3 for weight)
+  factor      Decimal  @default(1.0) @db.Decimal(12, 4) // Factor to convert to base unit
+  isBase      Boolean  @default(false)
+  baseUnitId  String?
+  baseUnit    MeasurementUnit? @relation("UnitConversion", fields: [baseUnitId], references: [id])
+  childUnits  MeasurementUnit[] @relation("UnitConversion")
+  products    Product[] @relation("BaseUnit")
+  saleItems   SaleItem[]
 }
 
 model Category {
@@ -47,30 +87,69 @@ model Category {
 }
 
 model Product {
-  id         String     @id @default(cuid())
-  code       String     @unique
-  ean        String?    @unique
-  name       String
-  price      Float
-  stock      Int        @default(0)
-  active     Boolean    @default(true)
-  categoryId String?
-  category   Category?  @relation(fields: [categoryId], references: [id])
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  saleItems  SaleItem[]
+  id          String         @id @default(cuid())
+  code        String         @unique
+  ean         String?        @unique
+  name        String
+  basePrice   Decimal        @default(0) @db.Decimal(10, 2) // Default price if no list is used
+  minStock    Decimal        @default(0) @db.Decimal(12, 3) // Minimum stock for alerts
+  active      Boolean        @default(true)
+  categoryId  String?
+  category    Category?      @relation(fields: [categoryId], references: [id])
+  baseUnitId  String?
+  baseUnit    MeasurementUnit? @relation("BaseUnit", fields: [baseUnitId], references: [id])
+  branchId    String?        // Owner Branch. Null = Global.
+  branch      Branch?        @relation("ProductOwner", fields: [branchId], references: [id])
+  stocks      Stock[]
+  prices      ProductPrice[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  saleItems   SaleItem[]
+
+  @@index([name])
+}
+
+model Stock {
+  id        String  @id @default(cuid())
+  productId String
+  product   Product @relation(fields: [productId], references: [id])
+  branchId  String
+  branch    Branch  @relation(fields: [branchId], references: [id])
+  quantity  Decimal @default(0) @db.Decimal(12, 3)
+  @@unique([productId, branchId])
+}
+
+model PriceList {
+  id         String         @id @default(cuid())
+  name       String         @unique
+  percentage Decimal        @default(0) @db.Decimal(5, 2) // Default % to apply to base price
+  active     Boolean        @default(true)
+  prices     ProductPrice[]
+  sales      Sale[]
+}
+
+model ProductPrice {
+  id          String     @id @default(cuid())
+  productId   String
+  product     Product    @relation(fields: [productId], references: [id])
+  priceListId String
+  priceList   PriceList  @relation(fields: [priceListId], references: [id])
+  price       Decimal    @db.Decimal(10, 2)
+  @@unique([productId, priceListId])
 }
 
 model Shift {
   id             String    @id @default(cuid())
   userId         String
   user           User      @relation(fields: [userId], references: [id])
+  branchId       String?
+  branch         Branch?   @relation(fields: [branchId], references: [id])
   openedAt       DateTime  @default(now())
   closedAt       DateTime?
-  initialCash    Float     @default(0)
-  declaredAmount Float?
-  expectedAmount Float?
-  discrepancy    Float?
+  initialCash    Decimal   @default(0) @db.Decimal(10, 2)
+  declaredAmount Decimal?  @db.Decimal(10, 2)
+  expectedAmount Decimal?  @db.Decimal(10, 2)
+  discrepancy    Decimal?  @db.Decimal(10, 2)
   discrepancyReason DiscrepancyReason?
   discrepancyNote   String?
   sales          Sale[]
@@ -81,14 +160,32 @@ model Sale {
   number        Int           @default(autoincrement())
   userId        String
   user          User          @relation(fields: [userId], references: [id])
+  branchId      String?
+  branch        Branch?       @relation(fields: [branchId], references: [id])
   shiftId       String
   shift         Shift         @relation(fields: [shiftId], references: [id])
-  total         Float
+  priceListId   String?
+  priceList     PriceList?    @relation(fields: [priceListId], references: [id])
+  total         Decimal       @db.Decimal(10, 2)
+  discount      Decimal       @default(0) @db.Decimal(10, 2)
   paymentMethod PaymentMethod
-  cashReceived  Float?
-  change        Float?
+  paymentDetails PaymentDetail[]
+  cashReceived  Decimal?      @db.Decimal(10, 2)
+  change        Decimal?      @db.Decimal(10, 2)
+  adjustment    Decimal       @default(0) @db.Decimal(10, 2)
+  notes         String?
   createdAt     DateTime      @default(now())
   items         SaleItem[]
+}
+
+model PaymentDetail {
+  id            String        @id @default(cuid())
+  saleId        String
+  sale          Sale          @relation(fields: [saleId], references: [id])
+  method        PaymentMethod
+  amount        Decimal       @db.Decimal(10, 2)
+  transactionId String?
+  createdAt     DateTime      @default(now())
 }
 
 model SaleItem {
@@ -97,7 +194,50 @@ model SaleItem {
   sale      Sale    @relation(fields: [saleId], references: [id])
   productId String
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int
-  price     Float
-  subtotal  Float
+  unitId    String?
+  unit      MeasurementUnit? @relation(fields: [unitId], references: [id])
+  quantity  Decimal @db.Decimal(12, 3)
+  price     Decimal @db.Decimal(10, 2)
+  discount  Decimal @default(0) @db.Decimal(10, 2)
+  subtotal  Decimal @db.Decimal(10, 2)
+
+  @@index([saleId])
+  @@index([productId])
+}
+
+model SystemSetting {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  useDecimals Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum SettlementStatus {
+  PENDING
+  CONFIRMED
+  REJECTED
+}
+
+model Settlement {
+  id              String           @id @default(cuid())
+  amount          Decimal          @db.Decimal(10, 2)
+  
+  sourceBranchId  String
+  sourceBranch    Branch           @relation("SettlementSource", fields: [sourceBranchId], references: [id])
+  
+  targetBranchId  String
+  targetBranch    Branch           @relation("SettlementTarget", fields: [targetBranchId], references: [id])
+  
+  status          SettlementStatus @default(PENDING)
+  
+  createdById     String
+  createdBy       User             @relation("SettlementCreator", fields: [createdById], references: [id])
+  
+  confirmedById   String?
+  confirmedBy     User?            @relation("SettlementConfirmer", fields: [confirmedById], references: [id])
+  
+  notes           String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
