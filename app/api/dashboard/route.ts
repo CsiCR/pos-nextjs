@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
+import { toZonedTime } from "date-fns-tz";
+
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -11,7 +13,12 @@ export async function GET(req: Request) {
   const isSupervisor = (session.user as any).role === "SUPERVISOR" || (session.user as any).role === "ADMIN";
   const isGerente = (session.user as any).role === "GERENTE";
   const branchId = (session.user as any).branchId;
-  const today = new Date();
+
+  // Fix Timezone for Production (Server is UTC, User is ARG)
+  const timeZone = 'America/Argentina/Buenos_Aires';
+  const now = new Date();
+  const zonedNow = toZonedTime(now, timeZone);
+  const today = new Date(zonedNow);
   today.setHours(0, 0, 0, 0);
 
   if (isSupervisor || isGerente) {
