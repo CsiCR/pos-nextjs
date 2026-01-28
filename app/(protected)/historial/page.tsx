@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown } from "lucide-react";
+import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent } from "lucide-react";
 import { Ticket } from "@/components/Ticket";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
@@ -261,9 +261,12 @@ export default function HistorialPage() {
                                                     <TooltipProvider>
                                                         <Tooltip>
                                                             <TooltipTrigger>
-                                                                <p className={`text-2xl font-black cursor-help border-b border-dotted ${sale.type === 'REFUND' ? 'text-red-600 border-red-300' : 'text-blue-600 border-blue-300'}`}>
-                                                                    {formatPrice(sale.total, settings.useDecimals)}
-                                                                </p>
+                                                                <div className="flex items-center justify-end gap-1 cursor-help group-hover/price:opacity-100">
+                                                                    <BadgePercent className="w-4 h-4 text-orange-500 animate-pulse" />
+                                                                    <p className={`text-2xl font-black border-b border-dotted ${sale.type === 'REFUND' ? 'text-red-600 border-red-300' : 'text-blue-600 border-blue-300'}`}>
+                                                                        {formatPrice(sale.total, settings.useDecimals)}
+                                                                    </p>
+                                                                </div>
                                                             </TooltipTrigger>
                                                             <TooltipContent>
                                                                 <div className="text-xs">
