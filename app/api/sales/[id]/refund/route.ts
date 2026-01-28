@@ -37,9 +37,9 @@ export async function POST(
             where: { id: originalSaleId },
             include: {
                 items: true,
-                refunds: { include: { items: true } } // Fetch previous refunds to validate quantities
+                refunds: { include: { items: true } } as any // Force include type for self-relation
             }
-        });
+        }) as any; // Cast to any to avoid recursive type issues with self-referential refunds logic for now
 
         if (!originalSale) {
             return NextResponse.json({ error: "Venta original no encontrada" }, { status: 404 });
@@ -118,37 +118,66 @@ export async function POST(
             let totalRefundAmount = new Prisma.Decimal(0);
             const newSaleItems = [];
 
+            // Calculate global discount weight per unit of currency (percentage efficiency) if any
+            // If original sale had 100 total, and 10 discount. Efficiency = 0.9.
+            // Actually, we need to know how much discount applies to THESE specific items.
+            // Simplistic approach: 
+            // 1. Calculate the hypothetical subtotal of these items in the original sale (Price * Qty - ItemDiscount).
+            // 2. Calculate the Ratio of (TheseItemsSubtotal / OriginalSaleSubtotalBeforeGlobalDiscount).
+            // 3. Apply that Ratio * GlobalDiscount to get the "Extra Discount" to refund.
+            // However, we iterate items one by one. 
+            // Let's attach the "share of global discount" to each item.
+
+            // Total Subtotal of Original Sale (Sum of all items subtotal)
+            // originalSale.total is AFTER global discount? 
+            // Schema usually: total = (sum(items.subtotal) - globalDiscount + adjustment)
+
+            let originalSubtotalSum = new Prisma.Decimal(0);
+            originalSale.items.forEach(i => {
+                // Item Subtotal in DB usually is (Price*Qty - ItemDiscount)
+                // If ItemSubtotal is not stored or we want to be sure:
+                const iSub = i.price.times(i.quantity).minus(i.discount || 0);
+                originalSubtotalSum = originalSubtotalSum.plus(iSub);
+            });
+
+            // Global Discount Ratio per dollar of subtotal
+            // If SubtotalSum = 3000, GlobalDiscount = 25.
+            // Ratio = 25 / 3000 = 0.008333... matches the ~0.83% discount.
+            const globalDiscount = originalSale.discount || new Prisma.Decimal(0);
+            let globalDiscountRatio = new Prisma.Decimal(0);
+            if (originalSubtotalSum.gt(0)) {
+                globalDiscountRatio = globalDiscount.div(originalSubtotalSum);
+            }
+
             for (const item of refundItems) {
                 const stats = originalMap.get(item.productId)!;
                 const qtyToRefund = new Prisma.Decimal(item.quantity); // Positive
 
-                // Calculate Proportional Price and Discount
-                // Unit Price is constant.
-                // Unit Discount = (TotalDiscountLine / OriginalQty)
-                const unitDiscount = stats.discount.div(new Prisma.Decimal(stats.original));
-                const lineDiscountToRefund = unitDiscount.times(qtyToRefund);
+                // 1. Calculate Line Item "Net" before Global Discount
+                // Unit Price
+                const unitPrice = stats.price;
+                // Unit Item Discount (Specific to item)
+                const unitItemDiscount = stats.discount.div(new Prisma.Decimal(stats.original));
 
-                // Subtotal Refund = (Price * Qty) - Discount
-                // But since it's a refund, everything is negative.
-                // We calculate positive magnitude first.
-                const lineSubtotalParams = stats.price.times(qtyToRefund).minus(lineDiscountToRefund);
+                // Refund Subtotal (Before Global)
+                const lineItemDiscountToRefund = unitItemDiscount.times(qtyToRefund);
+                const lineSubtotalBeforeGlobal = unitPrice.times(qtyToRefund).minus(lineItemDiscountToRefund);
+
+                // 2. Calculate Share of Global Discount for this line
+                // Share = SubtotalBeforeGlobal * Ratio
+                const shareOfGlobalDiscount = lineSubtotalBeforeGlobal.times(globalDiscountRatio);
+
+                // 3. Total Discount for this Refund Line = ItemDiscount + ShareGlobal
+                const totalLineDiscount = lineItemDiscountToRefund.plus(shareOfGlobalDiscount);
+
+                // 4. Final Refund Subtotal (What we pay back)
+                // = (Price * Qty) - TotalDiscount
+                const lineFinalSubtotal = unitPrice.times(qtyToRefund).minus(totalLineDiscount);
 
                 // Convert to Negative for DB
                 const negativeQty = qtyToRefund.negated();
-                const negativeSubtotal = lineSubtotalParams.negated();
-                // Negative discount? Yes, if we are reversing the transaction.
-                // If original was: Price 100, Disc 10, Total 90.
-                // Refund should be: Price 100, Disc 10, Total 90 (but all credit/negative flows).
-                // Actually, SaleItem structure:
-                // Quantity: -1
-                // Price: 100 (Price doesn't change sign)
-                // Discount: ?? 
-                // Subtotal: -90
-                // Logic: subtotal = (price * quantity) - discount
-                // -90 = (100 * -1) - discount
-                // -90 = -100 - discount => discount = -10.
-                // So discount must also be negative.
-                const negativeDiscount = lineDiscountToRefund.negated();
+                const negativeSubtotal = lineFinalSubtotal.negated();
+                const negativeDiscount = totalLineDiscount.negated();
 
                 totalRefundAmount = totalRefundAmount.plus(negativeSubtotal);
 
@@ -156,41 +185,12 @@ export async function POST(
                     productId: item.productId,
                     quantity: negativeQty,
                     price: stats.price, // Keep original unit price positive
-                    discount: negativeDiscount,
+                    discount: negativeDiscount, // Includes item specific + global share
                     subtotal: negativeSubtotal,
                     unitId: stats.unitId
                 });
 
                 // Restore Stock
-                // We decrement by the negative quantity (which adds stock)
-                // Target branch: The Refunds usually return stock to the CURRENT branch or the ORIGINAL branch?
-                // Physical return: Items are physically now in `branchId` (the session branch).
-                // So we should add stock to `branchId`. 
-                // BUT, if the product belongs to another branch (Clearing/Consignment), 
-                // where does the stock physically go? 
-                // POS Logic: Stock is tracked by `productId + branchId`.
-                // If I am in Branch A, and I sold a product from Branch B. 
-                // When I return it, does it go to Branch A's stock or back to Branch B?
-                // Usually, if it's a cross-branch sale, stock was decremented from Branch B.
-                // If customer returns to Branch A, logically Branch A now has the stock.
-                // SO we should increment Stock in Current Branch (A).
-                // However, if the product is OWNED by Branch B, can Branch A have stock of it?
-                // The Data Model supports `Stock { productId, branchId }`. So yes.
-
-                // Wait, `originalSale` items track where stock came from? 
-                // The API logic for sale was:
-                // `targetBranchId = product.branchId || branchId`
-                // It decrements stock from the OWNER branch (if product has owner).
-                // So, if I return it, it should go back to the OWNER branch?
-                // If I physically have it in Branch A, but it belongs to Branch B,
-                // and I sold it from Branch B's stock... 
-                // If I return it, I should credit Branch B's stock if I want to reverse the transaction exactly.
-                // Let's stick to: "Reverse the original stock movement".
-                // Original movement: Decrement from Product's Owner Branch.
-                // Refund movement: Increment to Product's Owner Branch.
-
-                // We need to fetch product to know owner branch? 
-                // We have productId. We assumed in original sale that `product.branchId` dictated stock source.
                 const product = await tx.product.findUnique({ where: { id: item.productId } });
                 const targetStockBranchId = product?.branchId || branchId;
 
@@ -204,30 +204,29 @@ export async function POST(
             // Create Sale Header
             const sale = await tx.sale.create({
                 data: {
-                    number: undefined, // Auto-inc
-                    type: "REFUND", // SaleType Enum
+                    number: undefined,
+                    type: "REFUND",
                     relatedSaleId: originalSaleId,
                     userId,
                     branchId,
                     shiftId: shift.id,
-                    total: totalRefundAmount, // Negative
-                    discount: new Prisma.Decimal(0), // Global discount adjustments? Let's ignore for item refund complexity for now.
-                    paymentMethod: originalSale.paymentMethod, // Inherit method
-                    cashReceived: null, // Not relevant for refund record usually, or negative?
+                    total: totalRefundAmount, // Negative (Correctly deducted global discount share)
+                    discount: new Prisma.Decimal(0), // We incorporated it into items for clarity/accounting? Or should we put it here?
+                    // If we put it in items, it's safer for partial refunds. 
+                    // If we put it here, we have to calculate "Global Discount Share" for the header.
+                    // Storing in items (as negative discount) is fine.
+                    paymentMethod: originalSale.paymentMethod,
+                    cashReceived: null,
                     change: null,
                     adjustment: new Prisma.Decimal(0),
                     notes: `Devolución de venta #${originalSale.number}`,
                     items: {
                         create: newSaleItems
                     },
-                    // Payment Details? 
-                    // If original was mixed, we might need to ask USER how to refund (Cash? Transfer?).
-                    // For MVP, we assume refund is matched to original method. 
-                    // We should create a negative PaymentDetail to balance the books (Clearing).
                     paymentDetails: {
                         create: [{
                             method: originalSale.paymentMethod,
-                            amount: totalRefundAmount // Negative amount
+                            amount: totalRefundAmount
                         }]
                     }
                 }
