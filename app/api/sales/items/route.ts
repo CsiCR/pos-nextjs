@@ -53,7 +53,12 @@ export async function GET(req: Request) {
     }
 
     if (userId) saleWhere.userId = userId;
-    if (paymentMethod) saleWhere.paymentMethod = paymentMethod;
+    if (paymentMethod) {
+        saleWhere.OR = [
+            { paymentMethod: paymentMethod },
+            { paymentDetails: { some: { method: paymentMethod } } }
+        ];
+    }
     if (ticketNumber) saleWhere.number = { contains: ticketNumber, mode: "insensitive" };
 
     if (productName) itemWhere.product = { ...itemWhere.product, name: { contains: productName, mode: "insensitive" } };
