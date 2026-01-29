@@ -1,10 +1,11 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, Scale, Tag, X, Printer, MessageSquare } from "lucide-react";
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, Scale, Tag, X, Printer, MessageSquare, ScanBarcode } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Ticket } from "@/components/Ticket";
 import { formatPrice, roundCurrency } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
+import { BarcodeScanner } from "@/components/BarcodeScanner";
 
 // ... interfaces ...
 
@@ -51,6 +52,7 @@ export default function POSPage() {
 
   const [showTicket, setShowTicket] = useState<any>(null);
   const [showMobileCart, setShowMobileCart] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -78,6 +80,14 @@ export default function POSPage() {
     }, 200);
     return () => clearTimeout(t);
   }, [search]);
+
+  const handleScan = (code: string) => {
+    setSearch(code);
+    setShowScanner(false);
+    // Play beep
+    const audio = new Audio('/beep.mp3');
+    audio.play().catch(e => console.log("Audio play failed", e));
+  };
 
   const decimals = settings.useDecimals ? 2 : 0;
 
@@ -303,9 +313,16 @@ export default function POSPage() {
               onChange={e => setSearch(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Escanear código o escribir nombre..."
-              className="input input-lg pl-14 shadow-sm w-full"
+              className="input input-lg pl-14 pr-12 shadow-sm w-full"
               autoFocus
             />
+            <button
+              onClick={() => setShowScanner(true)}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+              title="Escanear"
+            >
+              <ScanBarcode className="w-5 h-5" />
+            </button>
           </div>
 
           <div className="flex gap-2">

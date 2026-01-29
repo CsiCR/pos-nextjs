@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Search, Package } from "lucide-react";
+import { Search, Package, ScanBarcode } from "lucide-react";
+import { BarcodeScanner } from "@/components/BarcodeScanner";
 
 export default function VerificadorPage() {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -31,6 +33,14 @@ export default function VerificadorPage() {
     }
   };
 
+  const handleScan = (code: string) => {
+    setSearch(code);
+    setShowScanner(false);
+    // Play beep
+    const audio = new Audio('/beep.mp3'); // We might need a beep asset, or just rely on visual feedback
+    audio.play().catch(e => console.log("Audio play failed", e));
+  };
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="text-center mb-8">
@@ -49,9 +59,16 @@ export default function VerificadorPage() {
           onChange={e => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Código, EAN o Nombre..."
-          className="input input-lg pl-16 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl"
+          className="input input-lg pl-16 pr-14 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl w-full"
           autoFocus
         />
+        <button
+          onClick={() => setShowScanner(true)}
+          className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-gray-100 text-gray-600 rounded-xl hover:bg-blue-600 hover:text-white transition-colors"
+          title="Escanear con Cámara"
+        >
+          <ScanBarcode className="w-6 h-6" />
+        </button>
       </div>
 
       {loading && (
@@ -110,6 +127,12 @@ export default function VerificadorPage() {
           </div>
         )
       }
+      {showScanner && (
+        <BarcodeScanner
+          onScanSuccess={handleScan}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
     </div >
   );
 }
