@@ -360,8 +360,34 @@ export default function HistorialPage() {
                                                     {item.quantity}
                                                 </td>
                                                 <td className={`px-6 py-3 text-right font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
-                                                    {item.sale?.type === 'REFUND' && "-"}
-                                                    {formatPrice(roundCurrency(item.price * item.quantity), settings.useDecimals)}
+                                                    {(() => {
+                                                        const saleTotal = Number(item.sale?.total) || 1; // Avoid div 0
+                                                        let displayAmount = item.price * item.quantity;
+
+                                                        // Filter Logic Adjustment
+                                                        const filterMethod = searchParams.get("paymentMethod");
+                                                        if (filterMethod && item.sale?.paymentDetails?.length > 0) {
+                                                            // Calculate Proportional Amount
+                                                            // Find amount paid by this method
+                                                            const methodPayment = item.sale.paymentDetails.find((pd: any) => pd.method === filterMethod);
+                                                            if (methodPayment) {
+                                                                const methodAmount = Number(methodPayment.amount);
+                                                                const ratio = methodAmount / saleTotal;
+                                                                // Apply ratio to this item's total
+                                                                displayAmount = displayAmount * ratio;
+                                                            }
+                                                        }
+
+                                                        return (
+                                                            <>
+                                                                {item.sale?.type === 'REFUND' && "-"}
+                                                                {formatPrice(roundCurrency(displayAmount), settings.useDecimals)}
+                                                                {filterMethod && item.sale?.paymentDetails?.length > 0 && Math.abs(displayAmount - (item.price * item.quantity)) > 1 && (
+                                                                    <span className="block text-[10px] text-gray-400 font-normal">(Parcial)</span>
+                                                                )}
+                                                            </>
+                                                        );
+                                                    })()}
                                                 </td>
                                                 <td className="px-6 py-3 text-gray-500 text-xs uppercase">
                                                     {item.sale?.user?.name || "N/A"}
