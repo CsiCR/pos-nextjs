@@ -101,7 +101,8 @@ export async function GET(req: Request) {
                     createdAt: true,
                     paymentMethod: true,
                     user: { select: { name: true } },
-                    branch: { select: { name: true } }
+                    branch: { select: { name: true } },
+                    type: true
                 }
             }
         },

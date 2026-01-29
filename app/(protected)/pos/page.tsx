@@ -48,7 +48,9 @@ export default function POSPage() {
   const [weightAmount, setWeightAmount] = useState("");
   const [priceLists, setPriceLists] = useState<any[]>([]);
   const [selectedPriceList, setSelectedPriceList] = useState<string | null>(null);
+
   const [showTicket, setShowTicket] = useState<any>(null);
+  const [showMobileCart, setShowMobileCart] = useState(false);
 
   const searchRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
@@ -288,10 +290,10 @@ export default function POSPage() {
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-4 h-[calc(100vh-120px)]">
+    <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 h-[calc(100vh-80px)] lg:h-[calc(100vh-120px)] relative">
       {/* Products Area */}
       <div className="lg:col-span-2 flex flex-col min-h-0">
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-col md:flex-row gap-2 mb-4">
           <div className="relative flex-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6" />
             <input
@@ -301,29 +303,31 @@ export default function POSPage() {
               onChange={e => setSearch(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Escanear código o escribir nombre..."
-              className="input input-lg pl-14 shadow-sm"
+              className="input input-lg pl-14 shadow-sm w-full"
               autoFocus
             />
           </div>
 
-          {/* Price List Selector */}
-          <div className="relative">
-            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-            <select
-              value={selectedPriceList || ""}
-              onChange={e => handlePriceListChange(e.target.value || null)}
-              className="input pl-9 pr-8 py-2 h-full text-xs font-bold appearance-none bg-white border-gray-200 focus:border-blue-500 min-w-[140px]"
-            >
-              <option value="">General (Base)</option>
-              {priceLists.map(l => (
-                <option key={l.id} value={l.id}>{l.name}</option>
-              ))}
-            </select>
-          </div>
+          <div className="flex gap-2">
+            {/* Price List Selector */}
+            <div className="relative flex-1 md:flex-none">
+              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <select
+                value={selectedPriceList || ""}
+                onChange={e => handlePriceListChange(e.target.value || null)}
+                className="input pl-9 pr-8 py-2 h-14 md:h-full text-xs font-bold appearance-none bg-white border-gray-200 focus:border-blue-500 w-full md:min-w-[140px]"
+              >
+                <option value="">General (Base)</option>
+                {priceLists.map(l => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </div>
 
-          <button onClick={clearCart} className="btn btn-outline border-red-200 text-red-500 hover:bg-red-50 shrink-0" title="Vaciar Carrito">
-            <Trash2 className="w-5 h-5" />
-          </button>
+            <button onClick={clearCart} className="btn btn-outline border-red-200 text-red-500 hover:bg-red-50 shrink-0 h-14 md:h-auto w-14 md:w-auto flex items-center justify-center" title="Vaciar Carrito">
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         <div className="flex-1 overflow-auto grid grid-cols-2 md:grid-cols-3 gap-3 pr-2">
@@ -362,8 +366,22 @@ export default function POSPage() {
         </div>
       </div>
 
-      {/* Cart & Checkout Area */}
-      <div className="card flex flex-col h-full bg-white shadow-xl border-t-4 border-blue-600">
+      {/* Cart & Checkout Area - Responsive Drawer */}
+      <div className={`
+        flex-col h-full bg-white shadow-xl border-t-4 border-blue-600
+        ${showMobileCart ? 'fixed inset-0 z-50 rounded-none flex' : 'hidden lg:flex'} 
+        lg:relative lg:col-span-1 lg:rounded-xl lg:z-0 transition-all duration-300
+      `}>
+        {/* Mobile Cart Header with Close Button */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b bg-gray-50">
+          <h2 className="font-bold text-lg text-gray-800 flex items-center gap-2">
+            <ShoppingCart className="w-5 h-5 text-blue-600" />
+            Carrito de Compras
+          </h2>
+          <button onClick={() => setShowMobileCart(false)} className="btn btn-sm btn-ghost p-2 rounded-full hover:bg-gray-200">
+            <X className="w-6 h-6 text-gray-500" />
+          </button>
+        </div>
         <div className="flex items-center justify-between mb-4 pb-2 border-b">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -676,6 +694,23 @@ export default function POSPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {/* Mobile Bottom Bar (Sticky) */}
+      {!showMobileCart && (
+        <div className="lg:hidden fixed bottom-16 left-4 right-4 bg-white rounded-xl shadow-[0_0_15px_rgba(0,0,0,0.1)] border p-3 flex justify-between items-center z-40 animate-in slide-in-from-bottom-5">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-400 font-medium">Total Estimado</span>
+            <span className="text-xl font-black text-gray-900">{formatPrice(total, settings.useDecimals)}</span>
+          </div>
+          <button
+            onClick={() => setShowMobileCart(true)}
+            className="btn btn-primary px-6 py-2.5 h-auto rounded-lg shadow-lg shadow-blue-200 font-bold flex items-center gap-2"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            Ver Carrito
+            <span className="bg-white/20 px-2 py-0.5 rounded text-xs ml-1">{cart.length}</span>
+          </button>
         </div>
       )}
     </div>

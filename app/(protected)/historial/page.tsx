@@ -222,6 +222,17 @@ export default function HistorialPage() {
                     </div>
                 </div>
 
+                {/* Active Filters Badges */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {searchParams.get("paymentMethod") && (
+                        <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
+                            <CreditCard className="w-3 h-3" />
+                            Pago: {searchParams.get("paymentMethod")}
+                            <button onClick={() => router.replace("/historial?view=items")} className="hover:text-blue-900"><div className="sr-only">Remover</div>x</button>
+                        </div>
+                    )}
+                </div>
+
                 {/* Content Area */}
                 <div className="lg:col-span-3 space-y-4">
                     {loading && items.length === 0 ? (
@@ -332,7 +343,7 @@ export default function HistorialPage() {
                                         {items.length === 0 ? (
                                             <tr><td colSpan={8} className="text-center py-8 text-gray-400">Sin resultados</td></tr>
                                         ) : items.map((item) => (
-                                            <tr key={item.id} className="hover:bg-blue-50/30 transition-colors">
+                                            <tr key={item.id} className={`transition-colors ${item.sale?.type === 'REFUND' ? 'bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500' : 'hover:bg-blue-50/30'}`}>
                                                 <td className="px-6 py-3 font-mono font-bold text-gray-600">
                                                     #{item.sale?.number || "N/A"}
                                                 </td>
@@ -348,7 +359,8 @@ export default function HistorialPage() {
                                                 <td className="px-6 py-3 text-right font-mono">
                                                     {item.quantity}
                                                 </td>
-                                                <td className="px-6 py-3 text-right font-black text-blue-600">
+                                                <td className={`px-6 py-3 text-right font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
+                                                    {item.sale?.type === 'REFUND' && "-"}
                                                     {formatPrice(roundCurrency(item.price * item.quantity), settings.useDecimals)}
                                                 </td>
                                                 <td className="px-6 py-3 text-gray-500 text-xs uppercase">

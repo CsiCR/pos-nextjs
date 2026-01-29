@@ -116,8 +116,8 @@ export default function DashboardPage() {
               )}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-              {/* Date Range */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
+              {/* Date Range - Full width on very small screens for easier touch */}
               <div className="col-span-1">
                 <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Desde</label>
                 <input type="date" className="input text-sm py-1" value={filters.startDate} onChange={e => setFilters({ ...filters, startDate: e.target.value })} />
@@ -132,7 +132,7 @@ export default function DashboardPage() {
                 <div className="col-span-1">
                   <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Por Supervisor</label>
                   <select
-                    className="input text-sm py-1"
+                    className="input text-sm py-1 w-full"
                     value={(Array.isArray(usersList) ? usersList : []).find(u => u.branchId === filters.branchId && u.role === "SUPERVISOR")?.id || ""}
                     onChange={e => {
                       if (!Array.isArray(usersList)) return;
@@ -158,7 +158,7 @@ export default function DashboardPage() {
               <div className="col-span-1">
                 <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Sucursal</label>
                 <select
-                  className="input text-sm py-1"
+                  className="input text-sm py-1 w-full"
                   value={filters.branchId}
                   onChange={e => setFilters({ ...filters, branchId: e.target.value })}
                   disabled={!canFilterBranch}
@@ -173,7 +173,7 @@ export default function DashboardPage() {
               {/* Users */}
               <div className="col-span-1">
                 <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Vendedor</label>
-                <select className="input text-sm py-1" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
+                <select className="input text-sm py-1 w-full" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
                   <option value="">Todos</option>
                   {Array.isArray(usersList) && usersList.map(u => (
                     <option key={u.id} value={u.id}>{u.name}</option>
@@ -184,7 +184,7 @@ export default function DashboardPage() {
               {/* Payment */}
               <div className="col-span-1">
                 <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Método Pago</label>
-                <select className="input text-sm py-1" value={filters.paymentMethod} onChange={e => setFilters({ ...filters, paymentMethod: e.target.value })}>
+                <select className="input text-sm py-1 w-full" value={filters.paymentMethod} onChange={e => setFilters({ ...filters, paymentMethod: e.target.value })}>
                   <option value="">Todos</option>
                   <option value="EFECTIVO">Efectivo</option>
                   <option value="TARJETA">Tarjeta</option>
@@ -195,7 +195,7 @@ export default function DashboardPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <Link href={`/historial?view=items&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={DollarSign} label="Ventas Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} ventas`} color="blue" />
             </Link>
@@ -206,7 +206,7 @@ export default function DashboardPage() {
             <StatCard icon={Users} label="Usuarios Activos" value={data?.users || 0} color="orange" />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="card">
               <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-blue-600" />
