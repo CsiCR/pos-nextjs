@@ -59,7 +59,7 @@ export async function POST(
         // Map original items for quick lookup
         const originalMap = new Map<string, { original: number, refunded: number, price: Prisma.Decimal, discount: Prisma.Decimal, unitId: string | null }>();
 
-        originalSale.items.forEach(item => {
+        originalSale.items.forEach((item: any) => {
             originalMap.set(item.productId, {
                 original: Number(item.quantity),
                 refunded: 0,
@@ -74,8 +74,8 @@ export async function POST(
 
         // Sum up previous refunds
         if (originalSale.refunds) {
-            originalSale.refunds.forEach(ref => {
-                ref.items.forEach(ri => {
+            originalSale.refunds.forEach((ref: any) => {
+                ref.items.forEach((ri: any) => {
                     const stats = originalMap.get(ri.productId);
                     if (stats) {
                         // ri.quantity is negative in DB. We take absolute to count refunded amount.
@@ -133,7 +133,7 @@ export async function POST(
             // Schema usually: total = (sum(items.subtotal) - globalDiscount + adjustment)
 
             let originalSubtotalSum = new Prisma.Decimal(0);
-            originalSale.items.forEach(i => {
+            originalSale.items.forEach((i: any) => {
                 // Item Subtotal in DB usually is (Price*Qty - ItemDiscount)
                 // If ItemSubtotal is not stored or we want to be sure:
                 const iSub = i.price.times(i.quantity).minus(i.discount || 0);
