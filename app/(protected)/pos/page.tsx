@@ -313,7 +313,7 @@ export default function POSPage() {
               onChange={e => setSearch(e.target.value)}
               onKeyDown={handleSearchKeyDown}
               placeholder="Escanear código o escribir nombre..."
-              className="input input-lg pl-14 pr-12 shadow-sm w-full"
+              className="input input-lg pl-16 pr-12 shadow-sm w-full"
               autoFocus
             />
             <button
@@ -729,6 +729,12 @@ export default function POSPage() {
             <span className="bg-white/20 px-2 py-0.5 rounded text-xs ml-1">{cart.length}</span>
           </button>
         </div>
+      )}
+      {showScanner && (
+        <BarcodeScanner
+          onScanSuccess={handleScan}
+          onClose={() => setShowScanner(false)}
+        />
       )}
     </div>
   );

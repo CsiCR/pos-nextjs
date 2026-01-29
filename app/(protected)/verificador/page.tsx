@@ -59,7 +59,7 @@ export default function VerificadorPage() {
           onChange={e => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="Código, EAN o Nombre..."
-          className="input input-lg pl-16 pr-14 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl w-full"
+          className="input input-lg pl-20 pr-14 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl w-full"
           autoFocus
         />
         <button
