@@ -81,7 +81,34 @@ export default function POSPage() {
     return () => clearTimeout(t);
   }, [search]);
 
-  const handleScan = (code: string) => {
+  const handleScan = async (code: string) => {
+    // Check for Ticket QR (SALE:{ID})
+    if (code.startsWith("SALE:")) {
+      const saleId = code.replace("SALE:", "");
+
+      // Feedback: Beep
+      const audio = new Audio('/beep.mp3');
+      audio.play().catch(e => console.log("Audio play failed", e));
+      setShowScanner(false);
+
+      // Fetch Sale
+      try {
+        const res = await fetch(`/api/sales/${saleId}`);
+        if (res.ok) {
+          const sale = await res.json();
+          setShowTicket(sale);
+        } else {
+          // Error handling
+          alert("Venta no encontrada (ID inválido o error de red)");
+        }
+      } catch (error) {
+        console.error("Error fetching sale via QR:", error);
+        alert("Error al obtener la venta");
+      }
+      return;
+    }
+
+    // Default: Product Search
     setSearch(code);
     setShowScanner(false);
     // Play beep
