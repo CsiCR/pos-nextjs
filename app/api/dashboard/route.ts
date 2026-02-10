@@ -158,8 +158,10 @@ export async function GET(req: Request) {
     // 4. Products Count (User Scope - STRICT OWNERSHIP)
     // "Active products also calculated for logged user"
     const productWhere: any = { active: true };
-    if (effectiveBranchId) {
-      // Strict ownership for Supervisor/Branch view
+    if (effectiveBranchId && !isAdmin && !isGerente) {
+      // Supervisor: Count both their branch and global products
+      productWhere.OR = [{ branchId: effectiveBranchId }, { branchId: null }];
+    } else if (effectiveBranchId) {
       productWhere.branchId = effectiveBranchId;
     }
     const products = await prisma.product.count({ where: productWhere });

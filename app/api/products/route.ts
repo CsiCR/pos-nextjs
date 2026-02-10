@@ -103,7 +103,7 @@ export async function GET(req: Request) {
       where: whereClause,
       include: includeOptions,
       orderBy: { name: "asc" },
-      take: 20
+      take: 500
     });
 
     return NextResponse.json(products);
