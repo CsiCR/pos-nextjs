@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Scale, List, Plus, Trash2, Settings, ShieldCheck, AlertTriangle, RefreshCw, Pencil, Store, MapPin, Phone, CheckCircle, XCircle, Users, Shield, User, ShieldAlert } from "lucide-react";
+import { Scale, List, Plus, Trash2, Settings, ShieldCheck, AlertTriangle, RefreshCw, Pencil, Store, MapPin, Phone, CheckCircle, XCircle, Users, Shield, User, ShieldAlert, Tag } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils"; // Assuming utils exists, or use simple template literal
@@ -21,6 +21,12 @@ export default function ConfigPage() {
     const [units, setUnits] = useState<any[]>([]);
     const [unitModal, setUnitModal] = useState(false);
     const [unitForm, setUnitForm] = useState<any>({ name: "", symbol: "", isBase: true, conversionFactor: 1, baseUnitId: "", decimals: 2 });
+
+    // [NEW] CATEGORIES STATES
+    const [categories, setCategories] = useState<any[]>([]);
+    const [categoryModal, setCategoryModal] = useState(false);
+    const [categoryForm, setCategoryForm] = useState<any>({ name: "" });
+
     const [resetModal, setResetModal] = useState(false);
     const [resetConfirmText, setResetConfirmText] = useState("");
     const [resetLoading, setResetLoading] = useState(false);
@@ -41,6 +47,7 @@ export default function ConfigPage() {
     // --- DATA FETCHING ---
     const fetchGeneral = () => {
         fetch("/api/measurement-units").then(r => r.json()).then(setUnits);
+        fetch("/api/categories").then(r => r.json()).then(setCategories); // [NEW]
         fetch("/api/settings").then(r => r.json()).then(data => {
             if (data && data.useDecimals !== undefined) setSettings(data);
         });
@@ -87,6 +94,37 @@ export default function ConfigPage() {
     };
     const openEditUnit = (u: any) => { setUnitForm({ ...u, baseUnitId: u.baseUnitId || "" }); setUnitModal(true); };
     const openNewUnit = () => { setUnitForm({ name: "", symbol: "", isBase: true, conversionFactor: 1, baseUnitId: "", decimals: 2 }); setUnitModal(true); };
+
+    // --- HANDLERS: CATEGORIES ---
+    const handleCategorySubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const method = categoryForm.id ? "PUT" : "POST";
+        const url = categoryForm.id ? `/api/categories/${categoryForm.id}` : "/api/categories";
+        const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(categoryForm) });
+        if (res.ok) {
+            const savedItem = await res.json();
+            if (categoryForm.id) setCategories(categories.map(c => c.id === savedItem.id ? savedItem : c));
+            else setCategories([...categories, savedItem]);
+            setCategoryModal(false);
+        } else {
+            const err = await res.json();
+            alert("Error: " + (err.error || "No se pudo guardar la categoría"));
+        }
+    };
+
+    const handleDeleteCategory = async (id: string) => {
+        if (!confirm("¿Confirma que desea eliminar esta categoría? Se verificará si está en uso.")) return;
+        const res = await fetch(`/api/categories/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            setCategories(categories.filter(c => c.id !== id));
+        } else {
+            const err = await res.json();
+            alert(err.error || "No se pudo eliminar la categoría");
+        }
+    };
+
+    const openEditCategory = (c: any) => { setCategoryForm({ ...c }); setCategoryModal(true); };
+    const openNewCategory = () => { setCategoryForm({ name: "" }); setCategoryModal(true); };
 
     const handleReset = async () => {
         if (resetConfirmText !== "ELIMINAR") return;
@@ -307,6 +345,38 @@ export default function ConfigPage() {
                         </div>
                     </div>
 
+                    {/* [NEW] Categories Management */}
+                    <div className="card h-fit">
+                        <div className="flex items-center justify-between mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Tag className="w-5 h-5 text-blue-600" /> Categorías de Productos
+                            </h2>
+                            {canEditGlobal && (
+                                <button onClick={openNewCategory} className="btn btn-outline btn-sm">
+                                    <Plus className="w-4 h-4" /> Añadir
+                                </button>
+                            )}
+                        </div>
+                        <div className="space-y-3">
+                            {Array.isArray(categories) && categories.map(c => (
+                                <div key={c.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100 transition-all hover:bg-white hover:border-blue-200">
+                                    <div>
+                                        <p className="font-bold text-gray-900">{c.name}</p>
+                                    </div>
+                                    {canEditGlobal && (
+                                        <div className="flex items-center gap-3">
+                                            <button onClick={() => openEditCategory(c)} className="text-gray-300 hover:text-blue-500 transition-colors"><Pencil className="w-4 h-4" /></button>
+                                            <button onClick={() => handleDeleteCategory(c.id)} className="text-gray-300 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                            {categories.length === 0 && (
+                                <p className="text-center py-4 text-gray-400 text-sm italic">No hay categorías registradas.</p>
+                            )}
+                        </div>
+                    </div>
+
                     {/* Pricing & Preferences */}
                     <div className="card h-fit space-y-6">
                         <div>
@@ -486,6 +556,35 @@ export default function ConfigPage() {
                             {!unitForm.isBase && (<div><label className="block text-sm font-bold text-gray-700 mb-1">Factor de Conversión</label><input type="number" step="0.000001" required value={unitForm.conversionFactor} onChange={e => setUnitForm({ ...unitForm, conversionFactor: parseFloat(e.target.value) })} className="input" placeholder="Ej: 1000" /></div>)}
                             <div><label className="block text-sm font-bold text-gray-700 mb-1">Decimales</label><input type="number" min="0" max="4" required value={unitForm.decimals} onChange={e => setUnitForm({ ...unitForm, decimals: parseInt(e.target.value) })} className="input" /></div>
                             <div className="grid grid-cols-2 gap-3 pt-6"><button type="button" onClick={() => setUnitModal(false)} className="btn btn-secondary">Cancelar</button><button type="submit" className="btn btn-primary">Guardar</button></div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {categoryModal && (
+                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+                            <Tag className="w-6 h-6 text-blue-600" />
+                            {categoryForm.id ? "Editar Categoría" : "Nueva Categoría"}
+                        </h2>
+                        <form onSubmit={handleCategorySubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Nombre de la Categoría</label>
+                                <input
+                                    type="text"
+                                    required
+                                    autoFocus
+                                    value={categoryForm.name}
+                                    onChange={e => setCategoryForm({ ...categoryForm, name: e.target.value })}
+                                    className="input focus:ring-4 focus:ring-blue-100"
+                                    placeholder="Ej: Bebidas, Lácteos, etc."
+                                />
+                            </div>
+                            <div className="grid grid-cols-2 gap-3 pt-6">
+                                <button type="button" onClick={() => setCategoryModal(false)} className="btn btn-secondary">Cancelar</button>
+                                <button type="submit" className="btn btn-primary shadow-xl shadow-blue-100">Guardar Categoría</button>
+                            </div>
                         </form>
                     </div>
                 </div>

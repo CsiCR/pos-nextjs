@@ -3,6 +3,8 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { DollarSign, ShoppingCart, Package, Users, TrendingUp, Clock, AlertTriangle, Filter, Calendar, CreditCard, X } from "lucide-react";
 import Link from "next/link";
+import { formatPrice } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 const getLocalDate = (date: Date) => {
   const year = date.getFullYear();
@@ -13,6 +15,7 @@ const getLocalDate = (date: Date) => {
 
 export default function DashboardPage() {
   const { data: session } = useSession() || {};
+  const { settings } = useSettings();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -189,6 +192,7 @@ export default function DashboardPage() {
                   <option value="EFECTIVO">Efectivo</option>
                   <option value="TARJETA">Tarjeta</option>
                   <option value="TRANSFERENCIA">Transferencia</option>
+                  <option value="QR">QR</option>
                   <option value="MIXTO">Mixto</option>
                 </select>
               </div>
@@ -230,11 +234,11 @@ export default function DashboardPage() {
                         <div className="mt-2 pt-2 border-t border-gray-200">
                           <p className="text-xs text-orange-600 font-medium flex justify-between">
                             <span>Clearing:</span>
-                            <span>- ${(m.clearing).toLocaleString()}</span>
+                            <span>- {formatPrice(m.clearing, settings.useDecimals)}</span>
                           </p>
                           <p className="text-xs text-green-700 font-bold flex justify-between mt-0.5">
                             <span>Neto:</span>
-                            <span>${(m.net).toLocaleString()}</span>
+                            <span>{formatPrice(m.net, settings.useDecimals)}</span>
                           </p>
                         </div>
                       )}

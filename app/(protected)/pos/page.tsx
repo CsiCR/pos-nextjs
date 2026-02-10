@@ -528,7 +528,7 @@ export default function POSPage() {
           ) : paymentMode === "SINGLE" ? (
             <div className="space-y-4">
               <div className="flex gap-1">
-                {["EFECTIVO", "DEBITO", "CREDITO", "TRANSFERENCIA"].map(m => (
+                {["EFECTIVO", "DEBITO", "CREDITO", "TRANSFERENCIA", "QR"].map(m => (
                   <button
                     key={m}
                     onClick={() => {
@@ -640,6 +640,7 @@ export default function POSPage() {
                         <option value="DEBITO">Débito</option>
                         <option value="CREDITO">Crédito</option>
                         <option value="TRANSFERENCIA">Transf.</option>
+                        <option value="QR">QR</option>
                       </select>
                       <div className="flex gap-1">
                         <input

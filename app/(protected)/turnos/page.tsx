@@ -68,6 +68,15 @@ export default function TurnosPage() {
     return sum;
   }, 0) || 0;
 
+  const qrSales = currentShift?.sales?.reduce((sum: number, s: any) => {
+    if (s?.paymentMethod === "QR") return sum + Number(s?.total ?? 0);
+    if (s?.paymentMethod === "MIXTO" && s?.paymentDetails) {
+      const qrPart = s.paymentDetails.find((pd: any) => pd.method === "QR");
+      return sum + Number(qrPart?.amount ?? 0);
+    }
+    return sum;
+  }, 0) || 0;
+
   const totalChange = currentShift?.sales?.reduce((sum: number, s: any) => sum + Math.max(0, Number(s?.change ?? 0)), 0) || 0;
 
   const expectedAmount = Number(currentShift?.initialCash || 0) + cashSales - totalChange;
@@ -110,7 +119,9 @@ export default function TurnosPage() {
               <div className="flex justify-center gap-2 text-[10px] mt-1 text-gray-400">
                 <span>Efe: {formatPrice(cashSales, settings.useDecimals)}</span>
                 <span>•</span>
-                <span>Otros: {formatPrice(shiftTotal - cashSales, settings.useDecimals)}</span>
+                <span>QR: {formatPrice(qrSales, settings.useDecimals)}</span>
+                <span>•</span>
+                <span>Otros: {formatPrice(shiftTotal - cashSales - qrSales, settings.useDecimals)}</span>
               </div>
             </div>
             <div className="bg-white rounded-lg p-4 text-center">

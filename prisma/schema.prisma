@@ -21,6 +21,7 @@ enum PaymentMethod {
   CREDITO
   TARJETA
   TRANSFERENCIA
+  QR
   MIXTO
 }
 

@@ -1,11 +1,13 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, CheckCircle2, Printer } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { Switch } from "@/components/ui/switch";
 
 import { useSession } from "next-auth/react";
+import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { PrintLabelsModal } from "@/components/PrintLabelsModal";
 
 export default function ProductosPage() {
   const { data: session } = useSession();
@@ -19,12 +21,13 @@ export default function ProductosPage() {
   const [units, setUnits] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<any>(null);
+  const nameInputRef = useRef<HTMLInputElement>(null); // [NEW] Focus Ref
   const [priceLists, setPriceLists] = useState<any[]>([]);
   const [form, setForm] = useState<any>({
     name: "",
-    basePrice: 0,
-    minStock: 0, // [NEW]
-    stock: 0,
+    basePrice: "", // Changed to ""
+    minStock: "",  // Changed to ""
+    stock: "",     // Changed to ""
     categoryId: "",
     baseUnitId: "",
     ean: "",
@@ -37,6 +40,7 @@ export default function ProductosPage() {
 
   const [viewAll, setViewAll] = useState(true); // Default: View All
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
 
   const fetchData = async () => {
     // filterMode: viewAll ? 'all' : 'missing'
@@ -61,14 +65,23 @@ export default function ProductosPage() {
     setPriceLists(lists || []);
   };
 
-  useEffect(() => { fetchData(); }, [search, viewAll, selectedCategory]);
+  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, viewAll, selectedCategory]);
+
+  // [NEW] Modal Focus Effect
+  useEffect(() => {
+    if (modal) {
+      setTimeout(() => {
+        nameInputRef.current?.focus();
+      }, 100);
+    }
+  }, [modal]);
 
   const openNew = () => {
     setForm({
       name: "",
-      basePrice: 0,
-      minStock: 0, // [NEW]
-      stock: 0,
+      basePrice: "",
+      minStock: "",
+      stock: "",
       categoryId: "",
       baseUnitId: units.find(u => u.isBase)?.id || "",
       ean: "",
@@ -111,7 +124,7 @@ export default function ProductosPage() {
       console.log("Parsed CSV:", parsed);
       setPreviewData(parsed);
     };
-    reader.readAsText(file);
+    reader.readAsText(file, "ISO-8859-1");
   };
 
   const [importResults, setImportResults] = useState<any>(null); // { count: number, warnings: [] }
@@ -169,13 +182,23 @@ export default function ProductosPage() {
   const save = async () => {
     setLoading(true);
     try {
+      // Validation basics
+      if (!form.name.trim()) throw new Error("Debes ingresar un nombre para el producto.");
+      if (form.basePrice === "" || isNaN(Number(form.basePrice))) throw new Error("Debes ingresar un precio base válido.");
+
       // Map prices object back to array for API
       const pricesArray = Object.entries(form.prices).map(([listId, price]) => ({
         priceListId: listId,
         price: Number(price)
       }));
 
-      const body = { ...form, prices: pricesArray };
+      const body = {
+        ...form,
+        basePrice: Number(form.basePrice),
+        minStock: Number(form.minStock) || 0,
+        stock: Number(form.stock) || 0,
+        prices: pricesArray
+      };
 
       let res;
       if (modal.type === "new") {
@@ -184,17 +207,26 @@ export default function ProductosPage() {
         res = await fetch(`/api/products/${modal.id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       }
 
+      const data = await res.json();
+
       if (res.ok) {
         setModal(null);
         fetchData();
-        // Opcional: mostrar un toast de éxito si estuviera disponible
       } else {
-        const err = await res.json();
-        alert(err.error || "Error al guardar el producto");
+        // Detailed Error Handling
+        let errorMsg = data.error || "Error al guardar el producto";
+
+        if (errorMsg.includes("Unique constraint")) {
+          if (errorMsg.includes("code")) errorMsg = "Ya existe un producto con este código interno.";
+          if (errorMsg.includes("ean")) errorMsg = "Ya existe un producto con este código de barras (EAN).";
+        }
+        if (errorMsg.includes("Unauthorized")) errorMsg = "No tienes permisos para realizar esta acción.";
+
+        alert(`⚠️ Atención: ${errorMsg}${data.detail ? `\n\nDetalle técnico: ${JSON.stringify(data.detail)}` : ""}`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error saving product:", error);
-      alert("Error al guardar el producto");
+      alert(error.message || "Error al guardar el producto");
     } finally {
       setLoading(false);
     }
@@ -211,6 +243,19 @@ export default function ProductosPage() {
     }
   };
 
+  const handleExport = () => {
+    window.location.href = "/api/products/export";
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === products.length) setSelectedIds([]);
+    else setSelectedIds(products.map(p => p.id));
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-4">
@@ -219,6 +264,9 @@ export default function ProductosPage() {
           <p className="text-gray-500">Administra precios, unidades y stock de la sucursal</p>
         </div>
         <div className="flex gap-3">
+          <button onClick={handleExport} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
+            <Download className="w-5 h-5" /> Exportar CSV
+          </button>
           <button onClick={() => setImportModal(true)} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
             <FileDown className="w-5 h-5" /> Importar CSV
           </button>
@@ -267,6 +315,14 @@ export default function ProductosPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
+              <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider w-10">
+                <input
+                  type="checkbox"
+                  className="checkbox checkbox-sm checkbox-primary"
+                  checked={products.length > 0 && selectedIds.length === products.length}
+                  onChange={toggleSelectAll}
+                />
+              </th>
               <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Producto</th>
               <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Categoría</th>
               <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Precio Base</th>
@@ -280,7 +336,15 @@ export default function ProductosPage() {
               const stock = p.stocks?.[0]?.quantity || 0;
               const unit = p.baseUnit?.symbol || "-";
               return (
-                <tr key={p.id} className="hover:bg-blue-50/30 transition-colors group">
+                <tr key={p.id} className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(p.id) ? 'bg-blue-50' : ''}`}>
+                  <td className="px-6 py-4">
+                    <input
+                      type="checkbox"
+                      className="checkbox checkbox-sm checkbox-primary"
+                      checked={selectedIds.includes(p.id)}
+                      onChange={() => toggleSelect(p.id)}
+                    />
+                  </td>
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{p.name}</p>
@@ -329,6 +393,28 @@ export default function ProductosPage() {
         </table>
       </div>
 
+      {/* [NEW] Selection Action Bar */}
+      {selectedIds.length > 0 && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 z-40 animate-in slide-in-from-bottom-10">
+          <div className="flex flex-col">
+            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">{selectedIds.length} seleccionados</span>
+          </div>
+          <div className="h-8 w-px bg-gray-700" />
+          <button
+            onClick={() => setModal({ type: "print_labels", ids: selectedIds })}
+            className="btn btn-primary btn-sm flex items-center gap-2"
+          >
+            <Printer className="w-4 h-4" /> Imprimir Etiquetas
+          </button>
+          <button
+            onClick={() => setSelectedIds([])}
+            className="text-gray-400 hover:text-white transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+
       {modal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-8 w-full max-w-xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
@@ -342,7 +428,14 @@ export default function ProductosPage() {
             <div className="space-y-6 flex-1 overflow-auto pr-2 custom-scrollbar">
               <div>
                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Nombre del Producto</label>
-                <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} className="input input-lg font-bold" placeholder="Ej: Coca Cola 2.25L" />
+                <input
+                  ref={nameInputRef}
+                  type="text"
+                  value={form.name}
+                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  className="input input-lg font-bold"
+                  placeholder="Ej: Coca Cola 2.25L"
+                />
               </div>
 
               <div className="grid grid-cols-3 gap-6">
@@ -350,16 +443,35 @@ export default function ProductosPage() {
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Precio de Venta (Base)</label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">$</span>
-                    <input type="number" value={form.basePrice} onChange={e => setForm({ ...form, basePrice: Number(e.target.value) })} className="input input-lg pl-8 font-black text-blue-600" />
+                    <input
+                      type="number"
+                      value={form.basePrice}
+                      onChange={e => setForm({ ...form, basePrice: e.target.value })}
+                      className="input input-lg pl-8 font-black text-blue-600"
+                      onFocus={e => e.target.select()}
+                    />
                   </div>
                 </div>
                 <div>
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Stock Mínimo</label>
-                  <input type="number" value={form.minStock} onChange={e => setForm({ ...form, minStock: Number(e.target.value) })} className="input input-lg font-bold text-orange-600" placeholder="0" />
+                  <input
+                    type="number"
+                    value={form.minStock}
+                    onChange={e => setForm({ ...form, minStock: e.target.value })}
+                    className="input input-lg font-bold text-orange-600"
+                    placeholder="Sin mínimo"
+                    onFocus={e => e.target.select()}
+                  />
                 </div>
                 <div>
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Stock Inicial</label>
-                  <input type="number" value={form.stock} onChange={e => setForm({ ...form, stock: Number(e.target.value) })} className="input input-lg font-bold" />
+                  <input
+                    type="number"
+                    value={form.stock}
+                    onChange={e => setForm({ ...form, stock: e.target.value })}
+                    className="input input-lg font-bold"
+                    onFocus={e => e.target.select()}
+                  />
                 </div>
               </div>
 
@@ -513,6 +625,15 @@ export default function ProductosPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {modal?.type === "print_labels" && (
+        <PrintLabelsModal
+          ids={modal.ids}
+          products={products}
+          onClose={() => setModal(null)}
+          settings={settings}
+        />
       )}
 
       {importModal && (
