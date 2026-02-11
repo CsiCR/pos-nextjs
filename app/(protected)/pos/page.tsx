@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, Scale, Tag, X, Printer, MessageSquare, ScanBarcode } from "lucide-react";
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, Scale, Tag, X, Printer, MessageSquare, ScanBarcode, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Ticket } from "@/components/Ticket";
 import { formatPrice, roundCurrency } from "@/lib/utils";
@@ -21,6 +21,8 @@ interface CartItem {
   isWeighted?: boolean;
   basePrice: number;
   prices: any[];
+  originBranchId?: string;
+  originBranchName?: string;
 }
 
 interface PaymentDetail {
@@ -49,6 +51,8 @@ export default function POSPage() {
   const [weightAmount, setWeightAmount] = useState("");
   const [priceLists, setPriceLists] = useState<any[]>([]);
   const [selectedPriceList, setSelectedPriceList] = useState<string | null>(null);
+  const [globalSearch, setGlobalSearch] = useState(false);
+  const [activeBranch, setActiveBranch] = useState<any>(null);
 
   const [showTicket, setShowTicket] = useState<any>(null);
   const [showMobileCart, setShowMobileCart] = useState(false);
@@ -58,7 +62,10 @@ export default function POSPage() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/shifts/current").then(r => r.json()).then(d => setHasShift(!!d?.id));
+    fetch("/api/shifts/current").then(r => r.json()).then(d => {
+      setHasShift(!!d?.id);
+      if (d?.branch) setActiveBranch(d.branch);
+    });
     fetch("/api/price-lists").then(r => r.json()).then(setPriceLists);
   }, []);
 
@@ -68,18 +75,18 @@ export default function POSPage() {
       return;
     }
     const t = setTimeout(() => {
-      fetch(`/api/products?search=${search}&allStocks=true`)
+      fetch(`/api/products?search=${search}${globalSearch ? '&allStocks=true' : ''}`)
         .then(r => r.json())
         .then(data => {
           setProducts(data);
-          // Auto-add on exact match (typical for barcode scanners)
+          // Auto-add on exact match
           if (data.length === 1 && (data[0].code === search || data[0].ean === search)) {
             addToCart(data[0]);
           }
         });
     }, 200);
     return () => clearTimeout(t);
-  }, [search]);
+  }, [search, globalSearch]);
 
   const handleScan = async (code: string) => {
     // Check for Ticket QR (SALE:{ID})
@@ -140,8 +147,10 @@ export default function POSPage() {
     }
   }, [actualChange, cashReceived, total, selectedMethod, paymentMode, paymentDetails]);
 
-  const addToCart = (p: any, weight?: number) => {
+  const addToCart = (p: any, weight?: number, manualBranchInfo?: { id: string, name: string }) => {
+    if (!hasShift) return;
     const isWeighted = p.baseUnit?.symbol === "g" || p.baseUnit?.symbol === "kg";
+
     if (isWeighted && !weight) {
       setWeightModal({ product: p });
       setWeightAmount("");
@@ -149,7 +158,9 @@ export default function POSPage() {
     }
 
     setCart(prev => {
-      const exists = prev.find(i => i.productId === p.id);
+      // Find item with same product AND SAME branch origin
+      const targetBranchId = manualBranchInfo?.id || p.branchId || activeBranch?.id;
+      const exists = prev.find(i => i.productId === p.id && i.originBranchId === targetBranchId);
       const qty = weight || 1;
 
       // Get price based on selected list
@@ -160,7 +171,7 @@ export default function POSPage() {
       }
 
       if (exists && !isWeighted) {
-        return prev.map(i => i.productId === p.id ? { ...i, quantity: i.quantity + qty } : i);
+        return prev.map(i => (i.productId === p.id && i.originBranchId === targetBranchId) ? { ...i, quantity: i.quantity + qty } : i);
       }
       return [...prev, {
         productId: p.id,
@@ -169,11 +180,13 @@ export default function POSPage() {
         price,
         quantity: qty,
         discount: 0,
-        unitId: p.baseUnitId, // Fix: Use correct field access
+        unitId: p.baseUnitId,
         unitSymbol: p.baseUnit?.symbol,
         isWeighted,
         basePrice: Number(p.basePrice || 0),
-        prices: p.prices || []
+        prices: p.prices || [],
+        originBranchId: targetBranchId,
+        originBranchName: manualBranchInfo?.name || p.branch?.name || activeBranch?.name
       }];
     });
     setSearch("");
@@ -223,7 +236,8 @@ export default function POSPage() {
         productId: i.productId,
         quantity: i.quantity,
         price: i.price,
-        unitId: i.unitId
+        unitId: i.unitId,
+        originBranchId: i.originBranchId
       })),
       paymentMethod: paymentMode === "MIXED" ? "MIXTO" : selectedMethod,
       cashReceived: paymentMode === "MIXED" ? cashInMixed : (selectedMethod === "EFECTIVO" ? cashReceived : null),
@@ -330,29 +344,57 @@ export default function POSPage() {
     <div className="flex flex-col lg:grid lg:grid-cols-3 gap-4 h-[calc(100vh-80px)] lg:h-[calc(100vh-120px)] relative">
       {/* Products Area */}
       <div className="lg:col-span-2 flex flex-col min-h-0">
-        <div className="flex flex-col md:flex-row gap-2 mb-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-6 h-6" />
-            <input
-              ref={searchRef}
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              onKeyDown={handleSearchKeyDown}
-              placeholder="Escanear código o escribir nombre..."
-              className="input input-lg pl-16 pr-12 shadow-sm w-full"
-              autoFocus
-            />
-            <button
-              onClick={() => setShowScanner(true)}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-              title="Escanear"
-            >
-              <ScanBarcode className="w-5 h-5" />
-            </button>
+        {activeBranch && (
+          <div className="bg-blue-600 text-white px-4 py-2 rounded-t-xl flex items-center justify-between shadow-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-wider">Terminal Activa: <span className="text-blue-100">{activeBranch.name}</span></span>
+            </div>
+            <span className="text-[10px] font-mono opacity-70">POS-V2</span>
+          </div>
+        )}
+        <div className={`p-4 bg-white border-x border-b border-gray-100 rounded-b-xl mb-4 ${!activeBranch ? 'rounded-t-xl border-t' : ''}`}>
+          <div className="flex flex-col md:flex-row gap-2 mb-4">
+            <div className="flex items-center justify-between mb-4 w-full">
+              <div className="relative group flex-1 mr-4">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  ref={searchRef}
+                  type="text"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  placeholder="Escanea el código o busca productos..."
+                  className="input pl-12 pr-12 h-14 text-lg w-full bg-white border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                  autoFocus
+                />
+                <button
+                  onClick={() => setShowScanner(true)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                  title="Escanear"
+                >
+                  <ScanBarcode className="w-5 h-5" />
+                </button>
+              </div>
+
+              <label className="flex items-center gap-2 cursor-pointer bg-gray-50 border border-gray-200 px-4 h-14 rounded-xl hover:bg-white transition-all group whitespace-nowrap">
+                <input
+                  type="checkbox"
+                  checked={globalSearch}
+                  onChange={e => setGlobalSearch(e.target.checked)}
+                  className="checkbox checkbox-primary checkbox-sm"
+                />
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase leading-tight">Buscar en:</span>
+                  <span className={`text-xs font-bold transition-colors ${globalSearch ? 'text-blue-600' : 'text-gray-600'}`}>
+                    {globalSearch ? '🌎 Todas las Sucursales' : `📍 ${activeBranch?.name || 'Sucursal Local'}`}
+                  </span>
+                </div>
+              </label>
+            </div>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-4">
             {/* Price List Selector */}
             <div className="relative flex-1 md:flex-none">
               <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
@@ -372,43 +414,80 @@ export default function POSPage() {
               <Trash2 className="w-5 h-5" />
             </button>
           </div>
-        </div>
 
-        <div className="flex-1 overflow-auto grid grid-cols-2 md:grid-cols-3 gap-3 pr-2">
-          {products.length === 0 && search && (
-            <div className="col-span-full flex flex-col items-center justify-center py-12 text-gray-400 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
-              <Search className="w-12 h-12 mb-2 opacity-20" />
-              <p className="font-medium">No se encontraron productos</p>
-            </div>
-          )}
-          {(products ?? []).slice(0, 15).map(p => {
-            const currentStock = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
-            let displayPrice = p.basePrice;
-            if (selectedPriceList) {
-              const lp = p.prices?.find((lp: any) => lp.priceListId === selectedPriceList);
-              if (lp) displayPrice = lp.price;
-            }
+          <div className="flex-1 overflow-auto grid grid-cols-2 md:grid-cols-3 gap-3 pr-2">
+            {products.length === 0 && search && (
+              <div className="col-span-full flex flex-col items-center justify-center py-12 text-gray-400 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-100">
+                <Search className="w-12 h-12 mb-2 opacity-20" />
+                <p className="font-medium">No se encontraron productos</p>
+              </div>
+            )}
+            {(products ?? []).slice(0, 15).map(p => {
+              const currentStock = p.displayStock ?? (p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0);
+              const branchName = p.branch?.name;
+              const isLocal = activeBranch?.id ? (p.branchId === activeBranch.id || !p.branchId) : !p.branchId;
 
-            return (
-              <button key={p.id} onClick={() => addToCart(p)} className="card hover:shadow-lg transition-all text-left group border-transparent hover:border-blue-200">
-                <div className="flex justify-between items-start mb-1">
-                  <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-mono uppercase">{p.code}</span>
-                  {Number(currentStock) <= 0 ? (
-                    <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">AGOTADO</span>
-                  ) : Number(currentStock) < Number(p.minStock || 0) && (
-                    <span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">STOCK BAJO</span>
-                  )}
-                </div>
-                <p className="font-semibold text-gray-800 line-clamp-2 min-h-[3rem]">{p.name}</p>
-                <div className="flex justify-between items-end mt-auto">
-                  <p className={`text-2xl font-black ${Number(displayPrice) < 0 ? "text-red-600 animate-pulse" : "text-blue-600"}`}>
-                    {formatPrice(displayPrice, settings.useDecimals)}
-                  </p>
-                  <span className="text-xs text-gray-400">{p.baseUnit?.symbol}</span>
-                </div>
-              </button>
-            );
-          })}
+              // For Global products in Global Search, identify where the stock is
+              const stockLocations = globalSearch && !p.branchId
+                ? p.stocks?.filter((s: any) => Number(s.quantity) > 0).map((s: any) => s.branch).filter(Boolean)
+                : [];
+
+              let displayPrice = p.basePrice;
+              if (selectedPriceList) {
+                const lp = p.prices?.find((lp: any) => lp.priceListId === selectedPriceList);
+                if (lp) displayPrice = lp.price;
+              }
+
+              return (
+                <button key={p.id} onClick={() => addToCart(p)} className={`card hover:shadow-lg transition-all text-left group border-transparent hover:border-blue-200 ${!isLocal && !globalSearch ? 'bg-orange-50/40 border-orange-100 shadow-sm' : ''}`}>
+                  <div className="flex justify-between items-start mb-1 flex-wrap gap-1">
+                    <span className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded font-mono uppercase">{p.code}</span>
+                    <div className="flex flex-wrap gap-1 justify-end flex-1">
+                      {/* 1. Show Product Owner Branch if it exists */}
+                      {branchName && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); addToCart(p, undefined, { id: p.branchId, name: branchName }); }}
+                          className={`text-[10px] px-1.5 py-0.5 rounded font-bold uppercase transition hover:scale-105 active:scale-95 ${isLocal ? 'bg-blue-100 text-blue-600 hover:bg-blue-200' : 'bg-orange-100 text-orange-600 hover:bg-orange-200'}`}
+                          title="Elegir stock de esta sucursal"
+                        >
+                          📍 {branchName}
+                        </button>
+                      )}
+
+                      {/* 2. Show Stock Locations for Global Products in Global search */}
+                      {!branchName && stockLocations.length > 0 && (
+                        <div className="flex flex-wrap gap-1">
+                          {stockLocations.map((loc: any) => (
+                            <button
+                              key={loc.id}
+                              onClick={(e) => { e.stopPropagation(); addToCart(p, undefined, { id: loc.id, name: loc.name }); }}
+                              className="text-[10px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-bold uppercase transition hover:scale-105 active:scale-95 hover:bg-green-200"
+                              title={`Elegir stock de ${loc.name}`}
+                            >
+                              📦 {loc.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+
+                      {Number(currentStock) <= 0 ? (
+                        <span className="text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">AGOTADO</span>
+                      ) : Number(currentStock) < Number(p.minStock || 0) && (
+                        <span className="text-[10px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded font-bold">STOCK BAJO</span>
+                      )}
+                    </div>
+                  </div>
+                  <p className="font-semibold text-gray-800 line-clamp-2 min-h-[3rem]">{p.name}</p>
+                  <div className="flex justify-between items-end mt-auto">
+                    <p className={`text-2xl font-black ${Number(displayPrice) < 0 ? "text-red-600 animate-pulse" : "text-blue-600"}`}>
+                      {formatPrice(displayPrice, settings.useDecimals)}
+                    </p>
+                    <span className="text-xs text-gray-400">{p.baseUnit?.symbol}</span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -450,6 +529,11 @@ export default function POSPage() {
               <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 pr-2">
                   <p className="font-bold text-gray-900 truncate text-sm">{item.name}</p>
+                  {item.originBranchName && (
+                    <p className="text-[9px] text-blue-500 font-bold uppercase flex items-center gap-1">
+                      <MapPin className="w-2 h-2" /> {item.originBranchName}
+                    </p>
+                  )}
                   <p className={`text-[10px] font-bold ${item.price < 0 ? "text-red-600" : "text-gray-500"}`}>
                     {formatPrice(item.price, settings.useDecimals)} / {item.unitSymbol}
                   </p>
@@ -716,60 +800,66 @@ export default function POSPage() {
       </div>
 
       {/* Weight Modal */}
-      {weightModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in duration-200">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Scale className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="text-xl font-bold text-center mb-1">{weightModal.product.name}</h3>
-            <p className="text-gray-500 text-center mb-6">Indica la cantidad en <strong>Gramos</strong></p>
+      {
+        weightModal && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in duration-200">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Scale className="w-8 h-8 text-blue-600" />
+              </div>
+              <p className="text-xl font-bold text-gray-800">{weightModal?.product?.name}</p>
+              <p className="text-gray-500 text-center mb-6">Indica la cantidad en <strong>Gramos</strong></p>
 
-            <input
-              type="number"
-              value={weightAmount}
-              onChange={e => setWeightAmount(e.target.value)}
-              placeholder="Ej: 500"
-              className="input input-lg text-center font-black text-3xl mb-6"
-              autoFocus
-            />
+              <input
+                type="number"
+                value={weightAmount}
+                onChange={e => setWeightAmount(e.target.value)}
+                placeholder="Ej: 500"
+                className="input input-lg text-center font-black text-3xl mb-6"
+                autoFocus
+              />
 
-            <div className="grid grid-cols-2 gap-3">
-              <button onClick={() => setWeightModal(null)} className="btn btn-secondary btn-lg">Cancelar</button>
-              <button
-                onClick={() => addToCart(weightModal.product, Number(weightAmount))}
-                disabled={!weightAmount}
-                className="btn btn-primary btn-lg"
-              >
-                Añadir
-              </button>
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => setWeightModal(null)} className="btn btn-secondary btn-lg">Cancelar</button>
+                <button
+                  onClick={() => addToCart(weightModal?.product, Number(weightAmount))}
+                  disabled={!weightAmount}
+                  className="btn btn-primary btn-lg"
+                >
+                  Añadir
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )
+      }
       {/* Mobile Bottom Bar (Sticky) */}
-      {!showMobileCart && (
-        <div className="lg:hidden fixed bottom-16 left-4 right-4 bg-white rounded-xl shadow-[0_0_15px_rgba(0,0,0,0.1)] border p-3 flex justify-between items-center z-40 animate-in slide-in-from-bottom-5">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400 font-medium">Total Estimado</span>
-            <span className="text-xl font-black text-gray-900">{formatPrice(total, settings.useDecimals)}</span>
+      {
+        !showMobileCart && (
+          <div className="lg:hidden fixed bottom-16 left-4 right-4 bg-white rounded-xl shadow-[0_0_15px_rgba(0,0,0,0.1)] border p-3 flex justify-between items-center z-40 animate-in slide-in-from-bottom-5">
+            <div className="flex flex-col">
+              <span className="text-xs text-gray-400 font-medium">Total Estimado</span>
+              <span className="text-xl font-black text-gray-900">{formatPrice(total, settings.useDecimals)}</span>
+            </div>
+            <button
+              onClick={() => setShowMobileCart(true)}
+              className="btn btn-primary px-6 py-2.5 h-auto rounded-lg shadow-lg shadow-blue-200 font-bold flex items-center gap-2"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Ver Carrito
+              <span className="bg-white/20 px-2 py-0.5 rounded text-xs ml-1">{cart.length}</span>
+            </button>
           </div>
-          <button
-            onClick={() => setShowMobileCart(true)}
-            className="btn btn-primary px-6 py-2.5 h-auto rounded-lg shadow-lg shadow-blue-200 font-bold flex items-center gap-2"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            Ver Carrito
-            <span className="bg-white/20 px-2 py-0.5 rounded text-xs ml-1">{cart.length}</span>
-          </button>
-        </div>
-      )}
-      {showScanner && (
-        <BarcodeScanner
-          onScanSuccess={handleScan}
-          onClose={() => setShowScanner(false)}
-        />
-      )}
-    </div>
+        )
+      }
+      {
+        showScanner && (
+          <BarcodeScanner
+            onScanSuccess={handleScan}
+            onClose={() => setShowScanner(false)}
+          />
+        )
+      }
+    </div >
   );
 }

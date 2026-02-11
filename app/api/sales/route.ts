@@ -73,33 +73,22 @@ export async function POST(req: Request) {
     if (!session || !session.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
     const userId = session.user.id;
-    let branchId = (session.user as any).branchId;
+    const shift = await prisma.shift.findFirst({
+      where: { userId, closedAt: null },
+      select: { id: true, branchId: true }
+    });
+    if (!shift) return NextResponse.json({ error: "No hay turno abierto" }, { status: 400 });
+
+    const branchId = shift.branchId || (session.user as any).branchId;
+
+    if (!branchId) {
+      console.error("❌ Error: Usuario sin sucursal asignada", { userId });
+      return NextResponse.json({ error: "El turno no tiene una sucursal asignada. Contacte al administrador." }, { status: 400 });
+    }
 
     // Fetch System Settings for Rounding
     const settings = await prisma.systemSetting.findUnique({ where: { key: "global" } });
     const decimals = settings?.useDecimals ? 2 : 0;
-
-    // Fallback: If session branchId is missing (stale session), fetch from DB
-    if (!branchId) {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-        select: { branchId: true }
-      });
-      if (user?.branchId) {
-        branchId = user.branchId;
-        console.log("⚠️ BranchID recuperado de DB (Sesión obsoleta):", branchId);
-      }
-    }
-
-    if (!branchId) {
-      console.error("❌ Error: Usuario sin sucursal asignada", { userId });
-      return NextResponse.json({ error: "El usuario no tiene una sucursal asignada. Contacte al administrador." }, { status: 400 });
-    }
-
-    const shift = await prisma.shift.findFirst({
-      where: { userId, closedAt: null }
-    });
-    if (!shift) return NextResponse.json({ error: "No hay turno abierto" }, { status: 400 });
 
     const body = await req.json();
     const {
@@ -166,7 +155,7 @@ export async function POST(req: Request) {
           ...((item.unitId || (product as any).baseUnitId) ? { unit: { connect: { id: item.unitId || (product as any).baseUnitId } } } : {})
         });
 
-        const targetBranchId = (product as any).branchId || branchId;
+        const targetBranchId = item.originBranchId || (product as any).branchId || branchId;
 
         await tx.stock.upsert({
           where: { productId_branchId: { productId: item.productId, branchId: targetBranchId } },

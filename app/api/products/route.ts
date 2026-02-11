@@ -15,14 +15,24 @@ export async function GET(req: Request) {
     const branchId = (session?.user as any)?.branchId;
     const allStocks = searchParams.get("allStocks") === "true";
 
-    const filterBranchId = searchParams.get("branchId") || (userRole === "SUPERVISOR" ? branchId : null);
+    // [NEW] Shift dynamic branch awareness
+    const activeShift = await prisma.shift.findFirst({
+      where: { userId: session?.user?.id, closedAt: null },
+      select: { branchId: true }
+    });
+
+    // If allStocks=true (Global Search), we don't force the branch filter for stock calculation/visibility
+    // but we prioritize: 1. URL branchId, 2. (if not globalSearch) active shift/default branch
+    const filterBranchId = searchParams.get("branchId") || (allStocks ? null : (activeShift?.branchId || (userRole === "SUPERVISOR" ? branchId : null)));
 
     const includeOptions = {
       category: true,
       baseUnit: true,
+      branch: true,
       prices: true,
       stocks: {
-        where: allStocks ? undefined : (filterBranchId ? { branchId: filterBranchId } : undefined)
+        where: allStocks ? undefined : (filterBranchId ? { branchId: filterBranchId } : undefined),
+        include: { branch: true }
       }
     };
 
@@ -64,10 +74,11 @@ export async function GET(req: Request) {
     }
 
     // Ownership Logic
-    if (userRole === "SUPERVISOR") {
-      if (branchId) {
+    if (userRole === "SUPERVISOR" || (userRole === "CAJERO" && !allStocks)) {
+      const targetBranchId = userRole === "SUPERVISOR" ? branchId : (activeShift?.branchId || branchId);
+      if (targetBranchId) {
         andConditions.push({
-          OR: [{ branchId: null }, { branchId: branchId }]
+          OR: [{ branchId: null }, { branchId: targetBranchId }]
         });
       } else {
         andConditions.push({ branchId: null });

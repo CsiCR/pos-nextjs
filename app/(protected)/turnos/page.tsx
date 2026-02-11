@@ -17,25 +17,38 @@ export default function TurnosPage() {
   const [discrepancyReason, setDiscrepancyReason] = useState("");
   const [discrepancyNote, setDiscrepancyNote] = useState("");
   const [closeError, setCloseError] = useState<any>(null);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [selectedBranchId, setSelectedBranchId] = useState("");
   const router = useRouter();
 
   const fetchData = async () => {
     setLoading(true);
-    const [curr, all] = await Promise.all([
+    const [curr, all, brs] = await Promise.all([
       fetch("/api/shifts/current").then(r => r.json()),
-      fetch("/api/shifts").then(r => r.json())
+      fetch("/api/shifts").then(r => r.json()),
+      fetch("/api/branches").then(r => r.json())
     ]);
     setCurrentShift(curr?.id ? curr : null);
     setShifts(all || []);
+    setBranches(Array.isArray(brs) ? brs : []);
     setLoading(false);
   };
 
   useEffect(() => { fetchData(); }, []);
 
   const openShift = async () => {
-    await fetch("/api/shifts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initialCash }) });
+    if (!selectedBranchId) {
+      alert("Debes seleccionar una sucursal para abrir el turno.");
+      return;
+    }
+    await fetch("/api/shifts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initialCash, branchId: selectedBranchId })
+    });
     setOpenModal(false);
     setInitialCash(0);
+    setSelectedBranchId("");
     fetchData();
   };
 
@@ -195,7 +208,20 @@ export default function TurnosPage() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="card w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">Abrir Turno</h2>
-            <label className="block text-sm text-gray-500 mb-2">Monto inicial en caja</label>
+
+            <label className="block text-sm font-bold text-gray-700 mb-2">Sucursal</label>
+            <select
+              value={selectedBranchId}
+              onChange={e => setSelectedBranchId(e.target.value)}
+              className="input mb-4"
+            >
+              <option value="">Seleccionar sucursal...</option>
+              {branches.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+
+            <label className="block text-sm font-bold text-gray-700 mb-2">Monto inicial en caja</label>
             <input type="number" value={initialCash} onChange={e => setInitialCash(Number(e.target.value))} className="input mb-4" />
             <div className="flex gap-2">
               <button onClick={() => setOpenModal(false)} className="btn btn-secondary flex-1">Cancelar</button>

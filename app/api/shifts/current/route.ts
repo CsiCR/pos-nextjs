@@ -11,6 +11,7 @@ export async function GET() {
   const shift = await prisma.shift.findFirst({
     where: { userId: session.user.id, closedAt: null },
     include: {
+      branch: true,
       sales: {
         include: {
           items: { include: { product: true } },

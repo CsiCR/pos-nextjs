@@ -10,6 +10,122 @@ import { useSearchParams } from "next/navigation";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { PrintLabelsModal } from "@/components/PrintLabelsModal";
 
+function ImportModal({
+  onClose,
+  onUpload,
+  preview,
+  onConfirm,
+  loading
+}: {
+  onClose: () => void,
+  onUpload: (e: any) => void,
+  preview: any[],
+  onConfirm: () => void,
+  loading: boolean
+}) {
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
+              <Upload className="w-6 h-6 text-green-600" />
+            </div>
+            Importar Productos desde CSV
+          </h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition">&times;</button>
+        </div>
+
+        {!preview.length ? (
+          <div className="space-y-6">
+            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-blue-800">
+              <h3 className="font-bold flex items-center gap-2 mb-2">
+                <AlertCircle className="w-5 h-5" /> Instrucciones del archivo
+              </h3>
+              <p className="text-sm opacity-90 mb-2">El archivo debe ser un **CSV** separado por comas o punto y coma.</p>
+              <p className="text-xs font-bold text-blue-700 mb-4 bg-white/50 p-2 rounded-lg border border-blue-200">
+                💡 Recomendación Excel: Guarda tu archivo como **"CSV UTF-8 (delimitado por comas)"**.
+              </p>
+              <div className="grid grid-cols-2 gap-4 text-xs font-mono">
+                <div className="bg-white/50 p-3 rounded-lg border border-blue-200">
+                  <p className="font-bold text-blue-900">Obligatorios:</p>
+                  <ul className="list-disc list-inside">
+                    <li>Nombre</li>
+                    <li>Precio</li>
+                  </ul>
+                </div>
+                <div className="bg-white/50 p-3 rounded-lg border border-blue-200">
+                  <p className="font-bold text-blue-900">Opcionales:</p>
+                  <ul className="list-disc list-inside">
+                    <li>Codigo, EAN, Stock</li>
+                    <li>Stock Minimo (o Minimo)</li>
+                    <li>Categoria, Unidad</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center hover:border-blue-400 hover:bg-blue-50/10 transition-all group">
+              <label className="cursor-pointer">
+                <Upload className="w-12 h-12 text-gray-300 mx-auto mb-4 group-hover:text-blue-500 transition-colors" />
+                <p className="text-gray-500 font-medium">Click para seleccionar o arrastra tu archivo CSV</p>
+                <input type="file" accept=".csv" onChange={onUpload} className="hidden" />
+              </label>
+            </div>
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col min-h-0">
+            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2 text-green-800">
+                <CheckCircle2 className="w-5 h-5" />
+                <span className="font-bold">Vista Previa ({preview.length} filas detectadas)</span>
+              </div>
+              <button onClick={() => window.location.reload()} className="text-xs text-green-700 underline font-bold uppercase tracking-wider">Cambiar archivo</button>
+            </div>
+
+            <div className="flex-1 overflow-auto border border-gray-100 rounded-2xl custom-scrollbar">
+              <table className="w-full text-xs">
+                <thead className="bg-gray-50 border-b sticky top-0">
+                  <tr className="text-left font-bold text-gray-600 uppercase tracking-wider">
+                    <th className="px-4 py-3">Nombre</th>
+                    <th className="px-4 py-3">Código</th>
+                    <th className="px-4 py-3 text-right">Precio</th>
+                    <th className="px-4 py-3 text-right">Stock</th>
+                    <th className="px-4 py-3">Categoría</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 bg-white">
+                  {preview.slice(0, 100).map((p: any, i: number) => (
+                    <tr key={i} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium text-gray-900">{p.nombre}</td>
+                      <td className="px-4 py-3 text-gray-500 font-mono italic">{p.codigo || p.ean || "-"}</td>
+                      <td className="px-4 py-3 text-right font-bold text-gray-900">${p.precio}</td>
+                      <td className="px-4 py-3 text-right text-gray-600">{p.stock}</td>
+                      <td className="px-4 py-3"><span className="bg-gray-100 px-2 py-0.5 rounded text-[10px]">{p.categoria || "-"}</span></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {preview.length > 100 && (
+                <div className="p-4 text-center text-gray-500 italic bg-gray-50 border-t">
+                  ... y {preview.length - 100} productos más.
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-4 pt-6 mt-4 border-t">
+          <button onClick={onClose} className="btn bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold">Cancelar</button>
+          <button onClick={onConfirm} disabled={loading} className="btn btn-primary shadow-xl shadow-blue-100 font-bold">
+            {loading ? "Procesando..." : "Confirmar e Importar"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProductosPage() {
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
@@ -278,15 +394,15 @@ export default function ProductosPage() {
           <h1 className="text-3xl font-bold text-gray-900">Catálogo de Productos</h1>
           <p className="text-gray-500">Administra precios, unidades y stock de la sucursal</p>
         </div>
-        <div className="flex gap-3">
-          <button onClick={handleExport} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
-            <Download className="w-5 h-5" /> Exportar CSV
+        <div className="flex flex-wrap gap-2 sm:gap-3">
+          <button onClick={handleExport} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Exportar CSV">
+            <Download className="w-5 h-5" /> <span className="hidden sm:inline">Exportar</span>
           </button>
-          <button onClick={() => setImportModal(true)} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2">
-            <FileDown className="w-5 h-5" /> Importar CSV
+          <button onClick={() => setImportModal(true)} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Importar CSV">
+            <FileDown className="w-5 h-5" /> <span className="hidden sm:inline">Importar</span>
           </button>
-          <button onClick={openNew} className="btn btn-primary shadow-lg shadow-blue-100 flex items-center gap-2">
-            <Plus className="w-5 h-5" /> Nuevo Producto
+          <button onClick={openNew} className="btn btn-primary shadow-lg shadow-blue-100 flex items-center gap-2 h-11 px-3 sm:px-4">
+            <Plus className="w-5 h-5" /> <span className="hidden xs:inline">Nuevo Producto</span>
           </button>
         </div>
       </div>
@@ -336,104 +452,106 @@ export default function ProductosPage() {
         </select>
       </div>
 
-      <div className="card overflow-hidden p-0 border border-gray-100 shadow-sm">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
-            <tr>
-              <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider w-10">
-                <input
-                  type="checkbox"
-                  className="checkbox checkbox-sm checkbox-primary"
-                  checked={products.length > 0 && selectedIds.length === products.length}
-                  onChange={toggleSelectAll}
-                />
-              </th>
-              <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Producto</th>
-              <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Categoría</th>
-              <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Precio Base</th>
-              <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Unidad</th>
-              <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Stock</th>
-              <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Acciones</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100 bg-white">
-            {(products ?? []).map(p => {
-              const stock = p.displayStock ?? (p.stocks?.[0]?.quantity || 0);
-              const unit = p.baseUnit?.symbol || "-";
-              return (
-                <tr key={p.id} className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(p.id) ? 'bg-blue-50' : ''}`}>
-                  <td className="px-6 py-4">
-                    <input
-                      type="checkbox"
-                      className="checkbox checkbox-sm checkbox-primary"
-                      checked={selectedIds.includes(p.id)}
-                      onChange={() => toggleSelect(p.id)}
-                    />
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{p.name}</p>
-                      <p className="text-[10px] font-mono text-gray-400 mt-1">{p.code}</p>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg font-medium text-xs">
-                      {p.category?.name || "General"}
-                    </span>
-                  </td>
-                  <td className={`px-6 py-4 text-right font-black text-base ${Number(p.basePrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
-                    {formatPrice(p.basePrice, settings.useDecimals)}
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="text-gray-500 font-medium">{unit}</span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ${Number(stock) <= 0 ? "bg-red-100 text-red-600" :
-                      Number(stock) < Number(p.minStock || 0) ? "bg-orange-100 text-orange-600" :
-                        "bg-green-100 text-green-600"
-                      }`}>
-                      {formatStock(stock, p.baseUnit)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-center gap-1 transition-opacity">
+      <div className="card p-0 border border-gray-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto custom-scrollbar">
+          <table className="w-full text-sm min-w-[800px] md:min-w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider w-10">
+                  <input
+                    type="checkbox"
+                    className="checkbox checkbox-sm checkbox-primary"
+                    checked={products.length > 0 && selectedIds.length === products.length}
+                    onChange={toggleSelectAll}
+                  />
+                </th>
+                <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Producto</th>
+                <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Categoría</th>
+                <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Precio Base</th>
+                <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Unidad</th>
+                <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Stock</th>
+                <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 bg-white">
+              {(products ?? []).map(p => {
+                const stock = p.displayStock ?? (p.stocks?.[0]?.quantity || 0);
+                const unit = p.baseUnit?.symbol || "-";
+                return (
+                  <tr key={p.id} className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(p.id) ? 'bg-blue-50' : ''}`}>
+                    <td className="px-6 py-4">
+                      <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm checkbox-primary"
+                        checked={selectedIds.includes(p.id)}
+                        onChange={() => toggleSelect(p.id)}
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{p.name}</p>
+                        <p className="text-[10px] font-mono text-gray-400 mt-1">{p.code}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-lg font-medium text-xs">
+                        {p.category?.name || "General"}
+                      </span>
+                    </td>
+                    <td className={`px-6 py-4 text-right font-black text-base ${Number(p.basePrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
+                      {formatPrice(p.basePrice, settings.useDecimals)}
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span className="text-gray-500 font-medium">{unit}</span>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ${Number(stock) <= 0 ? "bg-red-100 text-red-600" :
+                        Number(stock) < Number(p.minStock || 0) ? "bg-orange-100 text-orange-600" :
+                          "bg-green-100 text-green-600"
+                        }`}>
+                        {formatStock(stock, p.baseUnit)}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center gap-1 transition-opacity">
 
-                      {/* Edit Button */}
-                      <button onClick={() => openEdit(p)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-blue-600" title="Editar">
-                        <Edit2 className="w-4 h-4" />
-                      </button>
-
-                      {/* Delete Button - Show if Admin/Gerente OR Supervisor */}
-                      {(canDelete || isSupervisor) && (
-                        <button onClick={() => remove(p.id)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-red-500" title="Eliminar">
-                          <Trash2 className="w-4 h-4" />
+                        {/* Edit Button */}
+                        <button onClick={() => openEdit(p)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-blue-600" title="Editar">
+                          <Edit2 className="w-4 h-4" />
                         </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+
+                        {/* Delete Button - Show if Admin/Gerente OR Supervisor */}
+                        {(canDelete || isSupervisor) && (
+                          <button onClick={() => remove(p.id)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-red-500" title="Eliminar">
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* [NEW] Selection Action Bar */}
       {selectedIds.length > 0 && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-6 z-40 animate-in slide-in-from-bottom-10">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">{selectedIds.length} seleccionados</span>
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-4 py-4 rounded-2xl shadow-2xl flex items-center gap-3 sm:gap-6 z-40 animate-in slide-in-from-bottom-10 w-[95%] sm:w-auto overflow-hidden justify-between sm:justify-start">
+          <div className="flex flex-col shrink-0">
+            <span className="text-[10px] sm:text-xs text-gray-400 font-bold uppercase tracking-wider">{selectedIds.length} <span className="hidden xs:inline">seleccionados</span></span>
           </div>
-          <div className="h-8 w-px bg-gray-700" />
+          <div className="h-8 w-px bg-gray-700 hidden xs:block" />
           <button
             onClick={() => setModal({ type: "print_labels", ids: selectedIds })}
-            className="btn btn-primary btn-sm flex items-center gap-2"
+            className="btn btn-primary btn-sm flex items-center gap-2 text-xs py-2 px-3 sm:px-4"
           >
-            <Printer className="w-4 h-4" /> Imprimir Etiquetas
+            <Printer className="w-4 h-4" /> <span className="hidden sm:inline">Imprimir Etiquetas</span><span className="sm:hidden">Etiquetas</span>
           </button>
           <button
             onClick={() => setSelectedIds([])}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-white transition-colors p-2"
           >
             <X className="w-5 h-5" />
           </button>
@@ -718,133 +836,6 @@ export default function ProductosPage() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function ImportModal({
-  onClose,
-  onUpload,
-  preview,
-  onConfirm,
-  loading
-}: {
-  onClose: () => void,
-  onUpload: (e: any) => void,
-  preview: any[],
-  onConfirm: () => void,
-  loading: boolean
-}) {
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-3xl p-8 w-full max-w-3xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center">
-              <Upload className="w-6 h-6 text-green-600" />
-            </div>
-            Importar Productos desde CSV
-          </h2>
-          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition">&times;</button>
-        </div>
-
-        {!preview.length ? (
-          <div className="space-y-6">
-            <div className="bg-blue-50 border border-blue-100 rounded-2xl p-6 text-blue-800">
-              <h3 className="font-bold flex items-center gap-2 mb-2">
-                <AlertCircle className="w-5 h-5" /> Instrucciones del archivo
-              </h3>
-              <p className="text-sm opacity-90 mb-2">El archivo debe ser un **CSV** separado por comas o punto y coma.</p>
-              <p className="text-xs font-bold text-blue-700 mb-4 bg-white/50 p-2 rounded-lg border border-blue-200">
-                💡 Recomendación Excel: Guarda tu archivo como **"CSV UTF-8 (delimitado por comas)"**.
-              </p>
-              <div className="grid grid-cols-2 gap-4 text-xs font-mono">
-                <div className="bg-white/50 p-3 rounded-lg border border-blue-200">
-                  <p className="font-bold text-blue-900">Obligatorios:</p>
-                  <ul className="list-disc list-inside">
-                    <li>Nombre</li>
-                    <li>Precio</li>
-                  </ul>
-                </div>
-                <div className="bg-white/50 p-3 rounded-lg border border-blue-200">
-                  <p className="font-bold text-blue-900">Opcionales:</p>
-                  <ul className="list-disc list-inside">
-                    <li>Codigo, EAN, Stock</li>
-                    <li>Stock Minimo (o Minimo)</li>
-                    <li>Categoria, Unidad</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center hover:border-blue-400 hover:bg-blue-50/10 transition-all group">
-              <label className="cursor-pointer">
-                <Upload className="w-12 h-12 text-gray-300 mx-auto mb-4 group-hover:text-blue-500 transition-colors" />
-                <p className="text-gray-500 font-medium">Click para seleccionar o arrastra tu archivo CSV</p>
-                <input type="file" accept=".csv" onChange={onUpload} className="hidden" />
-              </label>
-            </div>
-          </div>
-        ) : (
-          <div className="flex-1 flex flex-col min-h-0">
-            <div className="bg-green-50 border border-green-100 rounded-2xl p-4 flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2 text-green-800">
-                <CheckCircle2 className="w-5 h-5" />
-                <span className="font-bold">Vista Previa ({preview.length} filas detectadas)</span>
-              </div>
-              <button onClick={() => location.reload()} className="text-xs text-green-700 underline font-bold uppercase tracking-wider">Cambiar archivo</button>
-            </div>
-
-            <div className="flex-1 overflow-auto border border-gray-100 rounded-2xl custom-scrollbar">
-              <table className="w-full text-xs">
-                <thead className="bg-gray-50 border-b sticky top-0">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Código</th>
-                    <th className="px-4 py-2 text-left">Nombre</th>
-                    <th className="px-4 py-2 text-right">Precio</th>
-                    <th className="px-4 py-2 text-right">Stock</th>
-                    <th className="px-4 py-2 text-right">Min</th>
-                    <th className="px-4 py-2 text-left">Categoría</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {preview.slice(0, 100).map((p, i) => (
-                    <tr key={i} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 font-mono text-gray-400">{p.codigo || "-"}</td>
-                      <td className="px-4 py-2 font-bold">{p.nombre}</td>
-                      <td className="px-4 py-2 text-right">${p.precio || "0"}</td>
-                      <td className="px-4 py-2 text-right bg-blue-50/30">{p.stock || "0"}</td>
-                      <td className="px-4 py-2 text-right text-orange-500">{p.minStock || "0"}</td>
-                      <td className="px-4 py-2 text-gray-500">{p.categoria || "-"}</td>
-                    </tr>
-                  ))}
-                  {preview.length > 100 && (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-4 text-center font-bold text-gray-400">Y {preview.length - 100} productos más...</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-6">
-              <button
-                onClick={onClose}
-                className="btn bg-gray-100 hover:bg-gray-200 text-gray-600 btn-lg font-bold"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={onConfirm}
-                className="btn btn-success btn-lg shadow-xl shadow-green-100 font-bold"
-                disabled={loading}
-              >
-                {loading ? "Importando..." : "Confirmar Importación"}
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
