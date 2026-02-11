@@ -95,6 +95,17 @@ export default function ConfigPage() {
     const openEditUnit = (u: any) => { setUnitForm({ ...u, baseUnitId: u.baseUnitId || "" }); setUnitModal(true); };
     const openNewUnit = () => { setUnitForm({ name: "", symbol: "", isBase: true, conversionFactor: 1, baseUnitId: "", decimals: 2 }); setUnitModal(true); };
 
+    const handleDeleteUnit = async (id: string) => {
+        if (!confirm("¿Confirma que desea eliminar esta unidad de medida?")) return;
+        const res = await fetch(`/api/measurement-units/${id}`, { method: "DELETE" });
+        if (res.ok) {
+            setUnits(units.filter(u => u.id !== id));
+        } else {
+            const err = await res.json();
+            alert(err.error || "No se pudo eliminar la unidad. Es posible que esté en uso por algún producto.");
+        }
+    };
+
     // --- HANDLERS: CATEGORIES ---
     const handleCategorySubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -342,7 +353,7 @@ export default function ConfigPage() {
                                         {canEditGlobal && (
                                             <>
                                                 <button onClick={() => openEditUnit(u)} className="text-gray-300 hover:text-blue-500"><Pencil className="w-4 h-4" /></button>
-                                                <button className="text-gray-300 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                                                <button onClick={() => handleDeleteUnit(u.id)} className="text-gray-300 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                                             </>
                                         )}
                                     </div>
