@@ -29,10 +29,10 @@ function LoginForm() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-blue-800 p-4">
       <div className="card w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-4">
-            <Store className="w-8 h-8 text-blue-600" />
+          <div className="flex justify-center mb-4">
+            <img src="/logo.png" alt="Multirubro 24" className="w-24 h-24 object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">El 24</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Multirubro 24</h1>
           <p className="text-gray-600 mt-2">Sistema de Punto de Venta</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -44,7 +44,6 @@ function LoginForm() {
             {loading ? "Ingresando..." : "Ingresar"}
           </button>
         </form>
-
       </div>
     </div>
   );

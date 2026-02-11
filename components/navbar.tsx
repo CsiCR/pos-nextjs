@@ -28,8 +28,9 @@ export function Navbar() {
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <Link href="/dashboard" className="flex items-center gap-2 text-blue-600 font-bold text-xl">
-            <Store className="w-6 h-6" /> El 24
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
+            <span className="text-blue-600 font-bold text-xl hidden sm:inline">Multirubro 24</span>
           </Link>
           <div className="hidden md:flex items-center gap-1">
             {links.map(l => (

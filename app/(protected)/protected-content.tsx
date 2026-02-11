@@ -14,7 +14,7 @@ export function ProtectedContent({ children }: { children: ReactNode }) {
           </Suspense>
         </main>
         <footer className="text-center py-4 text-[10px] text-gray-400 uppercase tracking-widest">
-          <p>© {new Date().getFullYear()} El 24 - Sistema de Punto de Venta</p>
+          <p>© {new Date().getFullYear()} Multirubro 24 - Sistema de Punto de Venta</p>
           <p className="font-bold">Versión 1.0.0</p>
         </footer>
       </div>

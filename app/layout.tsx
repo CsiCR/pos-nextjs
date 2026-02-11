@@ -9,11 +9,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
-  title: "El 24 - Sistema POS",
+  title: "Multirubro 24 - Sistema POS",
   description: "Sistema de punto de venta",
   icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg"
+    icon: "/logo.png",
+    shortcut: "/logo.png"
   },
   openGraph: {
     images: ["/og-image.png"]
