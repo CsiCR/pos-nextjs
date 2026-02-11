@@ -87,10 +87,7 @@ export async function GET(req: Request) {
         some: stockCondition
       };
     } else if (filterMode === "missing") {
-      // Missing = Not currently having positive stock (in context)
-      whereClause.stocks = {
-        none: stockCondition
-      };
+      // Handled by JS filtering later to support minStock comparison
     } else if (filterMode === "critical") {
       // Critical = Explicitly has a stock record with quantity <= 0 (matches Dashboard)
       whereClause.stocks = {
@@ -113,6 +110,16 @@ export async function GET(req: Request) {
       orderBy: { name: "asc" },
       take: 500
     });
+
+    // 4. Post-filtering for "Stock Bajo" (JS needed for field comparison)
+    if (filterMode === "missing") {
+      const filtered = products.filter((p: any) => {
+        const currentStock = Number(p.stocks?.[0]?.quantity || 0);
+        const minStock = Number(p.minStock || 0);
+        return currentStock <= minStock;
+      });
+      return NextResponse.json(filtered);
+    }
 
     return NextResponse.json(products);
   } catch (error: any) {
