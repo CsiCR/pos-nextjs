@@ -6,6 +6,7 @@ import { useSettings } from "@/hooks/use-settings";
 import { Switch } from "@/components/ui/switch";
 
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { PrintLabelsModal } from "@/components/PrintLabelsModal";
 
@@ -38,13 +39,14 @@ export default function ProductosPage() {
   const [importing, setImporting] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
 
-  const [viewAll, setViewAll] = useState(true); // Default: View All
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get("filterMode") || "all";
+
+  const [filterMode, setFilterMode] = useState(initialFilter);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
 
   const fetchData = async () => {
-    // filterMode: viewAll ? 'all' : 'missing'
-    const filterMode = viewAll ? "all" : "missing";
     const [prods, cats, unis, lists] = await Promise.all([
       fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}`).then(r => r.json()),
       fetch("/api/categories").then(r => r.json()),
@@ -65,7 +67,7 @@ export default function ProductosPage() {
     setPriceLists(lists || []);
   };
 
-  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, viewAll, selectedCategory]);
+  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, filterMode, selectedCategory]);
 
   // [NEW] Modal Focus Effect
   useEffect(() => {
@@ -107,24 +109,33 @@ export default function ProductosPage() {
       const headers = firstLine.split(delimiter).map(h => h.trim().toLowerCase());
 
       const parsed = lines.slice(1).map(line => {
-        const values = line.split(delimiter).map(v => v.trim());
+        const values = line.split(delimiter).map(v => {
+          let val = v.trim();
+          // Eliminar comillas envolventes si existen (común en exportaciones de Excel)
+          if (val.startsWith('"') && val.endsWith('"')) {
+            val = val.slice(1, -1).trim();
+          }
+          return val;
+        });
         const obj: any = {};
         headers.forEach((h, i) => {
-          if (h.includes("nombre")) obj.nombre = values[i];
-          if (h.includes("cod") || h.includes("SKU")) obj.codigo = values[i];
-          if (h.includes("ean") || h.includes("barra")) obj.ean = values[i];
-          if (h.includes("precio")) obj.precio = values[i];
-          if (h.includes("stock") && !h.includes("min")) obj.stock = values[i];
-          if (h.includes("min")) obj.minStock = values[i]; // [NEW] Parser
-          if (h.includes("cat")) obj.categoria = values[i];
-          if (h.includes("uni")) obj.unidad = values[i];
+          const header = h.replace(/^"|"$/g, '').trim().toLowerCase();
+          if (header.includes("nombre")) obj.nombre = values[i];
+          if (header.includes("cod") || header.includes("sku")) obj.codigo = values[i];
+          if (header.includes("ean") || header.includes("barra")) obj.ean = values[i];
+          if (header.includes("precio")) obj.precio = values[i];
+          if (header.includes("stock") && !header.includes("min")) obj.stock = values[i];
+          if (header.includes("min")) obj.minStock = values[i];
+          if (header.includes("cat")) obj.categoria = values[i];
+          if (header.includes("uni")) obj.unidad = values[i];
         });
         return obj;
       });
       console.log("Parsed CSV:", parsed);
       setPreviewData(parsed);
     };
-    reader.readAsText(file, "ISO-8859-1");
+    // Priorizamos UTF-8 para mayor compatibilidad moderna
+    reader.readAsText(file, "UTF-8");
   };
 
   const [importResults, setImportResults] = useState<any>(null); // { count: number, warnings: [] }
@@ -299,16 +310,15 @@ export default function ProductosPage() {
           </select>
         </div>
 
-        <div className="flex items-center gap-2 cursor-pointer select-none bg-gray-50 px-4 py-2 rounded-lg border border-gray-200 hover:bg-white hover:border-blue-300 transition-all">
-          <Switch
-            checked={viewAll}
-            onCheckedChange={setViewAll}
-            className="data-[state=checked]:bg-blue-600"
-          />
-          <span className="text-sm font-bold text-gray-700">
-            {viewAll ? "Todos los Productos" : "Stock Bajo / Faltante"}
-          </span>
-        </div>
+        <select
+          value={filterMode}
+          onChange={e => setFilterMode(e.target.value)}
+          className="input appearance-none font-bold bg-white border-blue-200 text-blue-700 hover:border-blue-400 transition-all cursor-pointer"
+        >
+          <option value="all">🔍 Todos los Productos</option>
+          <option value="missing">📦 Stock Bajo / Faltante</option>
+          <option value="critical">⚠️ Sólo Críticos (Dashboard)</option>
+        </select>
       </div>
 
       <div className="card overflow-hidden p-0 border border-gray-100 shadow-sm">
@@ -378,8 +388,8 @@ export default function ProductosPage() {
                         <Edit2 className="w-4 h-4" />
                       </button>
 
-                      {/* Delete Button - Show if Admin/Gerente OR if Supervisor owns the product */}
-                      {(canDelete || (isSupervisor && !p.branchId ? false : true)) && (
+                      {/* Delete Button - Show if Admin/Gerente OR Supervisor */}
+                      {(canDelete || isSupervisor) && (
                         <button onClick={() => remove(p.id)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-red-500" title="Eliminar">
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -729,7 +739,10 @@ function ImportModal({
               <h3 className="font-bold flex items-center gap-2 mb-2">
                 <AlertCircle className="w-5 h-5" /> Instrucciones del archivo
               </h3>
-              <p className="text-sm opacity-90 mb-4">El archivo debe ser un **CSV** separado por comas con las siguientes columnas (el orden no importa):</p>
+              <p className="text-sm opacity-90 mb-2">El archivo debe ser un **CSV** separado por comas o punto y coma.</p>
+              <p className="text-xs font-bold text-blue-700 mb-4 bg-white/50 p-2 rounded-lg border border-blue-200">
+                💡 Recomendación Excel: Guarda tu archivo como **"CSV UTF-8 (delimitado por comas)"**.
+              </p>
               <div className="grid grid-cols-2 gap-4 text-xs font-mono">
                 <div className="bg-white/50 p-3 rounded-lg border border-blue-200">
                   <p className="font-bold text-blue-900">Obligatorios:</p>

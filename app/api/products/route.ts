@@ -91,6 +91,14 @@ export async function GET(req: Request) {
       whereClause.stocks = {
         none: stockCondition
       };
+    } else if (filterMode === "critical") {
+      // Critical = Explicitly has a stock record with quantity <= 0 (matches Dashboard)
+      whereClause.stocks = {
+        some: {
+          branchId: branchId || undefined,
+          quantity: { lte: 0 }
+        }
+      };
     }
 
     // Category Filter

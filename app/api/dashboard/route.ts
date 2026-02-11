@@ -180,7 +180,8 @@ export async function GET(req: Request) {
       lowStockCount = await (prisma as any).stock.count({
         where: {
           branchId: effectiveBranchId,
-          quantity: { lte: 0 }
+          quantity: { lte: 0 },
+          product: { active: true }
         }
       });
     }

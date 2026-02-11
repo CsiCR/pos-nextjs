@@ -164,7 +164,7 @@ export async function POST(req: Request) {
                 }
 
                 const commonData: any = {
-                    name: p.nombre,
+                    name: String(p.nombre).replace(/^"|"$/g, '').trim(),
                     basePrice: basePrice,
                     category: categoryId ? { connect: { id: categoryId } } : undefined,
                     baseUnit: unitId ? { connect: { id: unitId } } : undefined,
@@ -191,9 +191,9 @@ export async function POST(req: Request) {
                         commonData.ean = eanInput;
                     }
 
-                    // Branch Ownership
-                    if (product.branchId === null && branchId) {
-                        commonData.branch = { connect: { id: branchId } };
+                    // Branch Ownership: Si el producto es compartido o de otra sucursal, hacerlo GLOBAL
+                    if (product.branchId !== branchId) {
+                        commonData.branchId = null;
                     }
 
                     try {
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
                         product = await tx.product.create({
                             data: {
                                 code: productCode,
-                                branch: branchId ? { connect: { id: branchId } } : undefined,
+                                branchId: null, // Los productos por importación son Globales por defecto para evitar problemas de visibilidad
                                 ...commonData
                             }
                         });
@@ -251,7 +251,7 @@ export async function POST(req: Request) {
                                 branchId: targetBranchId
                             }
                         },
-                        update: { quantity: { increment: stockQty } },
+                        update: { quantity: stockQty },
                         create: {
                             productId: product.id,
                             branchId: targetBranchId,

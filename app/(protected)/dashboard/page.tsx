@@ -99,7 +99,7 @@ export default function DashboardPage() {
           <p className="text-gray-500">Bienvenido de nuevo, {session?.user?.name}</p>
         </div>
         {data.lowStockCount > 0 && (
-          <Link href="/productos?filterMode=missing" className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition">
+          <Link href="/productos?filterMode=critical" className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition">
             <AlertTriangle className="w-5 h-5" />
             <span className="font-semibold">{data.lowStockCount} items sin stock/críticos</span>
           </Link>
