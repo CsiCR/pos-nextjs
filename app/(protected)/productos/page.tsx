@@ -20,6 +20,8 @@ export default function ProductosPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [units, setUnits] = useState<any[]>([]);
+  const [branches, setBranches] = useState<any[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState("");
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<any>(null);
   const nameInputRef = useRef<HTMLInputElement>(null); // [NEW] Focus Ref
@@ -47,11 +49,12 @@ export default function ProductosPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
 
   const fetchData = async () => {
-    const [prods, cats, unis, lists] = await Promise.all([
-      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}`).then(r => r.json()),
+    const [prods, cats, unis, lists, brs] = await Promise.all([
+      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}&branchId=${selectedBranch}`).then(r => r.json()),
       fetch("/api/categories").then(r => r.json()),
       fetch("/api/measurement-units").then(r => r.json()),
-      fetch("/api/price-lists").then(r => r.json())
+      fetch("/api/price-lists").then(r => r.json()),
+      fetch("/api/branches").then(r => r.json())
     ]);
 
 
@@ -65,9 +68,10 @@ export default function ProductosPage() {
     setCategories(cats || []);
     setUnits(unis || []);
     setPriceLists(lists || []);
+    setBranches(brs || []);
   };
 
-  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, filterMode, selectedCategory]);
+  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, filterMode, selectedCategory, selectedBranch]);
 
   // [NEW] Modal Focus Effect
   useEffect(() => {
@@ -308,6 +312,17 @@ export default function ProductosPage() {
             <option value="">Todas las Categorías</option>
             {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
+
+          {(role === "ADMIN" || role === "GERENTE") && (
+            <select
+              value={selectedBranch}
+              onChange={e => setSelectedBranch(e.target.value)}
+              className="input appearance-none font-medium bg-blue-50 border-blue-100 text-blue-800"
+            >
+              <option value="">🌎 Stock Global (Total)</option>
+              {branches.map(b => <option key={b.id} value={b.id}>📍 {b.name}</option>)}
+            </select>
+          )}
         </div>
 
         <select
@@ -343,7 +358,7 @@ export default function ProductosPage() {
           </thead>
           <tbody className="divide-y divide-gray-100 bg-white">
             {(products ?? []).map(p => {
-              const stock = p.stocks?.[0]?.quantity || 0;
+              const stock = p.displayStock ?? (p.stocks?.[0]?.quantity || 0);
               const unit = p.baseUnit?.symbol || "-";
               return (
                 <tr key={p.id} className={`hover:bg-blue-50/30 transition-colors group ${selectedIds.includes(p.id) ? 'bg-blue-50' : ''}`}>

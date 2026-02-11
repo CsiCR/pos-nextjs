@@ -13,15 +13,16 @@ export async function GET(req: Request) {
 
     const userRole = (session?.user as any)?.role;
     const branchId = (session?.user as any)?.branchId;
-
     const allStocks = searchParams.get("allStocks") === "true";
+
+    const filterBranchId = searchParams.get("branchId") || (userRole === "SUPERVISOR" ? branchId : null);
 
     const includeOptions = {
       category: true,
       baseUnit: true,
       prices: true,
       stocks: {
-        where: allStocks ? undefined : { branchId: branchId || undefined }
+        where: allStocks ? undefined : (filterBranchId ? { branchId: filterBranchId } : undefined)
       }
     };
 
@@ -41,6 +42,10 @@ export async function GET(req: Request) {
         const isMine = exactMatch.branchId === branchId;
         if (!isGlobal && !isMine) return NextResponse.json([]); // Hidden if not yours
       }
+      // Calculate display stock for Gerentes if no branch filtered
+      if ((userRole === "ADMIN" || userRole === "GERENTE") && !filterBranchId) {
+        (exactMatch as any).displayStock = exactMatch.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
+      }
       return NextResponse.json([exactMatch]);
     }
 
@@ -59,15 +64,12 @@ export async function GET(req: Request) {
     }
 
     // Ownership Logic
-    // Supervisor: See Global + My Branch
-    // Gerente/Admin: See ALL (no constraint added)
     if (userRole === "SUPERVISOR") {
       if (branchId) {
         andConditions.push({
           OR: [{ branchId: null }, { branchId: branchId }]
         });
       } else {
-        // Fallback for supervisor without branch (shouldn't happen)
         andConditions.push({ branchId: null });
       }
     }
@@ -75,24 +77,19 @@ export async function GET(req: Request) {
     const whereClause: any = { AND: andConditions };
 
     // Filter Logic
-    // filterMode: "all" | "missing" | "withStock"
     const filterMode = searchParams.get("filterMode") || "all";
-
-    console.log("DEBUG FILTERS:", { filterMode, branchId, role: userRole });
-
-    const stockCondition = branchId ? { branchId, quantity: { gt: 0 } } : { quantity: { gt: 0 } };
+    const stockCondition = filterBranchId ? { branchId: filterBranchId, quantity: { gt: 0 } } : { quantity: { gt: 0 } };
 
     if (filterMode === "withStock") {
       whereClause.stocks = {
         some: stockCondition
       };
     } else if (filterMode === "missing") {
-      // Handled by JS filtering later to support minStock comparison
+      // Handled by JS
     } else if (filterMode === "critical") {
-      // Critical = Explicitly has a stock record with quantity <= 0 (matches Dashboard)
       whereClause.stocks = {
         some: {
-          branchId: branchId || undefined,
+          branchId: filterBranchId || undefined,
           quantity: { lte: 0 }
         }
       };
@@ -111,17 +108,30 @@ export async function GET(req: Request) {
       take: 500
     });
 
+    // Handle displayStock calculation for Managers viewing global or specific branch
+    const mappedProducts = products.map((p: any) => {
+      if (!filterBranchId) {
+        // Global Stock Sum
+        p.displayStock = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
+      } else {
+        // Branch Specific Stock
+        const branchStock = p.stocks?.find((s: any) => s.branchId === filterBranchId);
+        p.displayStock = branchStock ? Number(branchStock.quantity) : 0;
+      }
+      return p;
+    });
+
     // 4. Post-filtering for "Stock Bajo" (JS needed for field comparison)
     if (filterMode === "missing") {
-      const filtered = products.filter((p: any) => {
-        const currentStock = Number(p.stocks?.[0]?.quantity || 0);
+      const filtered = mappedProducts.filter((p: any) => {
+        const currentStock = Number(p.displayStock);
         const minStock = Number(p.minStock || 0);
         return currentStock <= minStock;
       });
       return NextResponse.json(filtered);
     }
 
-    return NextResponse.json(products);
+    return NextResponse.json(mappedProducts);
   } catch (error: any) {
     console.error("GET Products Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
