@@ -401,7 +401,9 @@ export default function POSPage() {
                 </div>
                 <p className="font-semibold text-gray-800 line-clamp-2 min-h-[3rem]">{p.name}</p>
                 <div className="flex justify-between items-end mt-auto">
-                  <p className="text-2xl font-black text-blue-600">{formatPrice(displayPrice, settings.useDecimals)}</p>
+                  <p className={`text-2xl font-black ${Number(displayPrice) < 0 ? "text-red-600 animate-pulse" : "text-blue-600"}`}>
+                    {formatPrice(displayPrice, settings.useDecimals)}
+                  </p>
                   <span className="text-xs text-gray-400">{p.baseUnit?.symbol}</span>
                 </div>
               </button>
@@ -448,7 +450,9 @@ export default function POSPage() {
               <div className="flex justify-between items-start mb-2">
                 <div className="min-w-0 pr-2">
                   <p className="font-bold text-gray-900 truncate text-sm">{item.name}</p>
-                  <p className="text-[10px] text-gray-500">{formatPrice(item.price, settings.useDecimals)} / {item.unitSymbol}</p>
+                  <p className={`text-[10px] font-bold ${item.price < 0 ? "text-red-600" : "text-gray-500"}`}>
+                    {formatPrice(item.price, settings.useDecimals)} / {item.unitSymbol}
+                  </p>
                 </div>
                 <button onClick={() => removeItem(item.productId)} className="text-gray-300 hover:text-red-500 transition">
                   <X className="w-4 h-4" />
@@ -467,7 +471,9 @@ export default function POSPage() {
                   />
                   <button onClick={() => updateQty(item.productId, 1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600"><Plus className="w-4 h-4" /></button>
                 </div>
-                <p className="font-black text-gray-900 text-lg">{formatPrice(item.price * item.quantity, settings.useDecimals)}</p>
+                <p className={`font-black text-lg ${item.price * item.quantity < 0 ? "text-red-600 animate-pulse" : "text-gray-900"}`}>
+                  {formatPrice(item.price * item.quantity, settings.useDecimals)}
+                </p>
               </div>
             </div>
           ))}

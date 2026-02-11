@@ -366,7 +366,7 @@ export default function ProductosPage() {
                       {p.category?.name || "General"}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-right font-black text-gray-900 text-base">
+                  <td className={`px-6 py-4 text-right font-black text-base ${Number(p.basePrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
                     {formatPrice(p.basePrice, settings.useDecimals)}
                   </td>
                   <td className="px-6 py-4 text-center">
