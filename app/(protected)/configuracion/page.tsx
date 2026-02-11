@@ -254,7 +254,13 @@ export default function ConfigPage() {
     };
 
     const openNewUser = () => {
-        setUserForm({ email: "", password: "", name: "", role: "CAJERO", branchId: "" });
+        setUserForm({
+            email: "",
+            password: "",
+            name: "",
+            role: "CAJERO",
+            branchId: isSupervisor ? userBranchId : ""
+        });
         setUserModal(true);
     };
 
@@ -443,7 +449,9 @@ export default function ConfigPage() {
                             <h2 className="text-xl font-bold">Listado de Sucursales</h2>
                             <p className="text-sm text-gray-500">Gestiona los puntos de venta</p>
                         </div>
-                        <button onClick={openNewBranch} disabled={!canEditGlobal} className={`btn btn-primary flex items-center gap-2 ${!canEditGlobal ? 'hidden' : ''}`}><Plus className="w-4 h-4" /> Nueva Sucursal</button>
+                        {isAdmin && (
+                            <button onClick={openNewBranch} className="btn btn-primary flex items-center gap-2"><Plus className="w-4 h-4" /> Nueva Sucursal</button>
+                        )}
                     </div>
                     {branchLoading ? <div className="text-center py-10">Cargando...</div> : (
                         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -619,18 +627,32 @@ export default function ConfigPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Rol</label>
-                                    <select value={userForm.role} onChange={e => setUserForm({ ...userForm, role: e.target.value })} className="input">
+                                    <select
+                                        value={userForm.role}
+                                        onChange={e => setUserForm({ ...userForm, role: e.target.value })}
+                                        className="input"
+                                        disabled={isSupervisor}
+                                    >
                                         <option value="CAJERO">Cajero</option>
-                                        <option value="SUPERVISOR">Supervisor</option>
-                                        <option value="ADMIN">Administrador</option>
-                                        <option value="GERENTE">Gerente</option>
+                                        {!isSupervisor && (
+                                            <>
+                                                <option value="SUPERVISOR">Supervisor</option>
+                                                <option value="ADMIN">Administrador</option>
+                                                <option value="GERENTE">Gerente</option>
+                                            </>
+                                        )}
                                     </select>
                                 </div>
                                 <div>
                                     {userForm.role !== "GERENTE" && (
                                         <>
                                             <label className="text-xs font-bold text-gray-500 uppercase mb-1 block">Sucursal</label>
-                                            <select value={userForm.branchId} onChange={e => setUserForm({ ...userForm, branchId: e.target.value })} className="input">
+                                            <select
+                                                value={userForm.branchId}
+                                                onChange={e => setUserForm({ ...userForm, branchId: e.target.value })}
+                                                className="input"
+                                                disabled={isSupervisor}
+                                            >
                                                 <option value="">Seleccionar...</option>
                                                 {branches.map(b => (
                                                     <option key={b.id} value={b.id}>{b.name}</option>
