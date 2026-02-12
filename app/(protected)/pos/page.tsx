@@ -365,7 +365,7 @@ export default function POSPage() {
                   onChange={e => setSearch(e.target.value)}
                   onKeyDown={handleSearchKeyDown}
                   placeholder="Escanea el código o busca productos..."
-                  className="input pl-12 pr-12 h-14 text-lg w-full bg-white border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
+                  className="input pl-14 pr-14 h-14 text-lg w-full bg-white border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-50"
                   autoFocus
                 />
                 <button
@@ -552,6 +552,7 @@ export default function POSPage() {
                     value={item.quantity}
                     onChange={e => updateQty(item.productId, Number(e.target.value) - item.quantity)}
                     className="w-16 text-center font-bold text-sm bg-transparent border-none focus:ring-0 p-0"
+                    onFocus={e => e.target.select()}
                   />
                   <button onClick={() => updateQty(item.productId, 1)} className="w-8 h-8 flex items-center justify-center text-gray-500 hover:text-blue-600"><Plus className="w-4 h-4" /></button>
                 </div>
@@ -580,6 +581,7 @@ export default function POSPage() {
                 disabled={!!paymentMode}
                 className={`w-20 px-2 py-0.5 text-right border rounded text-xs ${paymentMode ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-gray-50 text-gray-900"}`}
                 placeholder="0"
+                onFocus={e => e.target.select()}
               />
             </div>
             <span className="text-red-500">-${globalDiscount.toLocaleString()}</span>
@@ -644,7 +646,7 @@ export default function POSPage() {
                       setActualChange(Math.max(0, val - total)); // Update suggested change
                     }}
                     placeholder="Monto entregado"
-                    className="input input-lg text-center font-black text-2xl text-blue-600"
+                    className="input input-lg text-right font-black text-2xl text-blue-600"
                     autoFocus
                     onFocus={(e) => e.target.select()}
                   />
@@ -740,6 +742,7 @@ export default function POSPage() {
                           className="input input-sm w-full text-right"
                           key={`rem-${remaining}`} // Force re-render with new default
                           defaultValue={remaining}
+                          onFocus={e => e.target.select()}
                         />
                         <button
                           onClick={() => {
@@ -815,8 +818,9 @@ export default function POSPage() {
                 value={weightAmount}
                 onChange={e => setWeightAmount(e.target.value)}
                 placeholder="Ej: 500"
-                className="input input-lg text-center font-black text-3xl mb-6"
+                className="input input-lg text-right font-black text-3xl mb-6"
                 autoFocus
+                onFocus={e => e.target.select()}
               />
 
               <div className="grid grid-cols-2 gap-3">

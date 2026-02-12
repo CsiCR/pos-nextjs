@@ -10,10 +10,7 @@ export async function GET() {
     }
 
     const where: any = {};
-    // Restricted Scoping for Supervisor
-    if (session.user.role === "SUPERVISOR") {
-        where.id = (session.user as any).branchId;
-    }
+    // Scoping removed to allow multi-branch shift opening for all roles
 
     const branches = await prisma.branch.findMany({
         where,

@@ -8,9 +8,34 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
+  const role = (session.user as any)?.role;
+  const branchId = (session.user as any)?.branchId;
+  const userId = session.user.id;
+
+  const where: any = {};
+
+  if (role === "ADMIN" || role === "GERENTE") {
+    // Admin/Gerente: Ven todo, sin filtro adicional
+  } else if (role === "SUPERVISOR") {
+    // Supervisor: Ve turnos de su sucursal
+    if (branchId) {
+      where.branchId = branchId;
+    } else {
+      // Si un supervisor no tiene sucursal asignada (raro), solo ve los suyos por seguridad
+      where.userId = userId;
+    }
+  } else {
+    // Cajero y otros: Solo ven sus propios turnos
+    where.userId = userId;
+  }
+
   const shifts = await prisma.shift.findMany({
-    where: session.user.role === "SUPERVISOR" ? {} : { userId: session.user.id },
-    include: { user: { select: { name: true, email: true } }, _count: { select: { sales: true } } },
+    where,
+    include: {
+      user: { select: { name: true, email: true } },
+      branch: { select: { name: true } },
+      _count: { select: { sales: true } }
+    },
     orderBy: { openedAt: "desc" }
   });
   return NextResponse.json(shifts);

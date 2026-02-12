@@ -88,8 +88,12 @@ export default function DashboardPage() {
     setFilters({ startDate: `${y}-${m}-${d}`, endDate: "", branchId: "", userId: "", paymentMethod: "" });
   };
 
+  const [showFilters, setShowFilters] = useState(false);
+
   if (loading && !data) return <div className="text-center py-20">Cargando dashboard...</div>;
   if (!data) return <div className="text-center py-20 text-red-500">Error al cargar datos</div>;
+
+  const hasActiveFilters = filters.branchId || filters.userId || filters.paymentMethod || filters.endDate;
 
   return (
     <div className="space-y-6">
@@ -98,107 +102,108 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           <p className="text-gray-500">Bienvenido de nuevo, {session?.user?.name}</p>
         </div>
-        {data.lowStockCount > 0 && (
-          <Link href="/productos?filterMode=critical" className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition">
-            <AlertTriangle className="w-5 h-5" />
-            <span className="font-semibold">{data.lowStockCount} items sin stock/críticos</span>
-          </Link>
-        )}
+        <div className="flex flex-wrap gap-2">
+          {data?.lowStockCount > 0 && (
+            <Link href="/productos?filterMode=critical" className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition">
+              <AlertTriangle className="w-5 h-5" />
+              <span className="font-semibold">{data.lowStockCount} críticos</span>
+            </Link>
+          )}
+          {isSupervisorOrHigher && (
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition ${showFilters || hasActiveFilters ? 'bg-blue-600 text-white' : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+            >
+              <Filter className="w-4 h-4" />
+              {showFilters ? 'Ocultar Filtros' : 'Filtros'}
+              {hasActiveFilters && !showFilters && <span className="w-2 h-2 bg-orange-400 rounded-full"></span>}
+            </button>
+          )}
+        </div>
       </div>
+
+      {isSupervisorOrHigher && (
+        <div className={`bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[1000px] opacity-100 p-4' : 'max-h-0 opacity-0 p-0 border-none'}`}>
+          <div className="flex items-center justify-between mb-4 border-b pb-2">
+            <span className="text-sm font-bold text-gray-700 uppercase tracking-wider">Ajustar Periodo y Filtros</span>
+            <button onClick={clearFilters} className="text-xs text-red-500 hover:underline flex items-center gap-1 font-bold">
+              <X className="w-3 h-3" /> Limpiar Todo
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Desde</label>
+              <input type="date" className="input text-sm py-1.5" value={filters.startDate} onChange={e => setFilters({ ...filters, startDate: e.target.value })} />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Hasta</label>
+              <input type="date" className="input text-sm py-1.5" value={filters.endDate} onChange={e => setFilters({ ...filters, endDate: e.target.value })} />
+            </div>
+
+            {role === "GERENTE" && (
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Supervisor</label>
+                <select
+                  className="input text-sm py-1.5 w-full"
+                  value={(Array.isArray(usersList) ? usersList : []).find(u => u.branchId === filters.branchId && u.role === "SUPERVISOR")?.id || ""}
+                  onChange={e => {
+                    const supId = e.target.value;
+                    const sup = usersList.find(u => u.id === supId);
+                    if (sup?.branchId) setFilters({ ...filters, branchId: sup.branchId });
+                    else if (!supId) setFilters({ ...filters, branchId: "" });
+                  }}
+                >
+                  <option value="">Todos</option>
+                  {(usersList || []).filter((u: any) => u.role === "SUPERVISOR").map((s: any) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Sucursal</label>
+              <select
+                className="input text-sm py-1.5 w-full"
+                value={filters.branchId}
+                onChange={e => setFilters({ ...filters, branchId: e.target.value })}
+                disabled={!canFilterBranch}
+              >
+                <option value="">{canFilterBranch ? "Todas" : "Mi Sucursal"}</option>
+                {branches.map((b: any) => (
+                  <option key={b.id} value={b.id}>{b.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Vendedor</label>
+              <select className="input text-sm py-1.5 w-full" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
+                <option value="">Todos</option>
+                {usersList.map((u: any) => (
+                  <option key={u.id} value={u.id}>{u.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Método</label>
+              <select className="input text-sm py-1.5 w-full" value={filters.paymentMethod} onChange={e => setFilters({ ...filters, paymentMethod: e.target.value })}>
+                <option value="">Todos</option>
+                <option value="EFECTIVO">Efectivo</option>
+                <option value="TARJETA">Tarjeta</option>
+                <option value="TRANSFERENCIA">Transferencia</option>
+                <option value="QR">QR</option>
+                <option value="MIXTO">Mixto</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
 
       {isSupervisorOrHigher ? (
         <>
-          {/* FILTER BAR */}
-          <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 text-gray-700 font-semibold border-b pb-2">
-              <Filter className="w-4 h-4" /> Filtros Avanzados
-              {(filters.startDate || filters.endDate || filters.branchId || filters.userId || filters.paymentMethod) && (
-                <button onClick={clearFilters} className="text-xs text-red-500 hover:underline ml-auto flex items-center gap-1">
-                  <X className="w-3 h-3" /> Limpiar
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-3">
-              {/* Date Range - Full width on very small screens for easier touch */}
-              <div className="col-span-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Desde</label>
-                <input type="date" className="input text-sm py-1" value={filters.startDate} onChange={e => setFilters({ ...filters, startDate: e.target.value })} />
-              </div>
-              <div className="col-span-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Hasta</label>
-                <input type="date" className="input text-sm py-1" value={filters.endDate} onChange={e => setFilters({ ...filters, endDate: e.target.value })} />
-              </div>
-
-              {/* SUPERVISOR FILTER (Gerente Only) */}
-              {role === "GERENTE" && (
-                <div className="col-span-1">
-                  <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Por Supervisor</label>
-                  <select
-                    className="input text-sm py-1 w-full"
-                    value={(Array.isArray(usersList) ? usersList : []).find(u => u.branchId === filters.branchId && u.role === "SUPERVISOR")?.id || ""}
-                    onChange={e => {
-                      if (!Array.isArray(usersList)) return;
-                      const supId = e.target.value;
-                      const sup = usersList.find(u => u.id === supId);
-                      // When supervisor selected, auto-select their branch
-                      if (sup && sup.branchId) {
-                        setFilters({ ...filters, branchId: sup.branchId });
-                      } else if (!supId) {
-                        setFilters({ ...filters, branchId: "" });
-                      }
-                    }}
-                  >
-                    <option value="">Todos</option>
-                    {Array.isArray(usersList) && usersList.filter(u => u.role === "SUPERVISOR").map(s => (
-                      <option key={s.id} value={s.id}>{s.name} ({s.branch?.name || "Sin Sucursal"})</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-
-              {/* Branch (Global only) */}
-              <div className="col-span-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Sucursal</label>
-                <select
-                  className="input text-sm py-1 w-full"
-                  value={filters.branchId}
-                  onChange={e => setFilters({ ...filters, branchId: e.target.value })}
-                  disabled={!canFilterBranch}
-                >
-                  <option value="">{canFilterBranch ? "Todas" : "Mi Sucursal"}</option>
-                  {Array.isArray(branches) && branches.map(b => (
-                    <option key={b.id} value={b.id}>{b.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Users */}
-              <div className="col-span-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Vendedor</label>
-                <select className="input text-sm py-1 w-full" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
-                  <option value="">Todos</option>
-                  {Array.isArray(usersList) && usersList.map(u => (
-                    <option key={u.id} value={u.id}>{u.name}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Payment */}
-              <div className="col-span-1">
-                <label className="text-[10px] font-bold text-gray-500 uppercase block mb-1">Método Pago</label>
-                <select className="input text-sm py-1 w-full" value={filters.paymentMethod} onChange={e => setFilters({ ...filters, paymentMethod: e.target.value })}>
-                  <option value="">Todos</option>
-                  <option value="EFECTIVO">Efectivo</option>
-                  <option value="TARJETA">Tarjeta</option>
-                  <option value="TRANSFERENCIA">Transferencia</option>
-                  <option value="QR">QR</option>
-                  <option value="MIXTO">Mixto</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <Link href={`/historial?view=items&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={DollarSign} label="Ventas Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} ventas`} color="blue" />
@@ -225,11 +230,8 @@ export default function DashboardPage() {
                       className="bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-md transition block"
                     >
                       <p className="text-sm text-gray-500 font-medium mb-1">{m.paymentMethod}</p>
-
-                      {/* Total Collected */}
                       <p className="text-xl font-bold text-gray-900">${(m.total || m._sum?.total || 0).toLocaleString()}</p>
 
-                      {/* Clearing Deduction */}
                       {m.clearing > 0 && (
                         <div className="mt-2 pt-2 border-t border-gray-200">
                           <p className="text-xs text-orange-600 font-medium flex justify-between">
@@ -269,14 +271,13 @@ export default function DashboardPage() {
         </>
       ) : (
         <>
-          {data.hasOpenShift ? (
+          {data?.hasOpenShift ? (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <StatCard icon={DollarSign} label="Ventas del Turno" value={`$${(data?.shiftSales || 0).toLocaleString()}`} color="blue" />
                 <StatCard icon={ShoppingCart} label="Cantidad de Ventas" value={data?.shiftCount || 0} color="green" />
               </div>
 
-              {/* CASHIER SALES BREAKDOWN */}
               {data?.salesByMethod?.length > 0 && (
                 <div className="card mt-6">
                   <h2 className="font-semibold mb-4 flex items-center gap-2">
@@ -295,7 +296,6 @@ export default function DashboardPage() {
                 </div>
               )}
 
-              {/* Links */}
               <div className="grid md:grid-cols-2 gap-4 mt-6">
                 <Link href="/pos" className="btn btn-primary h-auto py-4 text-lg flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
                   <ShoppingCart className="w-6 h-6" /> Ir al POS

@@ -163,6 +163,7 @@ export default function ProductosPage() {
   const [filterMode, setFilterMode] = useState(initialFilter);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchData = async () => {
     const [prods, cats, unis, lists, brs] = await Promise.all([
@@ -398,8 +399,8 @@ export default function ProductosPage() {
           <button onClick={handleExport} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Exportar CSV">
             <Download className="w-5 h-5" /> <span className="hidden sm:inline">Exportar</span>
           </button>
-          <button onClick={() => setImportModal(true)} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Importar CSV">
-            <FileDown className="w-5 h-5" /> <span className="hidden sm:inline">Importar</span>
+          <button onClick={() => setShowFilters(!showFilters)} className={`btn flex items-center gap-2 h-11 px-3 sm:px-4 ${showFilters ? 'bg-blue-600 text-white' : 'bg-white border-gray-200 text-gray-600'}`}>
+            <Filter className="w-5 h-5" /> <span className="hidden sm:inline">{showFilters ? "Ocultar Filtros" : "Filtros"}</span>
           </button>
           <button onClick={openNew} className="btn btn-primary shadow-lg shadow-blue-100 flex items-center gap-2 h-11 px-3 sm:px-4">
             <Plus className="w-5 h-5" /> <span className="hidden xs:inline">Nuevo Producto</span>
@@ -407,49 +408,51 @@ export default function ProductosPage() {
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
-        <div className="relative group w-full md:w-96">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-          <input
-            type="text"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar por nombre, código o EAN..."
-            className="input pl-12 w-full"
-          />
-        </div>
+      <div className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[500px] opacity-100 p-4 mb-4' : 'max-h-0 opacity-0 p-0 border-none mb-0'}`}>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+          <div className="relative group w-full md:w-96">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar por nombre, código o EAN..."
+              className="input pl-12 w-full bg-gray-50 focus:pl-12"
+            />
+          </div>
 
-        <div className="flex gap-2 w-full md:w-auto">
-          <select
-            value={selectedCategory}
-            onChange={e => setSelectedCategory(e.target.value)}
-            className="input appearance-none font-medium bg-gray-50 border-gray-200"
-          >
-            <option value="">Todas las Categorías</option>
-            {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-
-          {(role === "ADMIN" || role === "GERENTE") && (
+          <div className="flex gap-2 w-full md:w-auto">
             <select
-              value={selectedBranch}
-              onChange={e => setSelectedBranch(e.target.value)}
-              className="input appearance-none font-medium bg-blue-50 border-blue-100 text-blue-800"
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="input appearance-none font-medium bg-gray-50 border-gray-200"
             >
-              <option value="">🌎 Stock Global (Total)</option>
-              {branches.map(b => <option key={b.id} value={b.id}>📍 {b.name}</option>)}
+              <option value="">Todas las Categorías</option>
+              {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
-          )}
-        </div>
 
-        <select
-          value={filterMode}
-          onChange={e => setFilterMode(e.target.value)}
-          className="input appearance-none font-bold bg-white border-blue-200 text-blue-700 hover:border-blue-400 transition-all cursor-pointer"
-        >
-          <option value="all">🔍 Todos los Productos</option>
-          <option value="missing">📦 Stock Bajo / Faltante</option>
-          <option value="critical">⚠️ Sólo Críticos (Dashboard)</option>
-        </select>
+            {(role === "ADMIN" || role === "GERENTE") && (
+              <select
+                value={selectedBranch}
+                onChange={e => setSelectedBranch(e.target.value)}
+                className="input appearance-none font-medium bg-blue-50 border-blue-100 text-blue-800"
+              >
+                <option value="">🌎 Stock Global (Total)</option>
+                {branches.map(b => <option key={b.id} value={b.id}>📍 {b.name}</option>)}
+              </select>
+            )}
+          </div>
+
+          <select
+            value={filterMode}
+            onChange={e => setFilterMode(e.target.value)}
+            className="input appearance-none font-bold bg-white border-blue-200 text-blue-700 hover:border-blue-400 transition-all cursor-pointer"
+          >
+            <option value="all">🔍 Todos los Productos</option>
+            <option value="missing">📦 Stock Bajo / Faltante</option>
+            <option value="critical">⚠️ Sólo Críticos (Dashboard)</option>
+          </select>
+        </div>
       </div>
 
       <div className="card p-0 border border-gray-100 shadow-sm overflow-hidden">
@@ -578,6 +581,7 @@ export default function ProductosPage() {
                   onChange={e => setForm({ ...form, name: e.target.value })}
                   className="input input-lg font-bold"
                   placeholder="Ej: Coca Cola 2.25L"
+                  onFocus={e => e.target.select()}
                 />
               </div>
 
@@ -590,7 +594,7 @@ export default function ProductosPage() {
                       type="number"
                       value={form.basePrice}
                       onChange={e => setForm({ ...form, basePrice: e.target.value })}
-                      className="input input-lg pl-8 font-black text-blue-600"
+                      className="input input-lg pl-8 font-black text-blue-600 text-right"
                       onFocus={e => e.target.select()}
                     />
                   </div>
@@ -601,7 +605,7 @@ export default function ProductosPage() {
                     type="number"
                     value={form.minStock}
                     onChange={e => setForm({ ...form, minStock: e.target.value })}
-                    className="input input-lg font-bold text-orange-600"
+                    className="input input-lg font-bold text-orange-600 text-right"
                     placeholder="Sin mínimo"
                     onFocus={e => e.target.select()}
                   />
@@ -612,7 +616,7 @@ export default function ProductosPage() {
                     type="number"
                     value={form.stock}
                     onChange={e => setForm({ ...form, stock: e.target.value })}
-                    className="input input-lg font-bold"
+                    className="input input-lg font-bold text-right"
                     onFocus={e => e.target.select()}
                   />
                 </div>
@@ -742,6 +746,7 @@ export default function ProductosPage() {
                             })}
                             className="input input-sm pl-7 font-black text-right focus:bg-white"
                             placeholder="Manual"
+                            onFocus={e => e.target.select()}
                           />
                         </div>
                       </div>

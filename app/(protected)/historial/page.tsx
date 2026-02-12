@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent } from "lucide-react";
+import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent, Filter } from "lucide-react";
 import { Ticket } from "@/components/Ticket";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
@@ -22,6 +22,7 @@ export default function HistorialPage() {
     const [sales, setSales] = useState<any[]>([]); // For Sales Mode
     const [items, setItems] = useState<any[]>([]); // For Items Mode
     const [loading, setLoading] = useState(true);
+    const [showFilters, setShowFilters] = useState(false);
 
     const getLocalDate = (date: Date) => {
         const year = date.getFullYear();
@@ -180,253 +181,248 @@ export default function HistorialPage() {
                 )}
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                {/* Filters Sidebar */}
-                <div className="card h-fit space-y-6">
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 block">Filtro por Fecha</label>
-                        <div className="space-y-3">
-                            <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Desde</span>
-                                <input
-                                    type="date"
-                                    value={startDate}
-                                    onChange={e => { setStartDate(e.target.value); setDateFilter("custom"); }}
-                                    className="input input-sm mt-1"
-                                />
-                            </div>
-                            <div>
-                                <span className="text-[10px] font-bold text-gray-400 uppercase ml-1">Hasta</span>
-                                <input
-                                    type="date"
-                                    value={endDate}
-                                    onChange={e => { setEndDate(e.target.value); setDateFilter("custom"); }}
-                                    className="input input-sm mt-1"
-                                />
-                            </div>
-                        </div>
-                    </div>
+            <div className="flex flex-wrap gap-2 items-center bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-6">
+                <div className="relative flex-1 min-w-[200px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder={viewMode === "items" ? "Buscar producto, código, ticket..." : "Buscar N° Venta o Cajero..."}
+                        value={search}
+                        onChange={e => setSearch(e.target.value)}
+                        className="input input-sm pl-9 bg-gray-50 border-none"
+                    />
+                </div>
+                {!shiftIdParam && (
+                    <button
+                        onClick={() => setShowFilters(!showFilters)}
+                        className={`btn btn-sm flex items-center gap-2 ${showFilters ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                    >
+                        <Filter className="w-4 h-4" />
+                        <span className="hidden sm:inline">Filtros Avanzados</span>
+                    </button>
+                )}
+            </div>
 
-                    <div>
-                        <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-3 block">Búsqueda Rápida</label>
-                        <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            {showFilters && !shiftIdParam && (
+                <div className="bg-white p-4 rounded-2xl border border-blue-100 shadow-xl shadow-blue-50/50 mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                            <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block ml-1">Fecha Desde</label>
                             <input
-                                type="text"
-                                placeholder={viewMode === "items" ? "Global..." : "N° Venta o Cajero..."}
-                                value={search}
-                                onChange={e => setSearch(e.target.value)}
-                                className="input input-sm pl-9"
+                                type="date"
+                                value={startDate}
+                                onChange={e => { setStartDate(e.target.value); setDateFilter("custom"); }}
+                                className="input input-sm"
                             />
                         </div>
+                        <div>
+                            <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block ml-1">Fecha Hasta</label>
+                            <input
+                                type="date"
+                                value={endDate}
+                                onChange={e => { setEndDate(e.target.value); setDateFilter("custom"); }}
+                                className="input input-sm"
+                            />
+                        </div>
+                        <div className="flex gap-2 pb-0.5">
+                            <button onClick={() => { setStartDate(""); setEndDate(""); setSearch(""); setDateFilter("custom"); }} className="text-xs text-red-500 font-bold hover:underline">Limpiar Filtros</button>
+                        </div>
                     </div>
                 </div>
+            )}
 
-                {/* Active Filters Badges */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {searchParams.get("paymentMethod") && (
-                        <div className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-2">
-                            <CreditCard className="w-3 h-3" />
-                            Pago: {searchParams.get("paymentMethod")}
-                            <button onClick={() => router.replace("/historial?view=items")} className="hover:text-blue-900"><div className="sr-only">Remover</div>x</button>
-                        </div>
-                    )}
-                </div>
-
-                {/* Content Area */}
-                <div className="lg:col-span-3 space-y-4">
-                    {loading && items.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed text-gray-400">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
-                            <p>Cargando datos...</p>
-                        </div>
-                    ) : viewMode === "sales" ? (
-                        // SALES CARD VIEW
-                        filteredSales.length === 0 ? (
-                            <EmptyState />
-                        ) : (
-                            <div className="grid gap-3">
-                                {filteredSales.map(sale => (
-                                    <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex items-center justify-between ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
-                                        <div className="flex items-center gap-4">
-                                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${sale.type === 'REFUND' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
-                                                {sale.type === 'REFUND' ? <ArrowUpDown className="w-6 h-6" /> : <Hash className="w-6 h-6" />}
-                                            </div>
-                                            <div>
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`font-black text-lg ${sale.type === 'REFUND' ? 'text-red-700' : 'text-gray-800'}`}>
-                                                        #{sale.number || sale.id.slice(-6).toUpperCase()}
-                                                    </span>
-                                                    <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">{sale.paymentMethod}</span>
-                                                    {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase">NOTA CRÉDITO</span>}
-                                                </div>
-                                                <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
-                                                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
-                                                    <span className="flex items-center gap-1"><User className="w-3 h-3" /> {sale.user?.name}</span>
-                                                </div>
-                                            </div>
+            <div className="space-y-4">
+                {loading && items.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border border-dashed text-gray-400">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                        <p>Cargando datos...</p>
+                    </div>
+                ) : viewMode === "sales" ? (
+                    // SALES CARD VIEW
+                    filteredSales.length === 0 ? (
+                        <EmptyState />
+                    ) : (
+                        <div className="grid gap-3">
+                            {filteredSales.map(sale => (
+                                <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex items-center justify-between ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
+                                    <div className="flex items-center gap-4">
+                                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${sale.type === 'REFUND' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                            {sale.type === 'REFUND' ? <ArrowUpDown className="w-6 h-6" /> : <Hash className="w-6 h-6" />}
                                         </div>
-                                        <div className="flex items-center gap-8">
-                                            <div className="text-right">
-                                                {Number(sale.discount) !== 0 || Number(sale.adjustment) !== 0 ? (
-                                                    <TooltipProvider>
-                                                        <Tooltip>
-                                                            <TooltipTrigger>
-                                                                <div className="flex items-center justify-end gap-1 cursor-help group-hover/price:opacity-100">
-                                                                    <BadgePercent className="w-4 h-4 text-orange-500 animate-pulse" />
-                                                                    <p className={`text-2xl font-black border-b border-dotted ${sale.type === 'REFUND' ? 'text-red-600 border-red-300' : 'text-blue-600 border-blue-300'}`}>
-                                                                        {formatPrice(sale.total, settings.useDecimals)}
-                                                                    </p>
-                                                                </div>
-                                                            </TooltipTrigger>
-                                                            <TooltipContent>
-                                                                <div className="text-xs">
-                                                                    <p>Subtotal: {formatPrice(Number(sale.total) + Number(sale.discount) - Number(sale.adjustment), settings.useDecimals)}</p>
-                                                                    {Number(sale.discount) > 0 && <p className="text-red-500">Descuento: -{formatPrice(sale.discount, settings.useDecimals)}</p>}
-                                                                    {Number(sale.adjustment) !== 0 && <p className="text-gray-500">Ajuste: {Number(sale.adjustment) > 0 ? '+' : ''}{formatPrice(sale.adjustment, settings.useDecimals)}</p>}
-                                                                </div>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                ) : (
-                                                    <p className={`text-2xl font-black ${sale.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
-                                                        {formatPrice(sale.total, settings.useDecimals)}
-                                                    </p>
-                                                )}
-                                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{sale.items?.length || 0} ítems</p>
+                                        <div>
+                                            <div className="flex items-center gap-2">
+                                                <span className={`font-black text-lg ${sale.type === 'REFUND' ? 'text-red-700' : 'text-gray-800'}`}>
+                                                    #{sale.number || sale.id.slice(-6).toUpperCase()}
+                                                </span>
+                                                <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">{sale.paymentMethod}</span>
+                                                {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase">NOTA CRÉDITO</span>}
                                             </div>
-                                            <button onClick={() => setSelectedSale(sale)} className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-blue-600 hover:text-white transition-colors">
-                                                <Printer className="w-5 h-5" />
-                                            </button>
+                                            <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
+                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
+                                                <span className="flex items-center gap-1"><User className="w-3 h-3" /> {sale.user?.name}</span>
+                                            </div>
                                         </div>
                                     </div>
-                                ))}
-                            </div>
-                        )
-                    ) : (
-                        // ITEMS TABLE VIEW
-                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left text-sm">
-                                    <thead className="bg-gray-50 border-b border-gray-100 text-xs font-black text-gray-500 uppercase tracking-wider">
-                                        <tr>
-                                            <th className="px-6 py-4">Comprobante</th>
-                                            <th className="px-6 py-4">Fecha</th>
-                                            <th className="px-6 py-4">Producto</th>
-                                            <th className="px-6 py-4">Sucursal</th> {/* NEW COLUMN */}
-                                            <th className="px-6 py-4 text-right">Cant.</th>
-                                            <th className="px-6 py-4 text-right">Monto</th>
-                                            <th className="px-6 py-4">Vendedor</th>
-                                            <th className="px-6 py-4 text-center">Ticket</th>
-                                        </tr>
-                                        {/* FILTER ROW */}
-                                        <tr className="bg-white border-b border-gray-100">
-                                            <th className="px-6 py-2">
-                                                <input className="input input-xs w-24" placeholder="Filtrar #" value={columnFilters.ticket} onChange={e => setColumnFilters({ ...columnFilters, ticket: e.target.value })} />
-                                            </th>
-                                            <th className="px-6 py-2"></th>
-                                            <th className="px-6 py-2">
-                                                <input className="input input-xs w-32" placeholder="Filtrar Producto" value={columnFilters.product} onChange={e => setColumnFilters({ ...columnFilters, product: e.target.value })} />
-                                            </th>
-                                            <th className="px-6 py-2">
-                                                <input className="input input-xs w-24" placeholder="Filtrar Suc..." value={columnFilters.branch} onChange={e => setColumnFilters({ ...columnFilters, branch: e.target.value })} />
-                                            </th>
-                                            <th className="px-6 py-2"></th>
-                                            <th className="px-6 py-2"></th>
-                                            <th className="px-6 py-2">
-                                                <input className="input input-xs w-24" placeholder="Filtrar Vend..." value={columnFilters.seller} onChange={e => setColumnFilters({ ...columnFilters, seller: e.target.value })} />
-                                            </th>
-                                            <th className="px-6 py-2"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-50">
-                                        {items.length === 0 ? (
-                                            <tr><td colSpan={8} className="text-center py-8 text-gray-400">Sin resultados</td></tr>
-                                        ) : items.map((item) => (
-                                            <tr key={item.id} className={`transition-colors ${item.sale?.type === 'REFUND' ? 'bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500' : 'hover:bg-blue-50/30'}`}>
-                                                <td className="px-6 py-3 font-mono font-bold text-gray-600">
-                                                    #{item.sale?.number || "N/A"}
-                                                </td>
-                                                <td className="px-6 py-3 text-gray-600">
-                                                    {formatDateTime(item.sale?.createdAt)}
-                                                </td>
-                                                <td className="px-6 py-3 font-medium text-gray-900">
-                                                    {item.product?.name || "Producto Eliminado"}
-                                                </td>
-                                                <td className="px-6 py-3 text-gray-600 uppercase text-xs"> {/* NEW COLUMN CELL */}
-                                                    {item.sale?.branch?.name || "-"}
-                                                </td>
-                                                <td className="px-6 py-3 text-right font-mono">
-                                                    {item.quantity}
-                                                </td>
-                                                <td className={`px-6 py-3 text-right font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
-                                                    {(() => {
-                                                        const saleTotal = Number(item.sale?.total) || 1; // Avoid div 0
-                                                        let displayAmount = item.price * item.quantity;
-
-                                                        // Filter Logic Adjustment
-                                                        const filterMethod = searchParams.get("paymentMethod");
-                                                        if (filterMethod && item.sale?.paymentDetails?.length > 0) {
-                                                            // Calculate Proportional Amount
-                                                            // Find amount paid by this method
-                                                            const methodPayment = item.sale.paymentDetails.find((pd: any) => pd.method === filterMethod);
-                                                            if (methodPayment) {
-                                                                const methodAmount = Number(methodPayment.amount);
-                                                                const ratio = methodAmount / saleTotal;
-                                                                // Apply ratio to this item's total
-                                                                displayAmount = displayAmount * ratio;
-                                                            }
-                                                        }
-
-                                                        return (
-                                                            <>
-                                                                {item.sale?.type === 'REFUND' && "-"}
-                                                                {formatPrice(roundCurrency(displayAmount), settings.useDecimals)}
-                                                                {filterMethod && item.sale?.paymentDetails?.length > 0 && Math.abs(displayAmount - (item.price * item.quantity)) > 1 && (
-                                                                    <span className="block text-[10px] text-gray-400 font-normal">(Parcial)</span>
-                                                                )}
-                                                            </>
-                                                        );
-                                                    })()}
-                                                </td>
-                                                <td className="px-6 py-3 text-gray-500 text-xs uppercase">
-                                                    {item.sale?.user?.name || "N/A"}
-                                                </td>
-                                                <td className="px-6 py-3 text-center">
-                                                    <button
-                                                        onClick={async () => {
-                                                            // Need to fetch full sale for ticket? Or if item.sale has enough info?
-                                                            // Ticket component usually needs full items list.
-                                                            // We can just open the ticket modal and let it fetch or pass the sale ID.
-                                                            // Current Ticket component takes `sale` object. 
-                                                            // We might need to fetch the full sale details first.
-                                                            if (item.sale?.id) {
-                                                                setLoading(true);
-                                                                const res = await fetch(`/api/sales/${item.sale.id}`);
-                                                                if (res.ok) {
-                                                                    const fullSale = await res.json();
-                                                                    setSelectedSale(fullSale);
-                                                                }
-                                                                setLoading(false);
-                                                            }
-                                                        }}
-                                                        className="text-gray-400 hover:text-blue-600 transition"
-                                                        title="Ver Comprobante"
-                                                    >
-                                                        <Eye className="w-5 h-5" />
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center text-xs text-gray-400">
-                                Mostrando {items.length} ítems
-                            </div>
+                                    <div className="flex items-center gap-8">
+                                        <div className="text-right">
+                                            {Number(sale.discount) !== 0 || Number(sale.adjustment) !== 0 ? (
+                                                <TooltipProvider>
+                                                    <Tooltip>
+                                                        <TooltipTrigger>
+                                                            <div className="flex items-center justify-end gap-1 cursor-help group-hover/price:opacity-100">
+                                                                <BadgePercent className="w-4 h-4 text-orange-500 animate-pulse" />
+                                                                <p className={`text-2xl font-black border-b border-dotted ${sale.type === 'REFUND' ? 'text-red-600 border-red-300' : 'text-blue-600 border-blue-300'}`}>
+                                                                    {formatPrice(sale.total, settings.useDecimals)}
+                                                                </p>
+                                                            </div>
+                                                        </TooltipTrigger>
+                                                        <TooltipContent>
+                                                            <div className="text-xs">
+                                                                <p>Subtotal: {formatPrice(Number(sale.total) + Number(sale.discount) - Number(sale.adjustment), settings.useDecimals)}</p>
+                                                                {Number(sale.discount) > 0 && <p className="text-red-500">Descuento: -{formatPrice(sale.discount, settings.useDecimals)}</p>}
+                                                                {Number(sale.adjustment) !== 0 && <p className="text-gray-500">Ajuste: {Number(sale.adjustment) > 0 ? '+' : ''}{formatPrice(sale.adjustment, settings.useDecimals)}</p>}
+                                                            </div>
+                                                        </TooltipContent>
+                                                    </Tooltip>
+                                                </TooltipProvider>
+                                            ) : (
+                                                <p className={`text-2xl font-black ${sale.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
+                                                    {formatPrice(sale.total, settings.useDecimals)}
+                                                </p>
+                                            )}
+                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">{sale.items?.length || 0} ítems</p>
+                                        </div>
+                                        <button onClick={() => setSelectedSale(sale)} className="p-3 bg-gray-50 text-gray-400 rounded-xl hover:bg-blue-600 hover:text-white transition-colors">
+                                            <Printer className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    )}
-                </div>
+                    )
+                ) : (
+                    // ITEMS TABLE VIEW
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-sm">
+                                <thead className="bg-gray-50 border-b border-gray-100 text-xs font-black text-gray-500 uppercase tracking-wider">
+                                    <tr>
+                                        <th className="px-6 py-4">Comprobante</th>
+                                        <th className="px-6 py-4">Fecha</th>
+                                        <th className="px-6 py-4">Producto</th>
+                                        <th className="px-6 py-4">Sucursal</th> {/* NEW COLUMN */}
+                                        <th className="px-6 py-4 text-right">Cant.</th>
+                                        <th className="px-6 py-4 text-right">Monto</th>
+                                        <th className="px-6 py-4">Vendedor</th>
+                                        <th className="px-6 py-4 text-center">Ticket</th>
+                                    </tr>
+                                    {/* FILTER ROW */}
+                                    <tr className="bg-white border-b border-gray-100">
+                                        <th className="px-6 py-2">
+                                            <input className="input input-xs w-24" placeholder="Filtrar #" value={columnFilters.ticket} onChange={e => setColumnFilters({ ...columnFilters, ticket: e.target.value })} />
+                                        </th>
+                                        <th className="px-6 py-2"></th>
+                                        <th className="px-6 py-2">
+                                            <input className="input input-xs w-32" placeholder="Filtrar Producto" value={columnFilters.product} onChange={e => setColumnFilters({ ...columnFilters, product: e.target.value })} />
+                                        </th>
+                                        <th className="px-6 py-2">
+                                            <input className="input input-xs w-24" placeholder="Filtrar Suc..." value={columnFilters.branch} onChange={e => setColumnFilters({ ...columnFilters, branch: e.target.value })} />
+                                        </th>
+                                        <th className="px-6 py-2"></th>
+                                        <th className="px-6 py-2"></th>
+                                        <th className="px-6 py-2">
+                                            <input className="input input-xs w-24" placeholder="Filtrar Vend..." value={columnFilters.seller} onChange={e => setColumnFilters({ ...columnFilters, seller: e.target.value })} />
+                                        </th>
+                                        <th className="px-6 py-2"></th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {items.length === 0 ? (
+                                        <tr><td colSpan={8} className="text-center py-8 text-gray-400">Sin resultados</td></tr>
+                                    ) : items.map((item) => (
+                                        <tr key={item.id} className={`transition-colors ${item.sale?.type === 'REFUND' ? 'bg-red-50 hover:bg-red-100 border-l-4 border-l-red-500' : 'hover:bg-blue-50/30'}`}>
+                                            <td className="px-6 py-3 font-mono font-bold text-gray-600">
+                                                #{item.sale?.number || "N/A"}
+                                            </td>
+                                            <td className="px-6 py-3 text-gray-600">
+                                                {formatDateTime(item.sale?.createdAt)}
+                                            </td>
+                                            <td className="px-6 py-3 font-medium text-gray-900">
+                                                {item.product?.name || "Producto Eliminado"}
+                                            </td>
+                                            <td className="px-6 py-3 text-gray-600 uppercase text-xs"> {/* NEW COLUMN CELL */}
+                                                {item.sale?.branch?.name || "-"}
+                                            </td>
+                                            <td className="px-6 py-3 text-right font-mono">
+                                                {item.quantity}
+                                            </td>
+                                            <td className={`px-6 py-3 text-right font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
+                                                {(() => {
+                                                    const saleTotal = Number(item.sale?.total) || 1; // Avoid div 0
+                                                    let displayAmount = item.price * item.quantity;
+
+                                                    // Filter Logic Adjustment
+                                                    const filterMethod = searchParams.get("paymentMethod");
+                                                    if (filterMethod && item.sale?.paymentDetails?.length > 0) {
+                                                        // Calculate Proportional Amount
+                                                        // Find amount paid by this method
+                                                        const methodPayment = item.sale.paymentDetails.find((pd: any) => pd.method === filterMethod);
+                                                        if (methodPayment) {
+                                                            const methodAmount = Number(methodPayment.amount);
+                                                            const ratio = methodAmount / saleTotal;
+                                                            // Apply ratio to this item's total
+                                                            displayAmount = displayAmount * ratio;
+                                                        }
+                                                    }
+
+                                                    return (
+                                                        <>
+                                                            {item.sale?.type === 'REFUND' && "-"}
+                                                            {formatPrice(roundCurrency(displayAmount), settings.useDecimals)}
+                                                            {filterMethod && item.sale?.paymentDetails?.length > 0 && Math.abs(displayAmount - (item.price * item.quantity)) > 1 && (
+                                                                <span className="block text-[10px] text-gray-400 font-normal">(Parcial)</span>
+                                                            )}
+                                                        </>
+                                                    );
+                                                })()}
+                                            </td>
+                                            <td className="px-6 py-3 text-gray-500 text-xs uppercase">
+                                                {item.sale?.user?.name || "N/A"}
+                                            </td>
+                                            <td className="px-6 py-3 text-center">
+                                                <button
+                                                    onClick={async () => {
+                                                        // Need to fetch full sale for ticket? Or if item.sale has enough info?
+                                                        // Ticket component usually needs full items list.
+                                                        // We can just open the ticket modal and let it fetch or pass the sale ID.
+                                                        // Current Ticket component takes `sale` object. 
+                                                        // We might need to fetch the full sale details first.
+                                                        if (item.sale?.id) {
+                                                            setLoading(true);
+                                                            const res = await fetch(`/api/sales/${item.sale.id}`);
+                                                            if (res.ok) {
+                                                                const fullSale = await res.json();
+                                                                setSelectedSale(fullSale);
+                                                            }
+                                                            setLoading(false);
+                                                        }
+                                                    }}
+                                                    className="text-gray-400 hover:text-blue-600 transition"
+                                                    title="Ver Comprobante"
+                                                >
+                                                    <Eye className="w-5 h-5" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center text-xs text-gray-400">
+                            Mostrando {items.length} ítems
+                        </div>
+                    </div>
+                )}
             </div>
 
             {selectedSale && (

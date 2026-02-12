@@ -153,7 +153,7 @@ export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     const userRole = (session?.user as any)?.role;
-    if (!session || (userRole !== "SUPERVISOR" && userRole !== "ADMIN")) {
+    if (!session || (userRole !== "SUPERVISOR" && userRole !== "ADMIN" && userRole !== "GERENTE")) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
@@ -162,9 +162,8 @@ export async function POST(req: Request) {
     const branchId = (session.user as any).branchId;
 
     // Ownership Assignment:
-    // Supervisor -> Assigned to their branch.
-    // Admin -> Global (null) by default.
-    const ownerBranchId = userRole === "SUPERVISOR" ? branchId : null;
+    // Every new product is now Global (null) so everyone can see it and manage their own stock.
+    const ownerBranchId = null;
 
     const product = await (prisma as any).product.create({
       data: {
@@ -174,9 +173,9 @@ export async function POST(req: Request) {
         basePrice: data.basePrice || data.price || 0,
         baseUnit: data.baseUnitId ? { connect: { id: data.baseUnitId } } : undefined,
         category: data.categoryId ? { connect: { id: data.categoryId } } : undefined,
-        minStock: data.minStock || 0, // Add minStock
-        branch: ownerBranchId ? { connect: { id: ownerBranchId } } : undefined, // Set Ownership using relation
-        stocks: branchId ? { // Initialize stock entry if creator has a branch
+        minStock: data.minStock || 0,
+        branch: undefined, // No owner branch = Global
+        stocks: branchId ? { // Initialize stock entry ONLY for the creator's branch
           create: {
             branchId,
             quantity: data.stock || 0
