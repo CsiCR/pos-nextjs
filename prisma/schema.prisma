@@ -64,6 +64,7 @@ model Branch {
   ownedProducts Product[] @relation("ProductOwner")
   sourceSettlements Settlement[] @relation("SettlementSource")
   targetSettlements Settlement[] @relation("SettlementTarget")
+  priceLists        PriceList[]
 }
 
 model MeasurementUnit {
@@ -125,6 +126,8 @@ model PriceList {
   name       String         @unique
   percentage Decimal        @default(0) @db.Decimal(5, 2) // Default % to apply to base price
   active     Boolean        @default(true)
+  branchId   String?        // Owner Branch. Null = Global.
+  branch     Branch?        @relation(fields: [branchId], references: [id])
   prices     ProductPrice[]
   sales      Sale[]
 }

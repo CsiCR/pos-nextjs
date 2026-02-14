@@ -5,8 +5,20 @@ import { authOptions } from "@/lib/auth-options";
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     const session = await getServerSession(authOptions);
-    if (!session || ((session.user as any).role !== "ADMIN" && (session.user as any).role !== "SUPERVISOR")) {
+    const userRole = (session?.user as any)?.role;
+    const branchId = (session?.user as any)?.branchId;
+
+    if (!session || (userRole !== "ADMIN" && userRole !== "SUPERVISOR" && userRole !== "GERENTE")) {
         return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
+    // Fetch current list to check ownership
+    const currentList = await (prisma as any).priceList.findUnique({ where: { id: params.id } });
+    if (!currentList) return NextResponse.json({ error: "Lista no encontrada" }, { status: 404 });
+
+    // Isolation: Supervisor can only edit their own lists
+    if (userRole === "SUPERVISOR" && currentList.branchId !== branchId) {
+        return NextResponse.json({ error: "No autorizado: Esta lista pertenece a otra sucursal" }, { status: 403 });
     }
 
     try {
@@ -49,7 +61,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
     const session = await getServerSession(authOptions);
-    if (!session || (session.user as any).role !== "ADMIN") {
+    const userRole = (session?.user as any)?.role;
+
+    if (!session || (userRole !== "ADMIN" && userRole !== "GERENTE")) {
         return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 

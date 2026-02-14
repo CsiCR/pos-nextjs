@@ -32,90 +32,102 @@ const canEditProduct = (userRole: string, userBranchId: string | null, productBr
 };
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
-  const session = await getServerSession(authOptions);
-  const user = session?.user as any;
-  if (!session || (user?.role !== "SUPERVISOR" && user?.role !== "ADMIN")) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 403 });
-  }
-  const data = await req.json();
-  const branchId = user?.branchId;
+  try {
+    const session = await getServerSession(authOptions);
+    const user = session?.user as any;
+    if (!session || (user?.role !== "SUPERVISOR" && user?.role !== "ADMIN" && user?.role !== "GERENTE")) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+    const data = await req.json();
+    const branchId = user?.branchId;
 
-  // Fetch current product to check ownership
-  const currentProduct = await (prisma as any).product.findUnique({
-    where: { id: params.id }
-  });
+    console.log(`[DEBUG] PUT Product ${params.id} by ${user.name} (${user.role})`);
+    console.log(`[DEBUG] Received Data:`, JSON.stringify(data, null, 2));
 
-  if (!currentProduct) return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
-
-  const isOwner = canEditProduct(user.role, branchId, currentProduct.branchId);
-
-  // If Supervisor is NOT owner (e.g. it's a Global product), they CANNOT change product details (Name, Price, etc.)
-  // But they CAN update their own stock/prices (if we allowed it).
-  // Current logic: We only execute the core product update if they are the owner.
-
-  if (isOwner) {
-    await (prisma as any).product.update({
-      where: { id: params.id },
-      data: {
-        name: data.name,
-        basePrice: Number(data.basePrice) || 0,
-        baseUnitId: data.baseUnitId,
-        categoryId: data.categoryId,
-        minStock: data.minStock !== undefined ? Number(data.minStock) : undefined, // Update minStock if provided
-        ean: data.ean || null
-      }
+    // Fetch current product to check ownership
+    const currentProduct = await (prisma as any).product.findUnique({
+      where: { id: params.id }
     });
-  }
 
-  // Update prices per list if provided
-  // Assumption: Supervisors shouldn't change global prices unless they own the product.
-  if (isOwner && data.prices && Array.isArray(data.prices)) {
-    for (const p of data.prices) {
-      if (!p.priceListId) continue;
-      const priceVal = Number(p.price);
-      if (isNaN(priceVal)) continue;
+    if (!currentProduct) return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
 
-      await (prisma as any).productPrice.upsert({
-        where: {
-          productId_priceListId: {
-            productId: params.id,
-            priceListId: p.priceListId
-          }
-        },
-        update: { price: priceVal },
-        create: {
-          productId: params.id,
-          priceListId: p.priceListId,
-          price: priceVal
+    // Permissions: Admin and Gerente can ALWAYS edit everything.
+    // Supervisor can ALWAYS edit metadata (Collaborative Global data).
+    const canEditMetadata = user.role === "ADMIN" || user.role === "GERENTE" || user.role === "SUPERVISOR";
+
+    if (canEditMetadata) {
+      console.log(`[DEBUG] Updating metadata for product ${params.id}`);
+      await (prisma as any).product.update({
+        where: { id: params.id },
+        data: {
+          name: data.name,
+          basePrice: Number(data.basePrice) || 0,
+          baseUnitId: data.baseUnitId,
+          categoryId: data.categoryId,
+          minStock: data.minStock !== undefined ? Number(data.minStock) : undefined,
+          ean: data.ean || null
         }
       });
     }
-  }
 
-  // Update branch stock if provided (ALWAYS ALLOWED for Supervisor in their own branch, even if product is Global)
-  if (branchId && data.stock !== undefined) {
-    const stockVal = Number(data.stock) || 0;
-    await (prisma as any).stock.upsert({
-      where: {
-        productId_branchId: { productId: params.id, branchId }
-      },
-      update: { quantity: stockVal },
-      create: { productId: params.id, branchId, quantity: stockVal }
-    });
-  }
+    // Update prices per list if provided
+    if (canEditMetadata && data.prices && Array.isArray(data.prices)) {
+      console.log(`[DEBUG] Updating ${data.prices.length} prices`);
+      for (const p of data.prices) {
+        if (!p.priceListId) continue;
+        const priceVal = Number(p.price);
+        if (isNaN(priceVal)) continue;
 
-  // Final fetch
-  const updatedProduct = await (prisma as any).product.findUnique({
-    where: { id: params.id },
-    include: {
-      category: true,
-      baseUnit: true,
-      stocks: { where: { branchId: (branchId as any) || undefined } },
-      prices: true
+        await (prisma as any).productPrice.upsert({
+          where: {
+            productId_priceListId: {
+              productId: params.id,
+              priceListId: p.priceListId
+            }
+          },
+          update: { price: priceVal },
+          create: {
+            productId: params.id,
+            priceListId: p.priceListId,
+            price: priceVal
+          }
+        });
+      }
     }
-  });
 
-  return NextResponse.json(updatedProduct);
+    // Update branch stock if provided
+    if (branchId && data.stock !== undefined) {
+      const stockVal = Number(data.stock) || 0;
+      console.log(`[DEBUG] Updating branch stock for ${branchId}: ${stockVal}`);
+      await (prisma as any).stock.upsert({
+        where: {
+          productId_branchId: { productId: params.id, branchId }
+        },
+        update: { quantity: stockVal },
+        create: { productId: params.id, branchId, quantity: stockVal }
+      });
+    }
+
+    // Final fetch
+    const updatedProduct = await (prisma as any).product.findUnique({
+      where: { id: params.id },
+      include: {
+        category: true,
+        baseUnit: true,
+        stocks: { where: { branchId: (branchId as any) || undefined } },
+        prices: true
+      }
+    });
+
+    return NextResponse.json(updatedProduct);
+  } catch (error: any) {
+    console.error(`[ERROR] PUT Product ${params.id}:`, error);
+    return NextResponse.json({
+      error: "Error interno del servidor al actualizar el producto",
+      message: error.message,
+      detail: error
+    }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {

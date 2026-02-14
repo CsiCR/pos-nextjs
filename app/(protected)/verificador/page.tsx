@@ -92,7 +92,7 @@ export default function VerificadorPage() {
                   <h2 className="text-2xl font-black text-gray-900 mb-6 min-h-[3rem] flex items-center">{product.name}</h2>
 
                   <div className="bg-blue-600 w-full py-6 rounded-2xl shadow-lg shadow-blue-100 mb-6">
-                    <p className="text-5xl font-black text-white">${product.basePrice?.toLocaleString()}</p>
+                    <p className="text-5xl font-black text-white">${(product.displayPrice || product.basePrice)?.toLocaleString()}</p>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 w-full">

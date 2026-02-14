@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, CheckCircle2, Printer } from "lucide-react";
+import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, CheckCircle2, Printer, MapPin } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { Switch } from "@/components/ui/switch";
@@ -129,6 +129,7 @@ function ImportModal({
 export default function ProductosPage() {
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
+  const userBranchId = (session?.user as any)?.branchId;
   const isSupervisor = role === "SUPERVISOR";
   const canDelete = role === "ADMIN" || role === "GERENTE";
 
@@ -470,7 +471,7 @@ export default function ProductosPage() {
                 </th>
                 <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Producto</th>
                 <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider">Categoría</th>
-                <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Precio Base</th>
+                <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Precio</th>
                 <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Unidad</th>
                 <th className="px-6 py-4 text-right font-bold text-gray-600 uppercase tracking-wider">Stock</th>
                 <th className="px-6 py-4 text-center font-bold text-gray-600 uppercase tracking-wider">Acciones</th>
@@ -501,8 +502,8 @@ export default function ProductosPage() {
                         {p.category?.name || "General"}
                       </span>
                     </td>
-                    <td className={`px-6 py-4 text-right font-black text-base ${Number(p.basePrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
-                      {formatPrice(p.basePrice, settings.useDecimals)}
+                    <td className={`px-6 py-4 text-right font-black text-base ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
+                      {formatPrice(p.displayPrice, settings.useDecimals)}
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-gray-500 font-medium">{unit}</span>
@@ -585,19 +586,57 @@ export default function ProductosPage() {
                 />
               </div>
 
+              {/* [NEW] Featured Local Price for Supervisors */}
+              {isSupervisor && priceLists.find(l => l.branchId === userBranchId) && (
+                (() => {
+                  const userList = priceLists.find(l => l.branchId === userBranchId);
+                  return (
+                    <div className="bg-blue-600 p-5 rounded-3xl mb-6 shadow-xl shadow-blue-100 ring-4 ring-blue-50 border border-blue-500 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <label className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-2 block flex items-center gap-2">
+                        <MapPin className="w-4 h-4" /> Precio de Venta en {userList.name} (TU SUCURSAL)
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-200 text-2xl">$</span>
+                        <input
+                          type="number"
+                          value={form.prices[userList.id] || ""}
+                          onChange={e => setForm({
+                            ...form,
+                            prices: { ...form.prices, [userList.id]: e.target.value }
+                          })}
+                          className="w-full bg-blue-700/50 border-none rounded-2xl h-16 text-right px-6 text-3xl font-black text-white focus:ring-4 focus:ring-blue-400 transition-all placeholder:text-blue-400"
+                          placeholder="Monto..."
+                          onFocus={e => e.target.select()}
+                        />
+                      </div>
+                      <p className="text-[10px] text-blue-100 font-bold mt-3 uppercase tracking-tight opacity-80 flex items-center gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Solo afecta a las ventas de tu sucursal
+                      </p>
+                    </div>
+                  );
+                })()
+              )}
+
               <div className="grid grid-cols-3 gap-6">
                 <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Precio de Venta (Base)</label>
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block flex items-center gap-1">
+                    {isSupervisor ? "Precio de Venta (Sugerido Global)" : "Precio de Venta (Base)"}
+                    {isSupervisor && <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse" title="Este precio afecta a todas las sucursales" />}
+                  </label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">$</span>
                     <input
                       type="number"
                       value={form.basePrice}
                       onChange={e => setForm({ ...form, basePrice: e.target.value })}
-                      className="input input-lg pl-8 font-black text-blue-600 text-right"
+                      className={`input input-lg pl-8 font-black text-right ${isSupervisor ? 'text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed opacity-60' : 'text-blue-600'}`}
                       onFocus={e => e.target.select()}
+                      disabled={isSupervisor} // [NEW] Disable for supervisors to force using local list
                     />
                   </div>
+                  {isSupervisor && (
+                    <p className="text-[9px] text-orange-500 font-bold mt-1 uppercase tracking-tight leading-tight">Este es el precio base de referencia para el sistema.</p>
+                  )}
                 </div>
                 <div>
                   <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Stock Mínimo</label>
@@ -715,9 +754,12 @@ export default function ProductosPage() {
                   <label className="text-xs font-black text-blue-600 uppercase tracking-widest mb-4 block">Precios por Lista</label>
                   <div className="space-y-4">
                     {priceLists.map(list => (
-                      <div key={list.id} className="flex items-center gap-4 bg-gray-50/50 p-3 rounded-2xl border border-gray-100 transition-all hover:border-blue-200">
+                      <div key={list.id} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all ${list.branchId === userBranchId ? 'bg-blue-50/50 border-blue-200 shadow-sm ring-2 ring-blue-100' : 'bg-gray-50/50 border-gray-100 hover:border-blue-200'}`}>
                         <div className="flex-1">
-                          <label className="text-xs font-black text-gray-600 uppercase tracking-wider block">{list.name}</label>
+                          <label className="text-xs font-black text-gray-600 uppercase tracking-wider flex items-center gap-2">
+                            {list.name}
+                            {list.branchId === userBranchId && <span className="bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-full">TU SUCURSAL</span>}
+                          </label>
                           {list.percentage !== 0 && (
                             <button
                               type="button"
@@ -744,7 +786,7 @@ export default function ProductosPage() {
                               ...form,
                               prices: { ...form.prices, [list.id]: e.target.value }
                             })}
-                            className="input input-sm pl-7 font-black text-right focus:bg-white"
+                            className={`input input-sm pl-7 font-black text-right ${list.branchId === userBranchId ? 'bg-white border-blue-400 text-blue-700 focus:ring-4 focus:ring-blue-50' : 'focus:bg-white'}`}
                             placeholder="Manual"
                             onFocus={e => e.target.select()}
                           />

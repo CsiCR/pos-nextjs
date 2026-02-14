@@ -69,6 +69,16 @@ export default function POSPage() {
     fetch("/api/price-lists").then(r => r.json()).then(setPriceLists);
   }, []);
 
+  // Auto-select branch price list
+  useEffect(() => {
+    if (activeBranch && priceLists.length > 0 && !selectedPriceList) {
+      const branchList = priceLists.find(l => l.branchId === activeBranch.id);
+      if (branchList) {
+        setSelectedPriceList(branchList.id);
+      }
+    }
+  }, [activeBranch, priceLists, selectedPriceList]);
+
   useEffect(() => {
     if (!search) {
       setProducts([]);
@@ -164,7 +174,7 @@ export default function POSPage() {
       const qty = weight || 1;
 
       // Get price based on selected list
-      let price = Number(p.basePrice || 0);
+      let price = Number(p.displayPrice || p.basePrice || 0);
       if (selectedPriceList) {
         const listPrice = p.prices?.find((lp: any) => lp.priceListId === selectedPriceList);
         if (listPrice) price = Number(listPrice.price);
@@ -432,7 +442,7 @@ export default function POSPage() {
                 ? p.stocks?.filter((s: any) => Number(s.quantity) > 0).map((s: any) => s.branch).filter(Boolean)
                 : [];
 
-              let displayPrice = p.basePrice;
+              let displayPrice = p.displayPrice || p.basePrice;
               if (selectedPriceList) {
                 const lp = p.prices?.find((lp: any) => lp.priceListId === selectedPriceList);
                 if (lp) displayPrice = lp.price;

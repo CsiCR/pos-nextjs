@@ -21,15 +21,22 @@ export async function GET(req: Request) {
       select: { branchId: true }
     });
 
+    // Context branch for PRICES (always prioritized if available)
+    const contextBranchId = searchParams.get("branchId") || activeShift?.branchId || (userRole === "SUPERVISOR" ? branchId : null);
+
     // If allStocks=true (Global Search), we don't force the branch filter for stock calculation/visibility
-    // but we prioritize: 1. URL branchId, 2. (if not globalSearch) active shift/default branch
-    const filterBranchId = searchParams.get("branchId") || (allStocks ? null : (activeShift?.branchId || (userRole === "SUPERVISOR" ? branchId : null)));
+    // but we prioritize context for PRICES.
+    const filterBranchId = searchParams.get("branchId") || (allStocks ? null : contextBranchId);
 
     const includeOptions = {
       category: true,
       baseUnit: true,
       branch: true,
-      prices: true,
+      prices: {
+        include: {
+          priceList: true
+        }
+      },
       stocks: {
         where: allStocks ? undefined : (filterBranchId ? { branchId: filterBranchId } : undefined),
         include: { branch: true }
@@ -119,8 +126,9 @@ export async function GET(req: Request) {
       take: 500
     });
 
-    // Handle displayStock calculation for Managers viewing global or specific branch
+    // Handle displayStock and displayPrice calculation
     const mappedProducts = products.map((p: any) => {
+      // 1. Stock Calculation
       if (!filterBranchId) {
         // Global Stock Sum
         p.displayStock = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
@@ -129,6 +137,16 @@ export async function GET(req: Request) {
         const branchStock = p.stocks?.find((s: any) => s.branchId === filterBranchId);
         p.displayStock = branchStock ? Number(branchStock.quantity) : 0;
       }
+
+      // 2. Price Calculation (Branch Priority)
+      // We use contextBranchId (Active shift or user's branch) independently of global stock search
+      if (contextBranchId) {
+        const branchPrice = p.prices?.find((pr: any) => pr.priceList?.branchId === contextBranchId);
+        p.displayPrice = branchPrice ? Number(branchPrice.price) : Number(p.basePrice);
+      } else {
+        p.displayPrice = Number(p.basePrice);
+      }
+
       return p;
     });
 

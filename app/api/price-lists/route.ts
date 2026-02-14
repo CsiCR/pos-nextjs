@@ -3,28 +3,42 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
-export async function GET() {
-    // Using raw SQL because Prisma Client is stale and missing 'percentage' column
-    const priceLists = await prisma.$queryRawUnsafe(`
-        SELECT * FROM "PriceList" 
-        WHERE "active" = true 
-        ORDER BY "name" ASC
-    `);
+export async function GET(req: Request) {
+    const session = await getServerSession(authOptions);
+    const userRole = (session?.user as any)?.role;
+    const branchId = (session?.user as any)?.branchId;
+
+    let query = `SELECT * FROM "PriceList" WHERE "active" = true`;
+    const params: any[] = [];
+
+    // Isolation: Supervisors only see Global or their own branch's lists
+    if (userRole === "SUPERVISOR" && branchId) {
+        query += ` AND ("branchId" IS NULL OR "branchId" = $1)`;
+        params.push(branchId);
+    }
+
+    query += ` ORDER BY "name" ASC`;
+
+    const priceLists = await prisma.$queryRawUnsafe(query, ...params);
     return NextResponse.json(priceLists);
 }
 
 export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
-    if (!session || ((session.user as any).role !== "ADMIN" && (session.user as any).role !== "SUPERVISOR")) {
+    const user = session?.user as any;
+    if (!session || (user.role !== "ADMIN" && user.role !== "SUPERVISOR" && user.role !== "GERENTE")) {
         return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
 
     try {
         const data = await req.json();
-        // 1. Create list using standard Prisma (without percentage to avoid validation error)
-        const priceList = await prisma.priceList.create({
+        const branchId = user.role === "SUPERVISOR" ? user.branchId : (data.branchId || null);
+
+        // 1. Create list using standard Prisma
+        const priceList = await (prisma as any).priceList.create({
             data: {
                 name: data.name,
+                branchId: branchId,
             }
         });
 
