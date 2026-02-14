@@ -600,10 +600,16 @@ export default function ProductosPage() {
                         <input
                           type="number"
                           value={form.prices[userList.id] || ""}
-                          onChange={e => setForm({
-                            ...form,
-                            prices: { ...form.prices, [userList.id]: e.target.value }
-                          })}
+                          onChange={e => {
+                            const val = e.target.value;
+                            const newPrices = { ...form.prices, [userList.id]: val };
+                            // [NEW] Auto-sync basePrice if empty and creating new product
+                            const newForm = { ...form, prices: newPrices };
+                            if (modal.type === "new" && (!form.basePrice || form.basePrice === "")) {
+                              newForm.basePrice = val;
+                            }
+                            setForm(newForm);
+                          }}
                           className="w-full bg-blue-700/50 border-none rounded-2xl h-16 text-right px-6 text-3xl font-black text-white focus:ring-4 focus:ring-blue-400 transition-all placeholder:text-blue-400"
                           placeholder="Monto..."
                           onFocus={e => e.target.select()}
@@ -629,13 +635,15 @@ export default function ProductosPage() {
                       type="number"
                       value={form.basePrice}
                       onChange={e => setForm({ ...form, basePrice: e.target.value })}
-                      className={`input input-lg pl-8 font-black text-right ${isSupervisor ? 'text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed opacity-60' : 'text-blue-600'}`}
+                      className={`input input-lg pl-8 font-black text-right ${(isSupervisor && modal.type !== "new") ? 'text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed opacity-60' : 'text-blue-600'}`}
                       onFocus={e => e.target.select()}
-                      disabled={isSupervisor} // [NEW] Disable for supervisors to force using local list
+                      disabled={isSupervisor && modal.type !== "new"} // [MODIFIED] Enabled during creation for supervisors
                     />
                   </div>
                   {isSupervisor && (
-                    <p className="text-[9px] text-orange-500 font-bold mt-1 uppercase tracking-tight leading-tight">Este es el precio base de referencia para el sistema.</p>
+                    <p className="text-[9px] text-orange-500 font-bold mt-1 uppercase tracking-tight leading-tight">
+                      {modal.type === "new" ? "Ingresa el precio sugerido para todas las sucursales." : "Este es el precio base de referencia para el sistema."}
+                    </p>
                   )}
                 </div>
                 <div>
