@@ -230,7 +230,9 @@ export default function DashboardPage() {
                       className="bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-md transition block"
                     >
                       <p className="text-sm text-gray-500 font-medium mb-1">{m.paymentMethod}</p>
-                      <p className="text-xl font-bold text-gray-900">${(m.total || m._sum?.total || 0).toLocaleString()}</p>
+                      <p className={`font-bold text-gray-900 ${getResponsiveFontSize(`$${(m.total || m._sum?.total || 0).toLocaleString()}`, "text-xl")}`}>
+                        ${(m.total || m._sum?.total || 0).toLocaleString()}
+                      </p>
 
                       {m.clearing > 0 && (
                         <div className="mt-2 pt-2 border-t border-gray-200">
@@ -288,7 +290,9 @@ export default function DashboardPage() {
                     {data.salesByMethod.map((m: any) => (
                       <div key={m.paymentMethod} className="bg-gray-50 p-4 rounded-xl border border-gray-100">
                         <p className="text-sm text-gray-500 font-medium mb-1">{m.paymentMethod}</p>
-                        <p className="text-xl font-bold text-gray-900">${(m.total || 0).toLocaleString()}</p>
+                        <p className={`font-bold text-gray-900 ${getResponsiveFontSize(`$${(m.total || 0).toLocaleString()}`, "text-xl")}`}>
+                          ${(m.total || 0).toLocaleString()}
+                        </p>
                         <p className="text-xs text-gray-400 mt-1">{m.count} ventas</p>
                       </div>
                     ))}
@@ -345,6 +349,14 @@ export default function DashboardPage() {
   );
 }
 
+const getResponsiveFontSize = (value: string | number, baseSize: string = "text-2xl") => {
+  const length = String(value).length;
+  if (length > 12) return "text-sm md:text-xl";
+  if (length > 10) return "text-base md:text-xl";
+  if (length > 8) return "text-lg md:text-2xl";
+  return baseSize;
+};
+
 function StatCard({ icon: Icon, label, value, sub, color }: any) {
   const colors: any = {
     blue: "bg-blue-100 text-blue-600",
@@ -360,7 +372,7 @@ function StatCard({ icon: Icon, label, value, sub, color }: any) {
       </div>
       <div>
         <p className="text-sm font-medium text-gray-500">{label}</p>
-        <p className="text-2xl font-bold text-gray-900">{value}</p>
+        <p className={`font-bold text-gray-900 ${getResponsiveFontSize(value)}`}>{value}</p>
         {sub && <p className="text-xs font-medium text-gray-400 mt-0.5">{sub}</p>}
       </div>
     </div>
