@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
+import { getZonedStartOfDay, getZonedEndOfDay } from "@/lib/utils";
 
 export async function GET(req: Request) {
     const session = await getServerSession(authOptions);
@@ -21,6 +22,11 @@ export async function GET(req: Request) {
     const userId = searchParams.get("userId");
     const sort = searchParams.get("sort") || "date_desc";
 
+    // Pagination
+    const page = parseInt(searchParams.get("page") || "1");
+    const pageSize = parseInt(searchParams.get("pageSize") || "100");
+    const skip = (page - 1) * pageSize;
+
     const userRole = (session.user as any).role;
     const userBranchId = (session.user as any).branchId;
     const isAdmin = userRole === "ADMIN";
@@ -32,9 +38,9 @@ export async function GET(req: Request) {
 
     // 1. Scoping
     if (userRole === "SUPERVISOR" && !isAdmin) {
-        // Supervisor sees only items owned by their branch
+        // Supervisor sees only sales in their branch
         if (userBranchId) {
-            itemWhere.product = { branchId: userBranchId };
+            saleWhere.branchId = userBranchId;
         }
     } else if (userRole === "CAJERO") {
         // Cashier sees only their own sales
@@ -42,14 +48,14 @@ export async function GET(req: Request) {
     }
     // Gerente/Admin can filter by branch manually
     if ((isGerente || isAdmin) && branchId) {
-        itemWhere.product = { branchId };
+        saleWhere.branchId = branchId;
     }
 
     // 2. Filters
     if (startDate || endDate) {
         saleWhere.createdAt = {};
-        if (startDate) saleWhere.createdAt.gte = new Date(`${startDate}T00:00:00.000Z`);
-        if (endDate) saleWhere.createdAt.lte = new Date(`${endDate}T23:59:59.999Z`);
+        if (startDate) saleWhere.createdAt.gte = getZonedStartOfDay(startDate);
+        if (endDate) saleWhere.createdAt.lte = getZonedEndOfDay(endDate);
     }
 
     if (userId) saleWhere.userId = userId;
@@ -59,12 +65,11 @@ export async function GET(req: Request) {
             { paymentDetails: { some: { method: paymentMethod } } }
         ];
     }
-    if (ticketNumber) saleWhere.number = { contains: ticketNumber, mode: "insensitive" };
+    if (ticketNumber) saleWhere.number = String(ticketNumber).includes("#") ? { contains: ticketNumber.replace("#", ""), mode: "insensitive" } : { equals: parseInt(ticketNumber) || 0 };
 
     if (productName) itemWhere.product = { ...itemWhere.product, name: { contains: productName, mode: "insensitive" } };
 
-    // Filter by Branch Name (Sale -> Branch -> Name OR Product -> Branch -> Name if we want strict? Display shows sale branch usually or product?
-    // The display shows `item.sale?.branch?.name`. So we filter Sale Branch.
+    // Filter by Branch Name (Sale -> Branch -> Name)
     if (branchName) saleWhere.branch = { name: { contains: branchName, mode: "insensitive" } };
 
     // Filter by Seller Name
@@ -87,13 +92,8 @@ export async function GET(req: Request) {
     // Combine
     itemWhere.sale = saleWhere;
 
-    // 3. Sorting
-    const orderBy: any = {};
-    if (sort === "date_desc") orderBy.sale = { createdAt: "desc" };
-    else if (sort === "date_asc") orderBy.sale = { createdAt: "asc" };
-    else if (sort === "amount_desc") itemWhere.price = "desc"; // Sort by price? Approximate. Item doesn't have total.
-    // Sorting by calculated total (price * qty) is hard in Prisma.
-    // Better to sort by Date by default.
+    // Get Total Count for Pagination
+    const totalItems = await prisma.saleItem.count({ where: itemWhere });
 
     const items = await prisma.saleItem.findMany({
         where: itemWhere,
@@ -114,8 +114,17 @@ export async function GET(req: Request) {
             }
         },
         orderBy: { sale: { createdAt: "desc" } }, // Default sort
-        take: 500 // Limit for performance
+        skip,
+        take: pageSize
     });
 
-    return NextResponse.json(items);
+    return NextResponse.json({
+        items,
+        pagination: {
+            total: totalItems,
+            pages: Math.ceil(totalItems / pageSize),
+            currentPage: page,
+            pageSize
+        }
+    });
 }

@@ -1,5 +1,6 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { toZonedTime, fromZonedTime } from "date-fns-tz"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -67,3 +68,29 @@ export const formatTime = (date: Date | string | number) => {
     hour12: false
   });
 };
+
+const ARG_TZ = 'America/Argentina/Buenos_Aires';
+
+export function getZonedStartOfDay(date?: string | Date) {
+  // If it's a date string like "2024-02-17", we want the start of THAT day in Argentina
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return fromZonedTime(`${date} 00:00:00`, ARG_TZ);
+  }
+
+  const baseDate = date ? new Date(date) : new Date();
+  const zoned = toZonedTime(baseDate, ARG_TZ);
+  zoned.setHours(0, 0, 0, 0);
+  // Convert the "zoned" representation back to a real UTC Date for Prisma
+  return fromZonedTime(zoned, ARG_TZ);
+}
+
+export function getZonedEndOfDay(date?: string | Date) {
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    return fromZonedTime(`${date} 23:59:59.999`, ARG_TZ);
+  }
+
+  const baseDate = date ? new Date(date) : new Date();
+  const zoned = toZonedTime(baseDate, ARG_TZ);
+  zoned.setHours(23, 59, 59, 999);
+  return fromZonedTime(zoned, ARG_TZ);
+}

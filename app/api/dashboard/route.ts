@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
 import { toZonedTime } from "date-fns-tz";
+import { getZonedStartOfDay, getZonedEndOfDay } from "@/lib/utils";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -15,11 +16,7 @@ export async function GET(req: Request) {
   const branchId = (session.user as any).branchId;
 
   // Fix Timezone for Production (Server is UTC, User is ARG)
-  const timeZone = 'America/Argentina/Buenos_Aires';
-  const now = new Date();
-  const zonedNow = toZonedTime(now, timeZone);
-  const today = new Date(zonedNow);
-  today.setHours(0, 0, 0, 0);
+  const today = getZonedStartOfDay();
 
   if (isSupervisor || isGerente) {
     // Analytics for the whole branch or global
@@ -66,8 +63,8 @@ export async function GET(req: Request) {
 
     if (filterStartDate || filterEndDate) {
       whereClause.createdAt = {};
-      if (filterStartDate) whereClause.createdAt.gte = new Date(`${filterStartDate}T00:00:00.000Z`);
-      if (filterEndDate) whereClause.createdAt.lte = new Date(`${filterEndDate}T23:59:59.999Z`);
+      if (filterStartDate) whereClause.createdAt.gte = getZonedStartOfDay(filterStartDate);
+      if (filterEndDate) whereClause.createdAt.lte = getZonedEndOfDay(filterEndDate);
     }
 
     if (filterPaymentMethod) {

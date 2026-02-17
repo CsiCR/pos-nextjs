@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 import { Prisma } from "@prisma/client";
+import { getZonedStartOfDay, getZonedEndOfDay } from "@/lib/utils";
 
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
@@ -15,6 +16,11 @@ export async function GET(req: Request) {
   const sessionBranchId = (session.user as any).branchId;
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
+
+  // Pagination
+  const page = parseInt(searchParams.get("page") || "1");
+  const pageSize = parseInt(searchParams.get("pageSize") || "100");
+  const skip = (page - 1) * pageSize;
 
   const isSupervisor = (session.user as any).role === "SUPERVISOR";
   const isGlobalAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "GERENTE";
@@ -50,9 +56,52 @@ export async function GET(req: Request) {
 
   if (startDate || endDate) {
     where.createdAt = {};
-    if (startDate) where.createdAt.gte = new Date(`${startDate}T00:00:00.000Z`);
-    if (endDate) where.createdAt.lte = new Date(`${endDate}T23:59:59.999Z`);
+    if (startDate) where.createdAt.gte = getZonedStartOfDay(startDate);
+    if (startDate) where.createdAt.gte = getZonedStartOfDay(startDate);
+    if (endDate) where.createdAt.lte = getZonedEndOfDay(endDate);
   }
+
+  // Search by Ticket Number
+  const ticketNumber = searchParams.get("ticketNumber");
+  if (ticketNumber) {
+    where.number = { contains: ticketNumber, mode: 'insensitive' };
+  }
+
+  // Search by Payment Method
+  const paymentMethod = searchParams.get("paymentMethod");
+  if (paymentMethod) {
+    where.paymentMethod = paymentMethod;
+  }
+
+  // Branch Name Search
+  const branchName = searchParams.get("branchName");
+  if (branchName) {
+    where.branch = { name: { contains: branchName, mode: 'insensitive' } };
+  }
+
+  // Seller Name Search
+  const sellerName = searchParams.get("sellerName");
+  if (sellerName) {
+    where.user = { name: { contains: sellerName, mode: 'insensitive' } };
+  }
+
+  // Global Search (Ticket, Seller or Amount)
+  const search = searchParams.get("search");
+  if (search) {
+    where.OR = [
+      { number: { contains: search, mode: 'insensitive' } },
+      { user: { name: { contains: search, mode: 'insensitive' } } },
+      { notes: { contains: search, mode: 'insensitive' } }
+    ];
+    // Check if search is a valid number for total comparison
+    const searchNum = parseFloat(search);
+    if (!isNaN(searchNum)) {
+      where.OR.push({ total: searchNum });
+    }
+  }
+
+  // Get Total Count for Pagination
+  const totalSales = await prisma.sale.count({ where });
 
   const sales = await (prisma as any).sale.findMany({
     where,
@@ -62,9 +111,20 @@ export async function GET(req: Request) {
       branch: { select: { name: true } },
       paymentDetails: true
     },
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
+    skip,
+    take: pageSize
   });
-  return NextResponse.json(sales);
+
+  return NextResponse.json({
+    sales,
+    pagination: {
+      total: totalSales,
+      pages: Math.ceil(totalSales / pageSize),
+      currentPage: page,
+      pageSize
+    }
+  });
 }
 
 export async function POST(req: Request) {

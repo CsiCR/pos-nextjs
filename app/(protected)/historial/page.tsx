@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent, Filter } from "lucide-react";
+import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent, Filter, Download } from "lucide-react";
 import { Ticket } from "@/components/Ticket";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
@@ -23,6 +23,10 @@ export default function HistorialPage() {
     const [items, setItems] = useState<any[]>([]); // For Items Mode
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
+    const [pagination, setPagination] = useState({ currentPage: 1, pages: 1, total: 0 });
+
+    const userRole = (session?.user as any)?.role;
+    const isAdmin = userRole === "ADMIN";
 
     const getLocalDate = (date: Date) => {
         const year = date.getFullYear();
@@ -48,19 +52,23 @@ export default function HistorialPage() {
     const [search, setSearch] = useState("");
     const [selectedSale, setSelectedSale] = useState<any>(null);
 
-    // Sync view mode with URL
-    useEffect(() => {
-        if (viewParam === "items" && viewMode !== "items") setViewMode("items");
-    }, [viewParam]);
-
     const [columnFilters, setColumnFilters] = useState({
         ticket: "",
         product: "",
-        branch: searchParams.get("branchName") || "", // If passed by name, or we might need to fetch by ID if only ID passed. 
-        // Dashboard passes branchId. The table column filter is by text name. 
-        // Ideally we should sync these, but for now date persistence is the main request.
+        branch: searchParams.get("branchName") || "",
         seller: ""
     });
+
+    // Reset page when filters change
+    useEffect(() => {
+        setPagination(prev => ({ ...prev, currentPage: 1 }));
+    }, [viewMode, startDate, endDate, search, columnFilters]);
+
+    // Sync view mode with URL
+    useEffect(() => {
+        if (viewParam === "items" && viewMode !== "items") setViewMode("items");
+        if (viewParam === "sales" && viewMode !== "sales") setViewMode("sales");
+    }, [viewParam]);
 
     const fetchData = async () => {
         setLoading(true);
@@ -92,15 +100,21 @@ export default function HistorialPage() {
 
         let url = "";
         if (viewMode === "sales") {
+            params.append("page", pagination.currentPage.toString());
+            params.append("pageSize", "100");
             url = `/api/sales?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
-            setSales(data || []);
+            setSales(data.sales || []);
+            setPagination(prev => ({ ...prev, pages: data.pagination?.pages || 1, total: data.pagination?.total || 0 }));
         } else {
+            params.append("page", pagination.currentPage.toString());
+            params.append("pageSize", "100");
             url = `/api/sales/items?${params.toString()}`;
             const res = await fetch(url);
             const data = await res.json();
-            setItems(data || []);
+            setItems(data.items || []);
+            setPagination(prev => ({ ...prev, pages: data.pagination?.pages || 1, total: data.pagination?.total || 0 }));
         }
         setLoading(false);
     };
@@ -110,7 +124,7 @@ export default function HistorialPage() {
             fetchData();
         }, 500); // Debounce filters
         return () => clearTimeout(timer);
-    }, [startDate, endDate, shiftIdParam, viewMode, search, columnFilters]); // Add columnFilters
+    }, [startDate, endDate, shiftIdParam, viewMode, search, columnFilters, pagination.currentPage]); // Add currentPage
 
     const handleDateShortcut = (type: string) => {
         const today = new Date();
@@ -131,16 +145,139 @@ export default function HistorialPage() {
         setDateFilter(type);
     };
 
-    // Client-side filtering for Sales Mode (Items mode does server-side search)
-    const filteredSales = sales.filter(s =>
-        !search || // If search handled by API in sales mode? Current api/sales might not support search param.
-        // Let's keep client filter for consistency if API doesn't support it, 
-        // BUT API call above includes search param. Assuming existing api/sales ignores it or we rely on client.
-        // Step 8 refactor: api/sales usually simple. Let's keep client filter safely.
-        (s.number?.toString().includes(search) ||
-            s.user?.name?.toLowerCase().includes(search.toLowerCase()) ||
-            s.total.toString().includes(search))
-    );
+    const exportItemsToCSV = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (shiftIdParam) params.append("shiftId", shiftIdParam);
+            else {
+                params.append("startDate", startDate);
+                params.append("endDate", endDate);
+            }
+            if (search) params.append("search", search);
+            if (columnFilters.ticket) params.append("ticketNumber", columnFilters.ticket);
+            if (columnFilters.product) params.append("productName", columnFilters.product);
+            if (columnFilters.branch) params.append("branchName", columnFilters.branch);
+            if (columnFilters.seller) params.append("sellerName", columnFilters.seller);
+
+            // Fetch ALL items for export
+            params.append("pageSize", "10000");
+            const res = await fetch(`/api/sales/items?${params.toString()}`);
+            const data = await res.json();
+            const exportItems = data.items || [];
+
+            if (exportItems.length === 0) {
+                alert("No hay datos para exportar");
+                return;
+            }
+
+            const headers = ["Sucursal", "Vendedor", "Fecha", "Comprobante", "Producto", "Cantidad", "Precio Unitario", "Subtotal"];
+
+            const csvData = exportItems.map((item: any) => [
+                item.sale?.branch?.name || "-",
+                item.sale?.user?.name || "-",
+                formatDateTime(item.sale?.createdAt),
+                `#${item.sale?.number || "N/A"}`,
+                item.product?.name || "Producto Eliminado",
+                item.quantity.toString(),
+                item.price.toString(),
+                (Number(item.price) * Number(item.quantity)).toFixed(2)
+            ]);
+
+            const csvContent = [headers, ...csvData]
+                .map(row => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
+                .join("\n");
+
+            downloadCSV(csvContent, `reporte_ventas_detallado_${new Date().toISOString().split('T')[0]}.csv`);
+        } catch (error) {
+            console.error(error);
+            alert("Error al exportar datos");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const exportSalesToCSV = async () => {
+        setLoading(true);
+        try {
+            const params = new URLSearchParams();
+            if (shiftIdParam) params.append("shiftId", shiftIdParam);
+            else {
+                params.append("startDate", startDate);
+                params.append("endDate", endDate);
+            }
+            if (search) params.append("search", search);
+            if (columnFilters.ticket) params.append("ticketNumber", columnFilters.ticket);
+            if (columnFilters.branch) params.append("branchName", columnFilters.branch);
+            if (columnFilters.seller) params.append("sellerName", columnFilters.seller);
+
+            // Dashboard IDs
+            const urlBranch = searchParams.get("branchId");
+            if (urlBranch) params.append("branchId", urlBranch);
+            const urlUser = searchParams.get("userId");
+            if (urlUser) params.append("userId", urlUser);
+            const paymentMethod = searchParams.get("paymentMethod");
+            if (paymentMethod) params.append("paymentMethod", paymentMethod);
+
+            // Fetch ALL sales for export
+            params.append("pageSize", "10000");
+            const res = await fetch(`/api/sales?${params.toString()}`);
+            const data = await res.json();
+            const exportSales = data.sales || [];
+
+            if (exportSales.length === 0) {
+                alert("No hay datos para exportar");
+                return;
+            }
+
+            // Columnas: nro de comprobante, descuento, metodo de pago, importe
+            const headers = ["Comprobante", "Fecha", "Vendedor", "Descuento", "Metodo de Pago", "Importe"];
+
+            const csvData = exportSales.flatMap((sale: any) => {
+                if (sale.paymentMethod === "MIXTO" && sale.paymentDetails?.length > 0) {
+                    return sale.paymentDetails.map((pd: any, index: number) => [
+                        `#${sale.number || sale.id.slice(-6).toUpperCase()}`,
+                        formatDateTime(sale.createdAt),
+                        sale.user?.name || "N/A",
+                        index === 0 ? sale.discount.toString() : "0",
+                        pd.method,
+                        pd.amount.toString()
+                    ]);
+                } else {
+                    return [[
+                        `#${sale.number || sale.id.slice(-6).toUpperCase()}`,
+                        formatDateTime(sale.createdAt),
+                        sale.user?.name || "N/A",
+                        sale.discount.toString(),
+                        sale.paymentMethod,
+                        sale.total.toString()
+                    ]];
+                }
+            });
+
+            const csvContent = [headers, ...csvData]
+                .map(row => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
+                .join("\n");
+
+            downloadCSV(csvContent, `reporte_comprobantes_detallado_${new Date().toISOString().split('T')[0]}.csv`);
+        } catch (error) {
+            console.error(error);
+            alert("Error al exportar datos");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const downloadCSV = (content: string, fileName: string) => {
+        const blob = new Blob(["\ufeff" + content], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     return (
         <div className="space-y-6">
@@ -201,6 +338,26 @@ export default function HistorialPage() {
                         <span className="hidden sm:inline">Filtros Avanzados</span>
                     </button>
                 )}
+                {isAdmin && viewMode === "sales" && sales.length > 0 && (
+                    <button
+                        onClick={exportSalesToCSV}
+                        className="btn btn-sm bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+                        title="Exportar Comprobantes a CSV"
+                    >
+                        <Download className="w-4 h-4" />
+                        <span className="hidden sm:inline">Exportar CSV</span>
+                    </button>
+                )}
+                {isAdmin && viewMode === "items" && items.length > 0 && (
+                    <button
+                        onClick={exportItemsToCSV}
+                        className="btn btn-sm bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
+                        title="Exportar Detalle a CSV"
+                    >
+                        <Download className="w-4 h-4" />
+                        <span className="hidden sm:inline">Exportar CSV</span>
+                    </button>
+                )}
             </div>
 
             {showFilters && !shiftIdParam && (
@@ -239,11 +396,11 @@ export default function HistorialPage() {
                     </div>
                 ) : viewMode === "sales" ? (
                     // SALES CARD VIEW
-                    filteredSales.length === 0 ? (
+                    sales.length === 0 ? (
                         <EmptyState />
                     ) : (
                         <div className="grid gap-3">
-                            {filteredSales.map(sale => (
+                            {sales.map(sale => (
                                 <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex items-center justify-between ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${sale.type === 'REFUND' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
@@ -418,8 +575,36 @@ export default function HistorialPage() {
                                 </tbody>
                             </table>
                         </div>
-                        <div className="p-4 border-t border-gray-100 bg-gray-50/50 text-center text-xs text-gray-400">
-                            Mostrando {items.length} ítems
+                    </div>
+                )}
+                {/* Pagination Footer - Conditional based on viewMode and data presence */}
+                {((viewMode === "sales" && sales.length > 0) || (viewMode === "items" && items.length > 0)) && (
+                    <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500 font-medium mt-auto">
+                        <div>
+                            Mostrando <span className="text-gray-900 font-bold">
+                                {viewMode === "sales" ? sales.length : items.length}
+                            </span> de <span className="text-gray-900 font-bold">
+                                {pagination.total}
+                            </span> {viewMode === "sales" ? "comprobantes" : "ítems"}
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setPagination(p => ({ ...p, currentPage: Math.max(1, p.currentPage - 1) }))}
+                                disabled={pagination.currentPage === 1}
+                                className="p-1 px-3 rounded bg-white border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                Anterior
+                            </button>
+                            <span className="px-2">
+                                Página <span className="text-gray-900 font-bold">{pagination.currentPage}</span> de <span className="text-gray-900 font-bold">{pagination.pages}</span>
+                            </span>
+                            <button
+                                onClick={() => setPagination(p => ({ ...p, currentPage: Math.min(p.pages, p.currentPage + 1) }))}
+                                disabled={pagination.currentPage === pagination.pages}
+                                className="p-1 px-3 rounded bg-white border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                            >
+                                Siguiente
+                            </button>
                         </div>
                     </div>
                 )}
