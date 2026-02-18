@@ -62,8 +62,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
         data: {
           name: data.name,
           basePrice: Number(data.basePrice) || 0,
-          baseUnitId: data.baseUnitId,
-          categoryId: data.categoryId,
+          baseUnitId: data.baseUnitId || null,
+          categoryId: data.categoryId || null,
           minStock: data.minStock !== undefined ? Number(data.minStock) : undefined,
           active: data.active !== undefined ? Boolean(data.active) : undefined,
           ean: data.ean || null
