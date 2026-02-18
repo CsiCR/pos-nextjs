@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, Suspense } from "react";
 import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, AlertTriangle, CheckCircle2, Printer, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
@@ -126,7 +126,27 @@ function ImportModal({
   );
 }
 
+// Final Export wrapper with Suspense for searchParams safety
 export default function ProductosPage() {
+  return (
+    <div className="flex-1">
+      <div className="mx-auto">
+        <div className="relative">
+          <div className="animate-in fade-in duration-500">
+            <div className="bg-white/50 backdrop-blur-sm sticky top-0 z-30 mb-6 pb-4">
+              {/* We could put a skeleton here if preferred */}
+            </div>
+            <Suspense fallback={<div className="p-12 text-center text-gray-500 font-bold animate-pulse uppercase tracking-widest">Cargando catálogo...</div>}>
+              <ProductosContent />
+            </Suspense>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductosContent() {
   const { data: session } = useSession();
   const role = (session?.user as any)?.role;
   const userBranchId = (session?.user as any)?.branchId;
@@ -205,14 +225,15 @@ export default function ProductosPage() {
     setBranches(brs || []);
   };
 
+  // Handle filter changes separately from page changes
   useEffect(() => {
-    setCurrentPage(1); // Reset page on filter change
-    fetchData();
+    setCurrentPage(1);
+    fetchData().catch(err => console.error("Filter Change Fetch Error:", err));
     setSelectedIds([]);
   }, [search, filterMode, selectedCategory, selectedBranch]);
 
   useEffect(() => {
-    fetchData();
+    fetchData().catch(err => console.error("Page Change Fetch Error:", err));
   }, [currentPage]);
 
   // [NEW] Modal Focus Effect
@@ -650,7 +671,7 @@ export default function ProductosPage() {
         </div>
       )}
 
-      {modal && (
+      {(modal?.type === "new" || modal?.type === "edit") && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-8 w-full max-w-xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
             <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
@@ -868,7 +889,7 @@ export default function ProductosPage() {
                 <div className="pt-6 border-t mt-4">
                   <label className="text-xs font-black text-blue-600 uppercase tracking-widest mb-4 block">Precios por Lista</label>
                   <div className="space-y-4">
-                    {priceLists.filter(l => l.branchId !== userBranchId).map(list => (
+                    {priceLists.map(list => (
                       <div key={list.id} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all ${list.branchId === userBranchId ? 'bg-blue-50/50 border-blue-200 shadow-sm ring-2 ring-blue-100' : 'bg-gray-50/50 border-gray-100 hover:border-blue-200'}`}>
                         <div className="flex-1">
                           <label className="text-xs font-black text-gray-600 uppercase tracking-wider flex items-center gap-2">
