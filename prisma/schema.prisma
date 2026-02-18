@@ -118,6 +118,7 @@ model Stock {
   branchId  String
   branch    Branch  @relation(fields: [branchId], references: [id])
   quantity  Decimal @default(0) @db.Decimal(12, 3)
+  minStock  Decimal @default(0) @db.Decimal(12, 3)
   @@unique([productId, branchId])
 }
 

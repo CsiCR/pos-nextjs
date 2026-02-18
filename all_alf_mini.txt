@@ -1,0 +1,36 @@
+--- LISTADO COMPLETO ---
+[ACTIVE] | Code: INT1770836807013 | Name: alfredo roca x750ml
+[ACTIVE] | Code: INT1770831768941 | Name: alfajor triple bon o bon blanco x60g
+[ACTIVE] | Code: INT1770831690713 | Name: alfajor bon o bon blanco x40g
+[ACTIVE] | Code: INT1770831833306 | Name: alfajor triple bon o bon negro x60g
+[INACTIVE] | Code: INT1770753780717425 | Name: "rapsodia minitorta x80g"
+[ACTIVE] | Code: INT1770831930721 | Name: alfajor triple cofler choco creamy x60g
+[INACTIVE] | Code: INT1770753780255947 | Name: "aguila minitorta brownie x71
+[INACTIVE] | Code: INT177075378029312 | Name: "alfajor hamlet x34
+[ACTIVE] | Code: INT1770831994120 | Name: alfajor triple cofler block x60g
+[INACTIVE] | Code: INT1770753780261404 | Name: "aguila minitorta clasica x69g"
+[INACTIVE] | Code: INT1770753780267439 | Name: "alfajor fantoche triple blanco x85g"
+[INACTIVE] | Code: INT1770753780273893 | Name: "alfajor fantoche triple negro x85g"
+[INACTIVE] | Code: INT1770753780279168 | Name: "alfajor guaymallen blanco x70g"
+[INACTIVE] | Code: INT1770753780285227 | Name: "alfajor guaymallen negro x70g "
+[INACTIVE] | Code: INT1770753780299913 | Name: "alfajor oreo triple x56g"
+[INACTIVE] | Code: INT1770753780305995 | Name: "alfajor pepito x57g"
+[ACTIVE] | Code: INT1770833785946 | Name: alfajor bon o bon negro x40g
+[ACTIVE] | Code: INT1771006143216 | Name: ALFAJOR MILKA MOUSSE 55g
+[ACTIVE] | Code: INT1771006383016 | Name: ALFAJOR MILKA MOUSSE BLANCO
+[ACTIVE] | Code: INT1771006435631 | Name: ALFAJOR MILKA OREO
+[ACTIVE] | Code: INT1771006534723 | Name: ALFAJOR GENIO BLANCO 60g
+[ACTIVE] | Code: INT1771006594173 | Name: ALFAJOR TRI SHOT 60g
+[ACTIVE] | Code: INT1770744756306 | Name: alfajor hamlet x34,5g
+[ACTIVE] | Code: INT1770744452484 | Name: rapsodia minitorta x80g
+[ACTIVE] | Code: INT1771006641890 | Name: ALFAJOR MINI TORTA BLANCO
+[INACTIVE] | Code: INT1770754898665681 | Name: "aguila minitorta brownie x71","5g"
+[ACTIVE] | Code: INT1770744081908 | Name: alfajor fantoche triple blanco x85g
+[ACTIVE] | Code: INT1770744387104 | Name: aguila minitorta clasica x69g
+[ACTIVE] | Code: INT1770744240192 | Name: aguila minitorta brownie x71,5g
+[ACTIVE] | Code: INT1770743929228 | Name: alfajor guaymallen blanco x70gr
+[ACTIVE] | Code: INT1770744589961 | Name: alfajor oreo triple x56g
+[ACTIVE] | Code: INT1770744688149 | Name: alfajor pepito x57g
+[ACTIVE] | Code: INT1770744007555 | Name: alfajor guaymallen negro x70gr
+[INACTIVE] | Code: INT1770754898695983 | Name: "alfajor hamlet x34","5g"
+[ACTIVE] | Code: INT1770744121168 | Name: alfajor fantoche triple negro x85g

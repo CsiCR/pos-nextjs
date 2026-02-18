@@ -1,6 +1,6 @@
 "use client";
 import { useRef, useState, useEffect } from "react";
-import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, CheckCircle2, Printer, MapPin } from "lucide-react";
+import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, AlertTriangle, CheckCircle2, Printer, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { Switch } from "@/components/ui/switch";
@@ -151,7 +151,10 @@ export default function ProductosPage() {
     categoryId: "",
     baseUnitId: "",
     ean: "",
-    prices: {} // { priceListId: price }
+    active: true,
+    prices: {}, // { priceListId: price }
+    branchMinStocks: {}, // { branchId: minStock }
+    branchQuantities: {} // { branchId: quantity }
   });
   const [loading, setLoading] = useState(false);
   const [importModal, setImportModal] = useState(false);
@@ -166,9 +169,15 @@ export default function ProductosPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
   const [showFilters, setShowFilters] = useState(false);
 
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const pageSize = 100;
+
   const fetchData = async () => {
-    const [prods, cats, unis, lists, brs] = await Promise.all([
-      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}&branchId=${selectedBranch}`).then(r => r.json()),
+    const [resp, cats, unis, lists, brs] = await Promise.all([
+      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}&branchId=${selectedBranch}&page=${currentPage}&pageSize=${pageSize}${filterMode === 'inactive' ? '&showInactive=true' : ''}`).then(r => r.json()),
       fetch("/api/categories").then(r => r.json()),
       fetch("/api/measurement-units").then(r => r.json()),
       fetch("/api/price-lists").then(r => r.json()),
@@ -176,10 +185,17 @@ export default function ProductosPage() {
     ]);
 
 
-    if (Array.isArray(prods)) {
-      setProducts(prods);
+    if (resp && Array.isArray(resp.products)) {
+      setProducts(resp.products);
+      setTotalPages(resp.totalPages || 1);
+      setTotalItems(resp.total || 0);
+      // [DEBUG] Check if Alfajores are in the data
+      if (resp.products.length > 0) {
+        const alfajores = resp.products.filter((p: any) => p.name.toUpperCase().includes("ALFAJOR"));
+        console.log(`[DEBUG] FetchData returned ${resp.products.length} products (Total: ${resp.total}). Alfajores found: ${alfajores.length}`);
+      }
     } else {
-      console.error("Error fetching products:", prods);
+      console.error("Error fetching products:", resp);
       setProducts([]);
     }
 
@@ -189,7 +205,15 @@ export default function ProductosPage() {
     setBranches(brs || []);
   };
 
-  useEffect(() => { fetchData(); setSelectedIds([]); }, [search, filterMode, selectedCategory, selectedBranch]);
+  useEffect(() => {
+    setCurrentPage(1); // Reset page on filter change
+    fetchData();
+    setSelectedIds([]);
+  }, [search, filterMode, selectedCategory, selectedBranch]);
+
+  useEffect(() => {
+    fetchData();
+  }, [currentPage]);
 
   // [NEW] Modal Focus Effect
   useEffect(() => {
@@ -209,7 +233,9 @@ export default function ProductosPage() {
       categoryId: "",
       baseUnitId: units.find(u => u.isBase)?.id || "",
       ean: "",
-      prices: {}
+      prices: {},
+      branchMinStocks: {},
+      branchQuantities: {}
     });
     setModal({ type: "new" });
   };
@@ -294,20 +320,30 @@ export default function ProductosPage() {
   };
 
   const openEdit = (p: any) => {
-    const priceMap: any = {};
+    const priceMap: Record<string, any> = {};
     p.prices?.forEach((pp: any) => {
       priceMap[pp.priceListId] = pp.price;
+    });
+
+    const minStockMap: Record<string, any> = {};
+    const quantityMap: Record<string, any> = {};
+    p.stocks?.forEach((s: any) => {
+      minStockMap[s.branchId] = Number(s.minStock);
+      quantityMap[s.branchId] = Number(s.quantity);
     });
 
     setForm({
       name: p.name,
       basePrice: p.basePrice || 0,
-      minStock: p.minStock || 0, // [NEW]
-      stock: p.stocks?.[0]?.quantity || 0,
+      minStock: p.displayMinStock ?? (p.stocks?.find((s: any) => s.branchId === userBranchId)?.minStock || p.minStock || 0),
+      stock: p.displayStock ?? (p.stocks?.find((s: any) => s.branchId === userBranchId)?.quantity || 0),
       categoryId: p.categoryId || "",
       baseUnitId: p.baseUnitId || "",
       ean: p.ean || "",
-      prices: priceMap
+      active: p.active ?? true,
+      prices: priceMap,
+      branchMinStocks: minStockMap,
+      branchQuantities: quantityMap
     });
     setModal({ type: "edit", id: p.id });
   };
@@ -318,6 +354,13 @@ export default function ProductosPage() {
       // Validation basics
       if (!form.name.trim()) throw new Error("Debes ingresar un nombre para el producto.");
       if (form.basePrice === "" || isNaN(Number(form.basePrice))) throw new Error("Debes ingresar un precio base válido.");
+
+      // Map branch stocks back to array for API
+      const branchStocks = priceLists.filter(l => l.branchId).map(l => ({
+        branchId: l.branchId,
+        minStock: Number(form.branchMinStocks[l.branchId || ""]) || 0,
+        quantity: Number(form.branchQuantities[l.branchId || ""]) || 0
+      }));
 
       // Map prices object back to array for API
       const pricesArray = Object.entries(form.prices).map(([listId, price]) => ({
@@ -330,7 +373,9 @@ export default function ProductosPage() {
         basePrice: Number(form.basePrice),
         minStock: Number(form.minStock) || 0,
         stock: Number(form.stock) || 0,
-        prices: pricesArray
+        active: Boolean(form.active),
+        prices: pricesArray,
+        branchStocks
       };
 
       let res;
@@ -450,8 +495,10 @@ export default function ProductosPage() {
             className="input appearance-none font-bold bg-white border-blue-200 text-blue-700 hover:border-blue-400 transition-all cursor-pointer"
           >
             <option value="all">🔍 Todos los Productos</option>
-            <option value="missing">📦 Stock Bajo / Faltante</option>
-            <option value="critical">⚠️ Sólo Críticos (Dashboard)</option>
+            <option value="low_stock">📉 Stock Bajo (Menor al Mínimo)</option>
+            <option value="missing">❌ Faltante / Crítico (Sin Stock)</option>
+            <option value="transfer">🔄 Traspaso Sugerido (Hacia Sucursales)</option>
+            <option value="inactive">🚫 Productos Desactivados (Papelera)</option>
           </select>
         </div>
       </div>
@@ -492,9 +539,12 @@ export default function ProductosPage() {
                       />
                     </td>
                     <td className="px-6 py-4">
-                      <div>
-                        <p className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">{p.name}</p>
-                        <p className="text-[10px] font-mono text-gray-400 mt-1">{p.code}</p>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-gray-900 text-base tracking-tight">{p.name}</span>
+                          {!p.active && <span className="text-[9px] font-black bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full uppercase tracking-tighter shadow-sm border border-red-200 animate-pulse">Inactivo</span>}
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-400 font-mono tracking-tighter uppercase">{p.code}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -503,14 +553,21 @@ export default function ProductosPage() {
                       </span>
                     </td>
                     <td className={`px-6 py-4 text-right font-black text-base ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
-                      {formatPrice(p.displayPrice, settings.useDecimals)}
+                      <div className="flex items-center justify-end gap-2">
+                        {p.priceAlert && (
+                          <span className="text-orange-500 hover:text-orange-600 transition-colors cursor-help" title={`Precio por debajo del base ($${formatPrice(p.basePrice, settings.useDecimals)})`}>
+                            <AlertTriangle className="w-4 h-4" />
+                          </span>
+                        )}
+                        {formatPrice(p.displayPrice, settings.useDecimals)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-center">
                       <span className="text-gray-500 font-medium">{unit}</span>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-bold text-xs ${Number(stock) <= 0 ? "bg-red-100 text-red-600" :
-                        Number(stock) < Number(p.minStock || 0) ? "bg-orange-100 text-orange-600" :
+                        Number(stock) < Number(p.displayMinStock || 0) ? "bg-orange-100 text-orange-600" :
                           "bg-green-100 text-green-600"
                         }`}>
                         {formatStock(stock, p.baseUnit)}
@@ -538,6 +595,37 @@ export default function ProductosPage() {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-t border-gray-100 italic">
+            <div className="flex items-center gap-2 text-xs text-gray-500 font-bold">
+              Mostrando {products.length} de {totalItems} productos
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="p-2 hover:bg-white hover:shadow-sm rounded-lg transition disabled:opacity-30 text-gray-600"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-lg shadow-sm border border-gray-100">
+                <span className="text-xs font-black text-blue-600">{currentPage}</span>
+                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">de {totalPages}</span>
+              </div>
+
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 hover:bg-white hover:shadow-sm rounded-lg transition disabled:opacity-30 text-gray-600"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* [NEW] Selection Action Bar */}
@@ -572,6 +660,25 @@ export default function ProductosPage() {
               {modal.type === "new" ? "Nuevo Producto" : "Editar Producto"}
             </h2>
 
+            {/* [NEW] Active/Inactive Toggle */}
+            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-3xl mb-4 border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className={`w-3 h-3 rounded-full animate-pulse ${form.active ? 'bg-green-500' : 'bg-red-500'}`} />
+                <div>
+                  <p className="text-xs font-black text-gray-900 uppercase tracking-tighter">Estado del Producto</p>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase">{form.active ? 'Activo (Visible en ventas)' : 'Inactivo (Oculto en ventas)'}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setForm({ ...form, active: !form.active })}
+                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ring-4 ${form.active ? 'bg-green-600 ring-green-100' : 'bg-gray-300 ring-gray-100'}`}
+              >
+                <span
+                  className={`${form.active ? 'translate-x-7' : 'translate-x-1'} inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-md`}
+                />
+              </button>
+            </div>
+
             <div className="space-y-6 flex-1 overflow-auto pr-2 custom-scrollbar">
               <div>
                 <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Nombre del Producto</label>
@@ -586,8 +693,8 @@ export default function ProductosPage() {
                 />
               </div>
 
-              {/* [NEW] Featured Local Price for Supervisors */}
-              {isSupervisor && priceLists.find(l => l.branchId === userBranchId) && (
+              {/* [NEW] Featured Local Price for the current branch context */}
+              {priceLists.find(l => l.branchId === userBranchId) && (
                 (() => {
                   const userList = priceLists.find(l => l.branchId === userBranchId);
                   return (
@@ -761,7 +868,7 @@ export default function ProductosPage() {
                 <div className="pt-6 border-t mt-4">
                   <label className="text-xs font-black text-blue-600 uppercase tracking-widest mb-4 block">Precios por Lista</label>
                   <div className="space-y-4">
-                    {priceLists.map(list => (
+                    {priceLists.filter(l => l.branchId !== userBranchId).map(list => (
                       <div key={list.id} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all ${list.branchId === userBranchId ? 'bg-blue-50/50 border-blue-200 shadow-sm ring-2 ring-blue-100' : 'bg-gray-50/50 border-gray-100 hover:border-blue-200'}`}>
                         <div className="flex-1">
                           <label className="text-xs font-black text-gray-600 uppercase tracking-wider flex items-center gap-2">
@@ -785,19 +892,50 @@ export default function ProductosPage() {
                             </button>
                           )}
                         </div>
-                        <div className="relative w-32">
-                          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                          <input
-                            type="number"
-                            value={form.prices[list.id] || ""}
-                            onChange={e => setForm({
-                              ...form,
-                              prices: { ...form.prices, [list.id]: e.target.value }
-                            })}
-                            className={`input input-sm pl-7 font-black text-right ${list.branchId === userBranchId ? 'bg-white border-blue-400 text-blue-700 focus:ring-4 focus:ring-blue-50' : 'focus:bg-white'}`}
-                            placeholder="Manual"
-                            onFocus={e => e.target.select()}
-                          />
+                        <div className="flex items-center gap-3">
+                          <div className="relative w-24">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Actual</label>
+                            <input
+                              type="number"
+                              value={form.branchQuantities[list.branchId || ""] === 0 ? "0" : (form.branchQuantities[list.branchId || ""] || "")}
+                              onChange={e => setForm({
+                                ...form,
+                                branchQuantities: { ...form.branchQuantities, [list.branchId || ""]: e.target.value }
+                              })}
+                              className="input input-sm font-bold text-right bg-blue-50/50 border-blue-100 text-blue-700 focus:ring-4 focus:ring-blue-50"
+                              placeholder="0"
+                              onFocus={e => e.target.select()}
+                            />
+                          </div>
+                          <div className="relative w-24">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Mín.</label>
+                            <input
+                              type="number"
+                              value={form.branchMinStocks[list.branchId || ""] === 0 ? "0" : (form.branchMinStocks[list.branchId || ""] || "")}
+                              onChange={e => setForm({
+                                ...form,
+                                branchMinStocks: { ...form.branchMinStocks, [list.branchId || ""]: e.target.value }
+                              })}
+                              className="input input-sm font-bold text-right bg-white border-orange-200 text-orange-600 focus:ring-4 focus:ring-orange-50"
+                              placeholder="0"
+                              onFocus={e => e.target.select()}
+                            />
+                          </div>
+                          <div className="relative w-32">
+                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Precio</label>
+                            <span className="absolute left-3 bottom-2.5 text-gray-400 font-bold text-xs">$</span>
+                            <input
+                              type="number"
+                              value={form.prices[list.id] || ""}
+                              onChange={e => setForm({
+                                ...form,
+                                prices: { ...form.prices, [list.id]: e.target.value }
+                              })}
+                              className={`input input-sm pl-7 font-black text-right ${list.branchId === userBranchId ? 'bg-white border-blue-400 text-blue-700 focus:ring-4 focus:ring-blue-50' : 'focus:bg-white'}`}
+                              placeholder="Manual"
+                              onFocus={e => e.target.select()}
+                            />
+                          </div>
                         </div>
                       </div>
                     ))}

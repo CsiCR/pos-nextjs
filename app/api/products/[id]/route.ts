@@ -13,7 +13,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     include: {
       category: true,
       baseUnit: true,
-      stocks: branchId ? { where: { branchId: branchId as any } } : true,
+      stocks: { include: { branch: true } },
       prices: true
     }
   });
@@ -65,6 +65,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
           baseUnitId: data.baseUnitId,
           categoryId: data.categoryId,
           minStock: data.minStock !== undefined ? Number(data.minStock) : undefined,
+          active: data.active !== undefined ? Boolean(data.active) : undefined,
           ean: data.ean || null
         }
       });
@@ -95,26 +96,66 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       }
     }
 
-    // Update branch stock if provided
-    if (branchId && data.stock !== undefined) {
-      const stockVal = Number(data.stock) || 0;
-      console.log(`[DEBUG] Updating branch stock for ${branchId}: ${stockVal}`);
+    // Update branch stock and branch minStock for the CURRENT branch (Legacy/Supervisor support)
+    if (branchId && (data.stock !== undefined || data.minStock !== undefined)) {
+      const stockVal = data.stock !== undefined ? Number(data.stock) : undefined;
+      const minStockVal = data.minStock !== undefined ? Number(data.minStock) : undefined;
+
+      console.log(`[DEBUG] Updating branch stock/minStock for ${branchId}`);
+
+      const updateData: any = {};
+      if (stockVal !== undefined) updateData.quantity = stockVal;
+      if (minStockVal !== undefined) updateData.minStock = minStockVal;
+
+      const createData: any = { productId: params.id, branchId, quantity: stockVal || 0, minStock: minStockVal || 0 };
+
       await (prisma as any).stock.upsert({
         where: {
           productId_branchId: { productId: params.id, branchId }
         },
-        update: { quantity: stockVal },
-        create: { productId: params.id, branchId, quantity: stockVal }
+        update: updateData,
+        create: createData
       });
     }
 
+    // [NEW] Update multiple branch stocks if provided (Management modal support)
+    if (canEditMetadata && data.branchStocks && Array.isArray(data.branchStocks)) {
+      console.log(`[DEBUG] Updating ${data.branchStocks.length} branch stocks`);
+      for (const s of data.branchStocks) {
+        if (!s.branchId) continue;
+
+        const msVal = s.minStock !== undefined ? Number(s.minStock) : undefined;
+        const qVal = s.quantity !== undefined ? Number(s.quantity) : undefined;
+
+        if ((msVal === undefined || isNaN(msVal)) && (qVal === undefined || isNaN(qVal))) continue;
+
+        const updateData: any = {};
+        if (msVal !== undefined && !isNaN(msVal)) updateData.minStock = msVal;
+        if (qVal !== undefined && !isNaN(qVal)) updateData.quantity = qVal;
+
+        await (prisma as any).stock.upsert({
+          where: {
+            productId_branchId: { productId: params.id, branchId: s.branchId }
+          },
+          update: updateData,
+          create: {
+            productId: params.id,
+            branchId: s.branchId,
+            quantity: qVal || 0,
+            minStock: msVal || 0
+          }
+        });
+      }
+    }
+
     // Final fetch
+    // Final fetch: include all stocks for better UI feedback
     const updatedProduct = await (prisma as any).product.findUnique({
       where: { id: params.id },
       include: {
         category: true,
         baseUnit: true,
-        stocks: { where: { branchId: (branchId as any) || undefined } },
+        stocks: { include: { branch: true } },
         prices: true
       }
     });
