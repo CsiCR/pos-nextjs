@@ -71,8 +71,8 @@ export async function GET(req: Request) {
     }
 
     // 2. Build Query
-    const showInactive = searchParams.get("showInactive") === "true";
-    const andConditions: any[] = showInactive ? [] : [{ active: true }];
+    const filterMode = searchParams.get("filterMode") || "all";
+    const andConditions: any[] = filterMode === "inactive" ? [{ active: false }] : [{ active: true }];
 
     // Search
     if (search) {
@@ -100,8 +100,6 @@ export async function GET(req: Request) {
     const whereClause: any = { AND: andConditions };
 
     // Filter Logic
-    const filterMode = searchParams.get("filterMode") || "all";
-
     // Defer complex multi-branch filters to JS processing
     // because Prisma cannot easily aggregate across branches in a findMany where.
 
