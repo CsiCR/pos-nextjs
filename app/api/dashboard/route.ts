@@ -116,7 +116,7 @@ export async function GET(req: Request) {
         }
       }
 
-      const debtRatio = saleDebt / saleTotal;
+      const debtRatio = saleTotal > 0 ? saleDebt / saleTotal : 0;
 
       // --- METHOD DISTRIBUTION ---
       // Distribute Total and Clearing Debt across methods

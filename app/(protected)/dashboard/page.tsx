@@ -91,7 +91,12 @@ export default function DashboardPage() {
   const [showFilters, setShowFilters] = useState(false);
 
   if (loading && !data) return <div className="text-center py-20">Cargando dashboard...</div>;
-  if (!data) return <div className="text-center py-20 text-red-500">Error al cargar datos</div>;
+  if (!data || data.error) return (
+    <div className="text-center py-20 space-y-4">
+      <p className="text-red-500 font-bold">{data?.error || "Error al cargar datos"}</p>
+      <button onClick={() => fetchDashboardData()} className="btn btn-secondary">Reintentar</button>
+    </div>
+  );
 
   const hasActiveFilters = filters.branchId || filters.userId || filters.paymentMethod || filters.endDate;
 
@@ -171,7 +176,7 @@ export default function DashboardPage() {
                 disabled={!canFilterBranch}
               >
                 <option value="">{canFilterBranch ? "Todas" : "Mi Sucursal"}</option>
-                {branches.map((b: any) => (
+                {Array.isArray(branches) && branches.map((b: any) => (
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
               </select>
@@ -181,7 +186,7 @@ export default function DashboardPage() {
               <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Vendedor</label>
               <select className="input text-sm py-1.5 w-full" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
                 <option value="">Todos</option>
-                {usersList.map((u: any) => (
+                {Array.isArray(usersList) && usersList.map((u: any) => (
                   <option key={u.id} value={u.id}>{u.name}</option>
                 ))}
               </select>
