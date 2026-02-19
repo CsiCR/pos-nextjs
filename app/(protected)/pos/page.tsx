@@ -88,10 +88,11 @@ export default function POSPage() {
       fetch(`/api/products?search=${search}${globalSearch ? '&allStocks=true' : ''}`)
         .then(r => r.json())
         .then(data => {
-          setProducts(data);
+          const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
+          setProducts(fetchedProducts);
           // Auto-add on exact match
-          if (data.length === 1 && (data[0].code === search || data[0].ean === search)) {
-            addToCart(data[0]);
+          if (fetchedProducts.length === 1 && (fetchedProducts[0].code === search || fetchedProducts[0].ean === search)) {
+            addToCart(fetchedProducts[0]);
           }
         });
     }, 200);

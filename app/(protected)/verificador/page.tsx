@@ -17,7 +17,8 @@ export default function VerificadorPage() {
       try {
         const res = await fetch(`/api/products?search=${search}&allStocks=true`);
         const data = await res.json();
-        setResults(Array.isArray(data) ? data : []);
+        const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
+        setResults(fetchedProducts);
       } catch (e) {
         console.error("Error buscando productos:", e);
       }

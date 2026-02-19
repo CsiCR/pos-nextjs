@@ -67,7 +67,13 @@ export async function GET(req: Request) {
       if ((userRole === "ADMIN" || userRole === "GERENTE") && !filterBranchId) {
         (exactMatch as any).displayStock = exactMatch.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
       }
-      return NextResponse.json([exactMatch]);
+      return NextResponse.json({
+        products: [exactMatch],
+        total: 1,
+        page: 1,
+        pageSize: pageSize,
+        totalPages: 1
+      });
     }
 
     // 2. Build Query
