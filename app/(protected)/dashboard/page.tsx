@@ -110,7 +110,7 @@ export default function DashboardPage() {
         <div className="flex flex-wrap gap-2">
           {data?.missingCount > 0 && (
             <Link
-              href={`/productos?filterMode=missing&branchId=${filters.branchId || (session?.user as any)?.branchId || ""}`}
+              href={`/productos?filterMode=missing${filters.branchId ? `&branchId=${filters.branchId}` : (role === "SUPERVISOR" ? `&branchId=${(session?.user as any)?.branchId || ""}` : "")}`}
               className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition"
               title="Productos sin stock"
             >
@@ -120,7 +120,7 @@ export default function DashboardPage() {
           )}
           {data?.lowStockCount > 0 && (
             <Link
-              href={`/productos?filterMode=low_stock&branchId=${filters.branchId || (session?.user as any)?.branchId || ""}`}
+              href={`/productos?filterMode=low_stock${filters.branchId ? `&branchId=${filters.branchId}` : (role === "SUPERVISOR" ? `&branchId=${(session?.user as any)?.branchId || ""}` : "")}`}
               className="flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm hover:bg-orange-200 transition"
               title="Productos por debajo del stock mínimo"
             >

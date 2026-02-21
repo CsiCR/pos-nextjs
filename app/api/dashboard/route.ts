@@ -154,14 +154,12 @@ export async function GET(req: Request) {
 
     // 4. Products Count (Sync with catalog 'onlyMyBranch' logic)
     const productWhere: any = { active: true };
-    if (effectiveBranchId && !isAdmin && !isGerente) {
-      // Supervisor: Only products that belong to this branch OR have stock record in it
+    if (effectiveBranchId) {
+      // Unify logic with catalog: branch-exclusive OR global with stock in branch
       productWhere.OR = [
         { branchId: effectiveBranchId },
         { stocks: { some: { branchId: effectiveBranchId } } }
       ];
-    } else if (effectiveBranchId) {
-      productWhere.branchId = effectiveBranchId;
     }
     const products = await prisma.product.count({ where: productWhere });
 
@@ -175,15 +173,12 @@ export async function GET(req: Request) {
 
     // 6. Low Stock Alerts (Expert Logic: Comparison with minStock)
     const stockProductWhere: any = { active: true };
-    if (effectiveBranchId && !isAdmin && !isGerente) {
-      // Supervisor: Same as catalog visibility
+    if (effectiveBranchId) {
+      // Unify logic with catalog
       stockProductWhere.OR = [
         { branchId: effectiveBranchId },
         { stocks: { some: { branchId: effectiveBranchId } } }
       ];
-    } else if (effectiveBranchId) {
-      // Gerente/Admin filtering by branch
-      stockProductWhere.branchId = effectiveBranchId;
     }
 
     const stockProducts = await (prisma as any).product.findMany({
