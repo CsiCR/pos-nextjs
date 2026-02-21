@@ -11,6 +11,13 @@ export async function POST(req: Request) {
 
     const { targetBranchId, amount, notes } = await req.json();
     const sourceBranchId = (session.user as any).branchId;
+    const userRole = (session.user as any).role;
+
+    // Check if module is enabled
+    const settings = (await prisma.systemSetting.findUnique({ where: { key: "global" } })) as any;
+    if (settings && !settings.isClearingEnabled && userRole !== "ADMIN") {
+        return NextResponse.json({ error: "El módulo de Clearing está desactivado" }, { status: 403 });
+    }
 
     if (!sourceBranchId) return NextResponse.json({ error: "User has no branch" }, { status: 400 });
 

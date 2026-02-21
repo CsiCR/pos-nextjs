@@ -108,10 +108,24 @@ export default function DashboardPage() {
           <p className="text-gray-500">Bienvenido de nuevo, {session?.user?.name}</p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {data?.lowStockCount > 0 && (
-            <Link href="/productos?filterMode=critical" className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition">
+          {data?.missingCount > 0 && (
+            <Link
+              href={`/productos?filterMode=missing&branchId=${filters.branchId || (session?.user as any)?.branchId || ""}`}
+              className="flex items-center gap-2 bg-red-100 text-red-700 px-4 py-2 rounded-full animate-pulse text-sm hover:bg-red-200 transition"
+              title="Productos sin stock"
+            >
               <AlertTriangle className="w-5 h-5" />
-              <span className="font-semibold">{data.lowStockCount} críticos</span>
+              <span className="font-semibold">{data.missingCount} críticos</span>
+            </Link>
+          )}
+          {data?.lowStockCount > 0 && (
+            <Link
+              href={`/productos?filterMode=low_stock&branchId=${filters.branchId || (session?.user as any)?.branchId || ""}`}
+              className="flex items-center gap-2 bg-orange-100 text-orange-700 px-4 py-2 rounded-full text-sm hover:bg-orange-200 transition"
+              title="Productos por debajo del stock mínimo"
+            >
+              <AlertTriangle className="w-5 h-5" />
+              <span className="font-semibold">{data.lowStockCount} alertas</span>
             </Link>
           )}
           {isSupervisorOrHigher && (
@@ -216,7 +230,9 @@ export default function DashboardPage() {
             <Link href={`/historial?view=items&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={TrendingUp} label="Ventas Totales" value={`$${(data?.totalSales || 0).toLocaleString()}`} sub={`${data?.totalCount || 0} ventas`} color="green" />
             </Link>
-            <StatCard icon={Package} label="Productos Activos" value={data?.products || 0} color="purple" />
+            <Link href="/productos" className="block">
+              <StatCard icon={Package} label="Productos Activos" value={data?.products || 0} color="purple" />
+            </Link>
             <StatCard icon={Users} label="Usuarios Activos" value={data?.users || 0} color="orange" />
           </div>
 

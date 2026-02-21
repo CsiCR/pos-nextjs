@@ -36,8 +36,15 @@ export async function PUT(req: Request) {
         const body = await req.json();
         const settings = await prisma.systemSetting.upsert({
             where: { key: "global" },
-            update: { useDecimals: body.useDecimals },
-            create: { key: "global", useDecimals: body.useDecimals }
+            update: {
+                useDecimals: body.useDecimals,
+                isClearingEnabled: body.isClearingEnabled
+            },
+            create: {
+                key: "global",
+                useDecimals: body.useDecimals,
+                isClearingEnabled: body.isClearingEnabled ?? false
+            }
         });
         return NextResponse.json(settings);
     } catch (error) {

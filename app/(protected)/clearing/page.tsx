@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ArrowRightLeft, ArrowUpRight, ArrowDownLeft, CheckCircle2, Clock, XCircle, DollarSign, Send, Info } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import Link from "next/link";
 
 export default function ClearingPage() {
     const { data: session } = useSession();
     const [balances, setBalances] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [enabled, setEnabled] = useState(true);
     const [activeTab, setActiveTab] = useState("obligations"); // obligations | receivables
     const [settlements, setSettlements] = useState<any[]>([]);
 
@@ -22,6 +24,15 @@ export default function ClearingPage() {
     const fetchData = async () => {
         setLoading(true);
         try {
+            const settingsRes = await fetch("/api/settings");
+            const settings = await settingsRes.json();
+
+            if (settings && settings.isClearingEnabled === false && !isAdmin) {
+                setEnabled(false);
+                setLoading(false);
+                return;
+            }
+
             const [balRes, setRes] = await Promise.all([
                 fetch("/api/clearing/balance"),
                 fetch(`/api/clearing/settlements?mode=${activeTab === "obligations" ? "outgoing" : "incoming"}`)
@@ -84,6 +95,24 @@ export default function ClearingPage() {
             if (res.ok) fetchData();
         } catch (e) { console.error(e); }
     };
+
+    if (!enabled) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                <Info className="w-12 h-12 text-blue-500 mb-4" />
+                <h2 className="text-xl font-bold text-gray-900">Módulo Desactivado</h2>
+                <p className="text-gray-500 max-w-sm text-center mt-2">
+                    El sistema de logística y clearing no está habilitado actualmente.
+                    Contacte con un administrador para activarlo desde Configuración.
+                </p>
+                {isAdmin && (
+                    <Link href="/configuracion" className="mt-6 btn btn-primary">
+                        Ir a Configuración
+                    </Link>
+                )}
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">

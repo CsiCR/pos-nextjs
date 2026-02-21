@@ -172,31 +172,45 @@ export async function GET(req: Request) {
     const users = await prisma.user.count({ where: userWhere });
 
     // 6. Low Stock Alerts (Expert Logic: Comparison with minStock)
+    const stockProductWhere: any = { active: true };
+    if (effectiveBranchId && !isAdmin && !isGerente) {
+      // Supervisor: Only count their products + global ones
+      stockProductWhere.OR = [{ branchId: effectiveBranchId }, { branchId: null }];
+    } else if (effectiveBranchId) {
+      // Gerente/Admin filtering by branch
+      stockProductWhere.branchId = effectiveBranchId;
+    }
+
     const stockProducts = await (prisma as any).product.findMany({
-      where: { active: true },
+      where: stockProductWhere,
       select: {
         id: true,
         minStock: true,
         stocks: {
-          include: { branch: true } // Ensure we have branch info if needed
+          include: { branch: true }
         }
       }
     });
 
-    const lowStockCount = stockProducts.filter((p: any) => {
+    let lowStockCount = 0;
+    let missingCount = 0;
+
+    for (const p of stockProducts) {
       if (effectiveBranchId) {
         // Branch specific: currentQuantity < currentMinStock
-        const branchStock = p.stocks?.find((s: any) => s.branchId === effectiveBranchId);
+        const branchStock = (p as any).stocks?.find((s: any) => s.branchId === effectiveBranchId);
         const qty = branchStock ? Number(branchStock.quantity) : 0;
-        const min = branchStock ? Number(branchStock.minStock || 0) : Number(p.minStock || 0);
-        return qty < min;
+        const min = branchStock ? Number(branchStock.minStock || 0) : Number((p as any).minStock || 0);
+        if (qty <= 0) missingCount++;
+        else if (qty < min) lowStockCount++;
       } else {
         // Global: Sum(qty) < Sum(min)
-        const totalQty = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
-        const totalMin = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.minStock || 0), 0) || Number(p.minStock || 0);
-        return totalQty < totalMin;
+        const totalQty = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
+        const totalMin = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.minStock || 0), 0) || Number((p as any).minStock || 0);
+        if (totalQty <= 0) missingCount++;
+        else if (totalQty < totalMin) lowStockCount++;
       }
-    }).length;
+    }
 
     return NextResponse.json({
       totalSales,
@@ -207,6 +221,7 @@ export async function GET(req: Request) {
       users,
       salesByMethod,
       lowStockCount,
+      missingCount,
       isGerente
     });
   } else {

@@ -2,12 +2,14 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X, Tag, Settings, ArrowRightLeft } from "lucide-react";
+import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X, Tag, Settings, ArrowRightLeft, Truck, DollarSign } from "lucide-react";
 import { useState } from "react";
+import { useSettings } from "@/hooks/use-settings";
 
 export function Navbar() {
   const { data: session } = useSession() || {};
   const pathname = usePathname();
+  const { settings } = useSettings();
   const [open, setOpen] = useState(false);
   const isSupervisor = (session?.user as any)?.role === "SUPERVISOR" || (session?.user as any)?.role === "ADMIN";
 
@@ -18,7 +20,10 @@ export function Navbar() {
     { href: "/verificador", label: "Precios", icon: Search },
     ...(isSupervisor ? [
       { href: "/productos", label: "Stock", icon: Package },
-      { href: "/clearing", label: "Clearing", icon: ArrowRightLeft },
+      ...(settings.isClearingEnabled ? [
+        { href: "/logistica", label: "Logística", icon: Truck },
+        { href: "/clearing", label: "Clearing", icon: DollarSign }
+      ] : []),
       { href: "/configuracion", label: "Configuración", icon: Settings }, // Updated label and icon
     ] : []),
     { href: "/turnos", label: "Turnos", icon: Clock },

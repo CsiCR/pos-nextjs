@@ -32,6 +32,13 @@ enum DiscrepancyReason {
   OTRO
 }
 
+enum TransferStatus {
+  PENDIENTE
+  EN_TRANSITO
+  COMPLETADO
+  CANCELADO
+}
+
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -47,6 +54,10 @@ model User {
   sales     Sale[]
   createdSettlements   Settlement[] @relation("SettlementCreator")
   confirmedSettlements Settlement[] @relation("SettlementConfirmer")
+  createdTransfers     StockTransfer[] @relation("TransferCreator")
+  shippedTransfers     StockTransfer[] @relation("TransferShipper")
+  confirmedTransfers   StockTransfer[] @relation("TransferConfirmer")
+  createdEntries       StockEntry[]    @relation("EntryCreator")
 }
 
 model Branch {
@@ -62,8 +73,11 @@ model Branch {
   shifts    Shift[]
   sales     Sale[]
   ownedProducts Product[] @relation("ProductOwner")
-  sourceSettlements Settlement[] @relation("SettlementSource")
   targetSettlements Settlement[] @relation("SettlementTarget")
+  sourceSettlements Settlement[] @relation("SettlementSource")
+  sourceTransfers   StockTransfer[] @relation("TransferSource")
+  targetTransfers   StockTransfer[] @relation("TransferTarget")
+  stockEntries      StockEntry[]
   priceLists        PriceList[]
 }
 
@@ -107,6 +121,8 @@ model Product {
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   saleItems   SaleItem[]
+  transferItems TransferItem[]
+  stockEntryItems StockEntryItem[]
 
   @@index([name])
 }
@@ -220,11 +236,52 @@ model SaleItem {
 }
 
 model SystemSetting {
-  id          String   @id @default(cuid())
-  key         String   @unique
-  useDecimals Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(cuid())
+  key             String   @unique
+  useDecimals     Boolean  @default(true)
+  isClearingEnabled Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model StockTransfer {
+  id              String         @id @default(cuid())
+  number          Int            @default(autoincrement())
+  status          TransferStatus @default(PENDIENTE)
+  
+  sourceBranchId  String
+  sourceBranch    Branch         @relation("TransferSource", fields: [sourceBranchId], references: [id])
+  
+  targetBranchId  String
+  targetBranch    Branch         @relation("TransferTarget", fields: [targetBranchId], references: [id])
+  
+  createdById     String
+  createdBy       User           @relation("TransferCreator", fields: [createdById], references: [id])
+  
+  shippedById     String?
+  shippedBy       User?          @relation("TransferShipper", fields: [shippedById], references: [id])
+  
+  confirmedById   String?
+  confirmedBy     User?          @relation("TransferConfirmer", fields: [confirmedById], references: [id])
+  
+  notes           String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  
+  items           TransferItem[]
+}
+
+model TransferItem {
+  id                    String        @id @default(cuid())
+  transferId            String
+  transfer              StockTransfer @relation(fields: [transferId], references: [id], onDelete: Cascade)
+  productId             String
+  product               Product       @relation(fields: [productId], references: [id])
+  quantity              Decimal       @db.Decimal(12, 3)
+  receivedQuantity      Decimal?      @db.Decimal(12, 3)
+  issuanceJustification String?
+  receptionJustification String?
+  receptionPhotoUrl     String?
 }
 
 enum SettlementStatus {
@@ -254,4 +311,38 @@ model Settlement {
   notes           String?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+}
+
+model StockEntry {
+  id                String           @id @default(cuid())
+  number            Int              @default(autoincrement())
+  date              DateTime         @default(now())
+  supplierName      String?          // Nombre del proveedor (texto libre)
+  invoiceNumber     String?          // Numero de comprobante
+  invoiceUrl        String?          // URL de la foto en S3
+  totalAmount       Decimal?         @db.Decimal(12, 2)
+  notes             String?
+  
+  branchId          String
+  branch            Branch           @relation(fields: [branchId], references: [id])
+  
+  createdById       String
+  createdBy         User             @relation("EntryCreator", fields: [createdById], references: [id])
+  
+  items             StockEntryItem[]
+  
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model StockEntryItem {
+  id            String     @id @default(cuid())
+  entryId       String
+  stockEntry    StockEntry @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  
+  productId     String
+  product       Product    @relation(fields: [productId], references: [id])
+  
+  quantity      Decimal    @db.Decimal(12, 3)
+  costPrice     Decimal    @db.Decimal(12, 2) // Precio de costo en este ingreso
 }

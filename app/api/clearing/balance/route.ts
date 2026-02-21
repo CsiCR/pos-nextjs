@@ -15,6 +15,12 @@ export async function GET(req: Request) {
     const userRole = (session.user as any).role;
     const userBranchId = (session.user as any).branchId;
 
+    // Check if module is enabled
+    const settings = (await prisma.systemSetting.findUnique({ where: { key: "global" } })) as any;
+    if (settings && !settings.isClearingEnabled && userRole !== "ADMIN") {
+        return NextResponse.json({ error: "El módulo de Clearing está desactivado" }, { status: 403 });
+    }
+
     let targetBranchId = userBranchId;
     const isAdmin = userRole === "ADMIN" || userRole === "GERENTE";
 
