@@ -435,13 +435,36 @@ function ProductosContent() {
   };
 
   const remove = async (id: string) => {
-    if (!confirm("¿Confirma que desea desactivar este producto?")) return;
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    const isGlobal = !product.branchId;
+    const isSupervisor = role === "SUPERVISOR";
+
+    // Specific Differentiated Messages
+    let confirmMsg = "¿Confirma que desea desactivar este producto?";
+    if (isSupervisor && isGlobal) {
+      confirmMsg = `El producto "${product.name}" es Global. \n\n¿Deseas OCULTARLO de tu sucursal? \n(Esto no afectará a las demás sucursales y podrás reactivarlo si ingresas mercadería).`;
+    }
+
+    if (!confirm(confirmMsg)) return;
+
+    setLoading(true);
     try {
       const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
-      if (res.ok) fetchData();
-      else alert("No se pudo eliminar el producto");
+      const data = await res.json();
+
+      if (res.ok) {
+        fetchData();
+      } else {
+        // Muestra el error específico del backend (ej: bloqueo por stock)
+        alert(`No se pudo realizar la acción: ${data.error || "Error desconocido"}${data.details ? `\n\n${data.details}` : ""}`);
+      }
     } catch (error) {
       console.error("Error deleting product:", error);
+      alert("Error de conexión al intentar eliminar el producto.");
+    } finally {
+      setLoading(false);
     }
   };
 

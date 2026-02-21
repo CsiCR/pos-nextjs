@@ -180,14 +180,50 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: "No autorizado." }, { status: 403 });
   }
 
-  // Fetch product to check ownership
-  const product = await (prisma as any).product.findUnique({ where: { id: params.id } });
+  // Fetch product to check ownership and stock relation
+  const product = await (prisma as any).product.findUnique({
+    where: { id: params.id },
+    include: {
+      stocks: branchId ? { where: { branchId } } : false
+    }
+  });
+
   if (!product) return NextResponse.json({ error: "No encontrado" }, { status: 404 });
 
-  const isOwner = canEditProduct(user.role, branchId, product.branchId);
+  const isGlobal = !product.branchId;
+  const isMine = product.branchId === branchId;
 
+  // 1. Logic for Global Products: Decouple from branch
+  if (isGlobal && user.role === "SUPERVISOR" && branchId) {
+    console.log(`[DEBUG] Decorrelating global product ${params.id} from branch ${branchId}`);
+
+    const branchStock = product.stocks?.[0];
+    if (branchStock && (Number(branchStock.quantity) !== 0 || Number(branchStock.minStock) !== 0)) {
+      return NextResponse.json({
+        error: "No se puede ocultar un producto con stock activo o mínimo configurado.",
+        details: "Asegúrate de que el stock y el mínimo sean 0 para desvincularlo localmente."
+      }, { status: 400 });
+    }
+
+    // Delete the local stock record (Decouple)
+    if (branchStock) {
+      await (prisma as any).stock.delete({
+        where: {
+          productId_branchId: {
+            productId: params.id,
+            branchId: branchId
+          }
+        }
+      });
+    }
+
+    return NextResponse.json({ success: true, message: "Producto desvinculado de esta sucursal." });
+  }
+
+  // 2. Logic for Private Products or Admin/Gerente: Soft Delete
+  const isOwner = canEditProduct(user.role, branchId, product.branchId);
   if (!isOwner) {
-    return NextResponse.json({ error: "No tienes permiso para eliminar este producto (Es Global o de otra sucursal)." }, { status: 403 });
+    return NextResponse.json({ error: "No tienes permiso para eliminar este producto (Es de otra sucursal)." }, { status: 403 });
   }
 
   // Soft Delete
