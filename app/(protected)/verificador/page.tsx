@@ -2,8 +2,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Search, Package, ScanBarcode } from "lucide-react";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
+import { useSession } from "next-auth/react";
 
 export default function VerificadorPage() {
+  const { data: session } = useSession() || {};
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,7 +84,20 @@ export default function VerificadorPage() {
       {!loading && results.length > 0 && (
         <div className={results.length === 1 ? "max-w-lg mx-auto" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
           {results.map((product) => {
-            const totalStock = product.stocks?.reduce((sum: number, s: any) => sum + Number(s.quantity), 0) || 0;
+            const qty = Number(product.displayStock || 0);
+            const min = Number(product.displayMinStock || 0);
+
+            // Unified Alert Logic
+            const isCritical = qty <= 0 && min > 0;
+            const isLowStock = qty > 0 && qty < min;
+
+            let stockColor = "text-green-600";
+            if (isCritical) stockColor = "text-red-600";
+            else if (isLowStock) stockColor = "text-orange-500";
+            else if (qty <= 0) stockColor = "text-gray-400"; // 0 stock but 0 min -> neutral
+
+            const isGlobal = (session?.user as any)?.role === "GERENTE" || (session?.user as any)?.role === "ADMIN";
+
             return (
               <div key={product.id} className="card bg-white border border-gray-100 shadow-xl overflow-hidden group hover:border-blue-500 transition-all duration-300 rounded-3xl p-8">
                 <div className="flex flex-col items-center text-center">
@@ -97,11 +112,12 @@ export default function VerificadorPage() {
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 w-full">
-                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Stock Total</p>
-                      <p className={`font-bold ${totalStock <= 0 ? 'text-red-500' : 'text-green-600'}`}>
-                        {totalStock} {product.baseUnit?.symbol || 'un'}
+                    <div className={`bg-gray-50 p-3 rounded-xl border border-gray-100 ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : ''}`}>
+                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{isGlobal ? 'Stock Global' : 'Stock Sucursal'}</p>
+                      <p className={`font-bold ${stockColor}`}>
+                        {qty} {product.baseUnit?.symbol || 'un'}
                       </p>
+                      {min > 0 && <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">Mín: {min}</p>}
                     </div>
                     <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
                       <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Categoría</p>
