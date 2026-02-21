@@ -26,12 +26,20 @@ export async function GET(req: Request) {
       select: { branchId: true }
     });
 
-    // Context branch for PRICES (always prioritized if available)
-    const contextBranchId = searchParams.get("branchId") || activeShift?.branchId || (userRole === "SUPERVISOR" ? branchId : null);
+    // Context branch for PRICES and STOCK FILTERING
+    const isRestrictedRole = userRole === "SUPERVISOR" || userRole === "CAJERO";
+    const explicitBranchId = searchParams.get("branchId");
+
+    // For Managers/Admins, we default to GLOBAL (null) even if they have a shift, 
+    // unless they explicitly provide a branchId in the URL.
+    let contextBranchId = explicitBranchId || null;
+    if (!explicitBranchId && isRestrictedRole) {
+      contextBranchId = activeShift?.branchId || branchId || null;
+    }
 
     // If allStocks=true (Global Search), we don't force the branch filter for stock calculation/visibility
     // but we prioritize context for PRICES.
-    const filterBranchId = searchParams.get("branchId") || (allStocks ? null : contextBranchId);
+    const filterBranchId = explicitBranchId || (allStocks ? null : contextBranchId);
 
     const includeOptions = {
       category: true,
