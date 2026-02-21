@@ -206,14 +206,14 @@ export async function GET(req: Request) {
         const branchStock = (p as any).stocks?.find((s: any) => s.branchId === effectiveBranchId);
         const qty = branchStock ? Number(branchStock.quantity) : 0;
         const min = branchStock ? Number(branchStock.minStock || 0) : Number((p as any).minStock || 0);
-        if (qty <= 0) missingCount++;
-        else if (qty < min) lowStockCount++;
+        if (qty <= 0 && min > 0) missingCount++;
+        else if (qty > 0 && qty < min) lowStockCount++;
       } else {
         // Global: Sum(qty) < Sum(min)
         const totalQty = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
         const totalMin = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.minStock || 0), 0) || Number((p as any).minStock || 0);
-        if (totalQty <= 0) missingCount++;
-        else if (totalQty < totalMin) lowStockCount++;
+        if (totalQty <= 0 && totalMin > 0) missingCount++;
+        else if (totalQty > 0 && totalQty < totalMin) lowStockCount++;
       }
     }
 

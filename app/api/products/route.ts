@@ -163,13 +163,11 @@ export async function GET(req: Request) {
       // 4. Inventory Filtering Decision
       let includeProduct = true;
       if (filterMode === "low_stock") {
-        // Strictly LOW stock (less than min but greater than 0)
-        // Dashboard uses: qty > 0 && qty < min
+        // Strictly LOW stock: 0 < qty < min (implicitly min > 0)
         includeProduct = p.displayStock > 0 && p.displayStock < p.displayMinStock;
       } else if (filterMode === "missing" || filterMode === "critical") {
-        // Strictly OUT OF stock (zero or negative)
-        // Dashboard uses: qty <= 0
-        includeProduct = p.displayStock <= 0;
+        // Strictly CRITICAL: qty <= 0 AND min > 0
+        includeProduct = p.displayStock <= 0 && p.displayMinStock > 0;
       } else if (filterMode === "transfer") {
         const hasCriticalBranch = p.stocks?.some((s: any) => {
           const branchMin = Number(s.minStock || 0) || Number(p.minStock || 0);
