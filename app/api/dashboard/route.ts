@@ -152,12 +152,14 @@ export async function GET(req: Request) {
       net: v.total - v.clearing // Amount owned by this branch
     }));
 
-    // 4. Products Count (User Scope - STRICT OWNERSHIP)
-    // "Active products also calculated for logged user"
+    // 4. Products Count (Sync with catalog 'onlyMyBranch' logic)
     const productWhere: any = { active: true };
     if (effectiveBranchId && !isAdmin && !isGerente) {
-      // Supervisor: Count both their branch and global products
-      productWhere.OR = [{ branchId: effectiveBranchId }, { branchId: null }];
+      // Supervisor: Only products that belong to this branch OR have stock record in it
+      productWhere.OR = [
+        { branchId: effectiveBranchId },
+        { stocks: { some: { branchId: effectiveBranchId } } }
+      ];
     } else if (effectiveBranchId) {
       productWhere.branchId = effectiveBranchId;
     }
@@ -174,8 +176,11 @@ export async function GET(req: Request) {
     // 6. Low Stock Alerts (Expert Logic: Comparison with minStock)
     const stockProductWhere: any = { active: true };
     if (effectiveBranchId && !isAdmin && !isGerente) {
-      // Supervisor: Only count their products + global ones
-      stockProductWhere.OR = [{ branchId: effectiveBranchId }, { branchId: null }];
+      // Supervisor: Same as catalog visibility
+      stockProductWhere.OR = [
+        { branchId: effectiveBranchId },
+        { stocks: { some: { branchId: effectiveBranchId } } }
+      ];
     } else if (effectiveBranchId) {
       // Gerente/Admin filtering by branch
       stockProductWhere.branchId = effectiveBranchId;
