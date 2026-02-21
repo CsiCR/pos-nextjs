@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     const userRole = (session?.user as any)?.role;
     const branchId = (session?.user as any)?.branchId;
     const allStocks = searchParams.get("allStocks") === "true";
+    const onlyMyBranch = searchParams.get("onlyMyBranch") === "true";
 
     // [NEW] Shift dynamic branch awareness
     const activeShift = await prisma.shift.findFirst({
@@ -91,8 +92,16 @@ export async function GET(req: Request) {
       });
     }
 
-    // Ownership Logic
-    if (userRole === "SUPERVISOR" || (userRole === "CAJERO" && !allStocks)) {
+    // Ownership & Visibility Logic
+    if (onlyMyBranch && branchId) {
+      // Strictly products that have a stock record in THIS branch OR belong to it
+      andConditions.push({
+        OR: [
+          { branchId: branchId },
+          { stocks: { some: { branchId: branchId } } }
+        ]
+      });
+    } else if (userRole === "SUPERVISOR" || (userRole === "CAJERO" && !allStocks)) {
       const targetBranchId = userRole === "SUPERVISOR" ? branchId : (activeShift?.branchId || branchId);
       if (targetBranchId) {
         andConditions.push({
@@ -105,23 +114,23 @@ export async function GET(req: Request) {
 
     const whereClause: any = { AND: andConditions };
 
-    // Filter Logic
-    // Defer complex multi-branch filters to JS processing
-    // because Prisma cannot easily aggregate across branches in a findMany where.
-
-    // Category Filter
     const categoryId = searchParams.get("categoryId");
     if (categoryId) {
       whereClause.categoryId = categoryId;
     }
+
+    const isFiltered = filterMode !== "all";
 
     const [products, total] = await Promise.all([
       (prisma as any).product.findMany({
         where: whereClause,
         include: includeOptions,
         orderBy: { name: "asc" },
-        skip: (page - 1) * pageSize,
-        take: pageSize
+        // If filtered in JS, we need ALL matching results first
+        ...(isFiltered ? {} : {
+          skip: (page - 1) * pageSize,
+          take: pageSize
+        })
       }),
       (prisma as any).product.count({ where: whereClause })
     ]);
@@ -154,8 +163,12 @@ export async function GET(req: Request) {
       // 4. Inventory Filtering Decision
       let includeProduct = true;
       if (filterMode === "low_stock") {
-        includeProduct = p.displayStock < p.displayMinStock;
-      } else if (filterMode === "missing") {
+        // Strictly LOW stock (less than min but greater than 0)
+        // Dashboard uses: qty > 0 && qty < min
+        includeProduct = p.displayStock > 0 && p.displayStock < p.displayMinStock;
+      } else if (filterMode === "missing" || filterMode === "critical") {
+        // Strictly OUT OF stock (zero or negative)
+        // Dashboard uses: qty <= 0
         includeProduct = p.displayStock <= 0;
       } else if (filterMode === "transfer") {
         const hasCriticalBranch = p.stocks?.some((s: any) => {
@@ -165,19 +178,23 @@ export async function GET(req: Request) {
         includeProduct = p.displayStock > 5 && hasCriticalBranch;
       } else if (filterMode === "withStock") {
         includeProduct = p.displayStock > 0;
-      } else if (filterMode === "critical") {
-        // Legacy support/alias for missing
-        includeProduct = p.displayStock <= 0;
       }
 
       return includeProduct ? p : null;
     }).filter(Boolean);
 
     // If we filtered in memory, total might have changed
-    const effectiveTotal = (filterMode !== "all") ? mappedProducts.length : total;
+    let finalProducts = mappedProducts;
+    let effectiveTotal = total;
+
+    if (isFiltered) {
+      effectiveTotal = mappedProducts.length;
+      // Manual Pagination for memory-filtered results
+      finalProducts = mappedProducts.slice((page - 1) * pageSize, page * pageSize);
+    }
 
     return NextResponse.json({
-      products: mappedProducts,
+      products: finalProducts,
       total: effectiveTotal,
       page,
       pageSize,

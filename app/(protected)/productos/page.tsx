@@ -1,9 +1,10 @@
 "use client";
 import { useRef, useState, useEffect, Suspense } from "react";
-import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, AlertTriangle, CheckCircle2, Printer, MapPin, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Plus, Upload, Filter, Download, MoreVertical, Edit2, Trash2, X, Archive, RefreshCw, FileDown, Package, Scale, Tag, AlertCircle, AlertTriangle, CheckCircle2, Printer, MapPin, ChevronLeft, ChevronRight, ArrowRightLeft } from "lucide-react";
 import { formatPrice, formatStock } from "@/lib/utils";
 import { useSettings } from "@/hooks/use-settings";
 import { Switch } from "@/components/ui/switch";
+import { TransferModal } from "@/components/TransferModal";
 
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
@@ -159,6 +160,7 @@ function ProductosContent() {
   const [units, setUnits] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
   const [selectedBranch, setSelectedBranch] = useState("");
+  const [onlyMyBranch, setOnlyMyBranch] = useState(isSupervisor);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<any>(null);
   const nameInputRef = useRef<HTMLInputElement>(null); // [NEW] Focus Ref
@@ -178,6 +180,7 @@ function ProductosContent() {
   });
   const [loading, setLoading] = useState(false);
   const [importModal, setImportModal] = useState(false);
+  const [transferModal, setTransferModal] = useState<any[] | null>(null); // [NEW]
   const [importing, setImporting] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
 
@@ -197,7 +200,7 @@ function ProductosContent() {
 
   const fetchData = async () => {
     const [resp, cats, unis, lists, brs] = await Promise.all([
-      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}&branchId=${selectedBranch}&page=${currentPage}&pageSize=${pageSize}${filterMode === 'inactive' ? '&showInactive=true' : ''}`).then(r => r.json()),
+      fetch(`/api/products?search=${search}&filterMode=${filterMode}&categoryId=${selectedCategory}&branchId=${selectedBranch}&page=${currentPage}&pageSize=${pageSize}&onlyMyBranch=${onlyMyBranch}${filterMode === 'inactive' ? '&showInactive=true' : ''}`).then(r => r.json()),
       fetch("/api/categories").then(r => r.json()),
       fetch("/api/measurement-units").then(r => r.json()),
       fetch("/api/price-lists").then(r => r.json()),
@@ -230,7 +233,7 @@ function ProductosContent() {
     setCurrentPage(1);
     fetchData().catch(err => console.error("Filter Change Fetch Error:", err));
     setSelectedIds([]);
-  }, [search, filterMode, selectedCategory, selectedBranch]);
+  }, [search, filterMode, selectedCategory, selectedBranch, onlyMyBranch]);
 
   useEffect(() => {
     fetchData().catch(err => console.error("Page Change Fetch Error:", err));
@@ -443,7 +446,14 @@ function ProductosContent() {
   };
 
   const handleExport = () => {
-    window.location.href = "/api/products/export";
+    const params = new URLSearchParams({
+      search,
+      filterMode,
+      categoryId: selectedCategory,
+      branchId: selectedBranch,
+      onlyMyBranch: String(onlyMyBranch)
+    });
+    window.location.href = `/api/products/export?${params.toString()}`;
   };
 
   const toggleSelectAll = () => {
@@ -474,6 +484,29 @@ function ProductosContent() {
           </button>
         </div>
       </div>
+
+      {/* Branch Specific Filter Toggle */}
+      {userBranchId && (
+        <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center justify-between mb-2">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-blue-600" />
+            </div>
+            <div>
+              <p className="text-sm font-black text-blue-900 leading-tight">Vista de Sucursal: {branches.find(b => b.id === userBranchId)?.name || 'Tu Sucursal'}</p>
+              <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">{onlyMyBranch ? 'Mostrando solo productos con stock o vinculados a esta sucursal' : 'Mostrando catálogo global completo'}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-xl border border-blue-100 shadow-sm">
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Filtrar por mi sucursal</span>
+            <Switch
+              checked={onlyMyBranch}
+              onCheckedChange={setOnlyMyBranch}
+              className="data-[state=checked]:bg-blue-600"
+            />
+          </div>
+        </div>
+      )}
 
       <div className={`bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-[500px] opacity-100 p-4 mb-4' : 'max-h-0 opacity-0 p-0 border-none mb-0'}`}>
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -602,6 +635,13 @@ function ProductosContent() {
                           <Edit2 className="w-4 h-4" />
                         </button>
 
+                        {/* Transfer Button - Only if module enabled */}
+                        {settings.isClearingEnabled && (
+                          <button onClick={() => setTransferModal([p])} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-orange-600" title="Traspasar">
+                            <ArrowRightLeft className="w-4 h-4" />
+                          </button>
+                        )}
+
                         {/* Delete Button - Show if Admin/Gerente OR Supervisor */}
                         {(canDelete || isSupervisor) && (
                           <button onClick={() => remove(p.id)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-red-500" title="Eliminar">
@@ -662,6 +702,18 @@ function ProductosContent() {
           >
             <Printer className="w-4 h-4" /> <span className="hidden sm:inline">Imprimir Etiquetas</span><span className="sm:hidden">Etiquetas</span>
           </button>
+
+          {settings.isClearingEnabled && (
+            <button
+              onClick={() => {
+                const selectedProducts = products.filter(p => selectedIds.includes(p.id));
+                setTransferModal(selectedProducts);
+              }}
+              className="btn bg-orange-600 hover:bg-orange-700 text-white btn-sm flex items-center gap-2 text-xs py-2 px-3 sm:px-4 border-none"
+            >
+              <ArrowRightLeft className="w-4 h-4" /> <span className="hidden sm:inline">Solicitar Traspaso</span><span className="sm:hidden">Traspaso</span>
+            </button>
+          )}
           <button
             onClick={() => setSelectedIds([])}
             className="text-gray-400 hover:text-white transition-colors p-2"
@@ -1049,6 +1101,19 @@ function ProductosContent() {
             </div>
           </div>
         </div>
+      )}
+
+      {transferModal && (
+        <TransferModal
+          products={transferModal}
+          branches={branches}
+          userBranchId={userBranchId || ""}
+          onClose={() => setTransferModal(null)}
+          onSuccess={() => {
+            fetchData();
+            setSelectedIds([]);
+          }}
+        />
       )}
     </div>
   );
