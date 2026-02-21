@@ -10,14 +10,26 @@ export default function VerificadorPage() {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [onlyMyBranch, setOnlyMyBranch] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const role = (session?.user as any)?.role;
+  const isSupervisor = role === "SUPERVISOR";
 
   useEffect(() => {
     if (!search) { setResults([]); return; }
     const t = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/products?search=${search}&allStocks=true`);
+        const userBranchId = (session?.user as any)?.branchId;
+        const isGlobalRole = role === "GERENTE" || role === "ADMIN";
+
+        // Match Catalog behavior: only filter by branch if toggle is ON
+        const shouldFilterByBranch = !isGlobalRole && onlyMyBranch;
+        const branchParam = (shouldFilterByBranch && userBranchId) ? `&branchId=${userBranchId}` : "";
+        const onlyMyBranchParam = (isSupervisor && onlyMyBranch) ? "&onlyMyBranch=true" : "";
+
+        const res = await fetch(`/api/products?search=${search}&allStocks=true${branchParam}${onlyMyBranchParam}`);
         const data = await res.json();
         const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
         setResults(fetchedProducts);
@@ -27,7 +39,7 @@ export default function VerificadorPage() {
       setLoading(false);
     }, 300);
     return () => clearTimeout(t);
-  }, [search]);
+  }, [search, onlyMyBranch, role, isSupervisor]);
 
   // Capturar Enter del escáner para limpiar la búsqueda después de ver el resultado
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -40,9 +52,13 @@ export default function VerificadorPage() {
     setSearch(code);
     setShowScanner(false);
     // Play beep
-    const audio = new Audio('/beep.mp3'); // We might need a beep asset, or just rely on visual feedback
+    const audio = new Audio('/beep.mp3');
     audio.play().catch(e => console.log("Audio play failed", e));
   };
+
+  // Label helper
+  const isGlobalRole = role === "GERENTE" || role === "ADMIN";
+  const isShowingGlobal = isGlobalRole || !onlyMyBranch;
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
@@ -73,6 +89,26 @@ export default function VerificadorPage() {
           <ScanBarcode className="w-6 h-6" />
         </button>
       </div>
+
+      {isSupervisor && (
+        <div className="flex justify-center mb-8">
+          <label className="inline-flex items-center cursor-pointer group">
+            <div className="relative">
+              <input
+                type="checkbox"
+                className="sr-only"
+                checked={onlyMyBranch}
+                onChange={() => setOnlyMyBranch(!onlyMyBranch)}
+              />
+              <div className={`block w-14 h-8 rounded-full transition-colors ${onlyMyBranch ? 'bg-blue-600' : 'bg-gray-300'}`}></div>
+              <div className={`absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition-transform ${onlyMyBranch ? 'translate-x-6' : ''}`}></div>
+            </div>
+            <span className="ml-3 text-sm font-bold text-gray-700 uppercase tracking-wider group-hover:text-blue-600 transition-colors">
+              Filtrar por mi sucursal
+            </span>
+          </label>
+        </div>
+      )}
 
       {loading && (
         <div className="flex flex-col items-center py-20 animate-pulse">
@@ -113,7 +149,7 @@ export default function VerificadorPage() {
 
                   <div className="grid grid-cols-2 gap-4 w-full">
                     <div className={`bg-gray-50 p-3 rounded-xl border border-gray-100 ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : ''}`}>
-                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{isGlobal ? 'Stock Global' : 'Stock Sucursal'}</p>
+                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{isShowingGlobal ? 'Stock Global' : 'Stock Sucursal'}</p>
                       <p className={`font-bold ${stockColor}`}>
                         {qty} {product.baseUnit?.symbol || 'un'}
                       </p>
