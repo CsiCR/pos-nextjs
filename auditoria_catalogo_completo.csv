@@ -1,0 +1,985 @@
+﻿ID,Estado,Codigo,EAN,Nombre,Unidad,Categoria,Precio Base,Sucursal Dueña,Sucursal (Stock/Precio),Stock Actual,Stock Minimo,Precio Venta,Diferencia Precio (Base vs Venta)
+cmlfpyevm0000jr049brgg7xd,Activo,"INT1770674627793","7792798002726","andes origen x473cm3",Un,"bebidas",4000,"Global","Suc. Cepernic",0,6,4000,0
+cmlfpyevm0000jr049brgg7xd,Activo,"INT1770674627793","7792798002726","andes origen x473cm3",Un,"bebidas",4000,"Global","Suc. Rivadavia",4,6,4000,0
+cmlfpyevm0000jr049brgg7xd,Activo,"INT1770674627793","7792798002726","andes origen x473cm3",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlvgh3ou000kjo040c2chby5,Activo,"INT1771626162414",""," agua orizon 500",Un,"bebidas",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlvgh3ou000kjo040c2chby5,Activo,"INT1771626162414",""," agua orizon 500",Un,"bebidas",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmlvgh3ou000kjo040c2chby5,Activo,"INT1771626162414",""," agua orizon 500",Un,"bebidas",1500,"Global","Suc. Perito Moreno",12,0,1500,0
+cmlslvkwx0000jm04r8ptz7em,Activo,"INT1771453837472","7791813444411","7up 1,5L",Un,"kiosco",6000,"Global","Suc. Cepernic",12,2,6000,0
+cmlslvkwx0000jm04r8ptz7em,Activo,"INT1771453837472","7791813444411","7up 1,5L",Un,"kiosco",6000,"Global","Suc. Rivadavia",12,4,6000,0
+cmlslvkwx0000jm04r8ptz7em,Activo,"INT1771453837472","7791813444411","7up 1,5L",Un,"kiosco",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlfnc4530000l40408dsof2t,Activo,"INT1770670228215","7798113301611","AGUA VILLAMANAOS 2L",Un,"bebidas",2500,"Global","Suc. Cepernic",10,6,2500,0
+cmlfnc4530000l40408dsof2t,Activo,"INT1770670228215","7798113301611","AGUA VILLAMANAOS 2L",Un,"bebidas",2500,"Global","Suc. Rivadavia",21,6,2500,0
+cmlfnc4530000l40408dsof2t,Activo,"INT1770670228215","7798113301611","AGUA VILLAMANAOS 2L",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlfnobke0000l504fl9rkzj8,Activo,"INT1770670797710","7798113300270","AGUA VILLAMANAOS 600CM3",Un,"bebidas",1500,"Global","Suc. Cepernic",17,6,1500,0
+cmlfnobke0000l504fl9rkzj8,Activo,"INT1770670797710","7798113300270","AGUA VILLAMANAOS 600CM3",Un,"bebidas",1500,"Global","Suc. Rivadavia",33,6,1500,0
+cmlfnobke0000l504fl9rkzj8,Activo,"INT1770670797710","7798113300270","AGUA VILLAMANAOS 600CM3",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlfqfnzt0000jp04c992cgec,Activo,"INT1770675432760","7792798007493","brahma x1l",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlfqfnzt0000jp04c992cgec,Activo,"INT1770675432760","7792798007493","brahma x1l",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlfqfnzt0000jp04c992cgec,Activo,"INT1770675432760","7792798007493","brahma x1l",Un,"bebidas",5000,"Global","Suc. Perito Moreno",8,6,6000,1000
+cmlfnficb0003l4041rxm1bvp,Activo,"INT1770670386586","7798113300027","MANAOS LIMA LIMON 2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",2,6,3000,0
+cmlfnficb0003l4041rxm1bvp,Activo,"INT1770670386586","7798113300027","MANAOS LIMA LIMON 2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",3,6,3000,0
+cmlfnficb0003l4041rxm1bvp,Activo,"INT1770670386586","7798113300027","MANAOS LIMA LIMON 2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfna1ga0003l104i3uj2s97,Activo,"INT1770670131418","7798113300041","MANAOS NARANJA 2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",13,6,3000,0
+cmlfna1ga0003l104i3uj2s97,Activo,"INT1770670131418","7798113300041","MANAOS NARANJA 2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",12,6,3000,0
+cmlfna1ga0003l104i3uj2s97,Activo,"INT1770670131418","7798113300041","MANAOS NARANJA 2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfndfof0000l704ddlev1i3,Activo,"INT1770670289814","7798113301529","SODA MANAOS 2L",Un,"bebidas",3000,"Global","Suc. Cepernic",15,6,3000,0
+cmlfndfof0000l704ddlev1i3,Activo,"INT1770670289814","7798113301529","SODA MANAOS 2L",Un,"bebidas",3000,"Global","Suc. Rivadavia",2,6,3000,0
+cmlfndfof0000l704ddlev1i3,Activo,"INT1770670289814","7798113301529","SODA MANAOS 2L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlh0fsqd000al704gljjuxay,Activo,"INT1770752701236","7791560074077","mumm cuvee reserve x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",3,6,30000,0
+cmlh0fsqd000al704gljjuxay,Activo,"INT1770752701236","7791560074077","mumm cuvee reserve x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",2,6,30000,0
+cmlh0fsqd000al704gljjuxay,Activo,"INT1770752701236","7791560074077","mumm cuvee reserve x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmlh08eh50005l204lf79mfa0,Activo,"INT1770752356169","7791560512593","mumm leger x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlh08eh50005l204lf79mfa0,Activo,"INT1770752356169","7791560512593","mumm leger x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",2,6,30000,0
+cmlh08eh50005l204lf79mfa0,Activo,"INT1770752356169","7791560512593","mumm leger x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmlfp3g92000fl104k4uq889t,Activo,"INT1770673183238","7798113302496","MANAOS POMELO BLANCO X354CM3",Un,"bebidas",1500,"Global","Suc. Cepernic",-2,6,1500,0
+cmlfp3g92000fl104k4uq889t,Activo,"INT1770673183238","7798113302496","MANAOS POMELO BLANCO X354CM3",Un,"bebidas",1500,"Global","Suc. Rivadavia",7,6,2000,500
+cmlfp3g92000fl104k4uq889t,Activo,"INT1770673183238","7798113302496","MANAOS POMELO BLANCO X354CM3",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlfowkv30003l704npx2xseh,Activo,"INT1770672862622","7790895643767","ADES MULTIFRUTAX200ML",Un,"bebidas",1500,"Global","Suc. Cepernic",0,6,1500,0
+cmlfowkv30003l704npx2xseh,Activo,"INT1770672862622","7790895643767","ADES MULTIFRUTAX200ML",Un,"bebidas",1500,"Global","Suc. Rivadavia",17,6,1500,0
+cmlfowkv30003l704npx2xseh,Activo,"INT1770672862622","7790895643767","ADES MULTIFRUTAX200ML",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlibba2a0000ky04p5r7ndpq,Activo,"INT1770831432369","INT3134278394","pote de x150g",Un,"Heladeria",5000,"Global","Suc. Cepernic",0,20,5000,0
+cmlibba2a0000ky04p5r7ndpq,Activo,"INT1770831432369","INT3134278394","pote de x150g",Un,"Heladeria",5000,"Global","Suc. Rivadavia",50,20,5000,0
+cmlibba2a0000ky04p5r7ndpq,Activo,"INT1770831432369","INT3134278394","pote de x150g",Un,"Heladeria",5000,"Global","Suc. Perito Moreno",0,20,5000,0
+cmlfo6r840009l104ss6iuhiu,Activo,"INT1770671657811","7790895005794","COCA COLA X2,5L",Un,"bebidas",7000,"Global","Suc. Cepernic",0,6,7000,0
+cmlfo6r840009l104ss6iuhiu,Activo,"INT1770671657811","7790895005794","COCA COLA X2,5L",Un,"bebidas",7000,"Global","Suc. Rivadavia",0,6,7000,0
+cmlfo6r840009l104ss6iuhiu,Activo,"INT1770671657811","7790895005794","COCA COLA X2,5L",Un,"bebidas",7000,"Global","Suc. Perito Moreno",0,6,7000,0
+cmlfpzy5y000ol704ev97yme6,Activo,"INT1770674699446","7790950134100","dr.lemon limon x1l",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlfpzy5y000ol704ev97yme6,Activo,"INT1770674699446","7790950134100","dr.lemon limon x1l",Un,"bebidas",6000,"Global","Suc. Rivadavia",2,6,6000,0
+cmlfpzy5y000ol704ev97yme6,Activo,"INT1770674699446","7790950134100","dr.lemon limon x1l",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfq13u0000ll104co4wa8r9,Activo,"INT1770674753447","7790950131918","dr.lemon vodka x1l",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlfq13u0000ll104co4wa8r9,Activo,"INT1770674753447","7790950131918","dr.lemon vodka x1l",Un,"bebidas",6000,"Global","Suc. Rivadavia",4,6,6000,0
+cmlfq13u0000ll104co4wa8r9,Activo,"INT1770674753447","7790950131918","dr.lemon vodka x1l",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfoq9uk0000l704tbzjqvl8,Activo,"INT1770672568411","7790895000454","FANTA NARANJA X1,5L",Un,"bebidas",7000,"Global","Suc. Cepernic",0,6,7000,0
+cmlfoq9uk0000l704tbzjqvl8,Activo,"INT1770672568411","7790895000454","FANTA NARANJA X1,5L",Un,"bebidas",7000,"Global","Suc. Rivadavia",2,6,7000,0
+cmlfoq9uk0000l704tbzjqvl8,Activo,"INT1770672568411","7790895000454","FANTA NARANJA X1,5L",Un,"bebidas",7000,"Global","Suc. Perito Moreno",0,6,7000,0
+cmlfo5s1c000fl4042pwz3umv,Activo,"INT1770671612207","7790895001017","FANTA NARANJA X2,25L",Un,"bebidas",7000,"Global","Suc. Cepernic",0,6,7000,0
+cmlfo5s1c000fl4042pwz3umv,Activo,"INT1770671612207","7790895001017","FANTA NARANJA X2,25L",Un,"bebidas",7000,"Global","Suc. Rivadavia",6,6,7000,0
+cmlfo5s1c000fl4042pwz3umv,Activo,"INT1770671612207","7790895001017","FANTA NARANJA X2,25L",Un,"bebidas",7000,"Global","Suc. Perito Moreno",0,6,7000,0
+cmlfoyx4h000cl504q5ryuehh,Activo,"INT1770672971824","7790895000782","COCA COLA X500ML",Un,"bebidas",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmlfoyx4h000cl504q5ryuehh,Activo,"INT1770672971824","7790895000782","COCA COLA X500ML",Un,"bebidas",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlfoyx4h000cl504q5ryuehh,Activo,"INT1770672971824","7790895000782","COCA COLA X500ML",Un,"bebidas",2500,"Global","Suc. Perito Moreno",22,0,2500,0
+cmlfo8sef000fl704yrn9rvj4,Activo,"INT1770671752647","7790895001413","COCA COLA X1L",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlfo8sef000fl704yrn9rvj4,Activo,"INT1770671752647","7790895001413","COCA COLA X1L",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlfo8sef000fl704yrn9rvj4,Activo,"INT1770671752647","7790895001413","COCA COLA X1L",Un,"bebidas",5000,"Global","Suc. Perito Moreno",16,0,5000,0
+cmlfpg1p0000nl504sxwoldvi,Activo,"INT1770673770900","7790895000430","coca cola x1,5l",Un,"bebidas",6000,"Global","Suc. Cepernic",14,6,6000,0
+cmlfpg1p0000nl504sxwoldvi,Activo,"INT1770673770900","7790895000430","coca cola x1,5l",Un,"bebidas",6000,"Global","Suc. Rivadavia",24,6,6000,0
+cmlfpg1p0000nl504sxwoldvi,Activo,"INT1770673770900","7790895000430","coca cola x1,5l",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlih14v2001gjp0492nh2p4p,Activo,"INT1770841036765","779089500100","sprite 2,25l",Un,"bebidas",6000,"Global","Suc. Cepernic",4,6,6000,0
+cmlih14v2001gjp0492nh2p4p,Activo,"INT1770841036765","779089500100","sprite 2,25l",Un,"bebidas",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlih14v2001gjp0492nh2p4p,Activo,"INT1770841036765","779089500100","sprite 2,25l",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlfq2310000ol10402v5ovip,Activo,"INT1770674799059","7792798002399","patagonia 24.7 x730cm3",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlfq2310000ol10402v5ovip,Activo,"INT1770674799059","7792798002399","patagonia 24.7 x730cm3",Un,"bebidas",6000,"Global","Suc. Rivadavia",5,6,6000,0
+cmlfq2310000ol10402v5ovip,Activo,"INT1770674799059","7792798002399","patagonia 24.7 x730cm3",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfpx5we000ll704xb09wq8o,Activo,"INT1770674569501","7792798003938","patagonia vera ipa x473cm3",Un,"bebidas",4000,"Global","Suc. Cepernic",0,6,4000,0
+cmlfpx5we000ll704xb09wq8o,Activo,"INT1770674569501","7792798003938","patagonia vera ipa x473cm3",Un,"bebidas",4000,"Global","Suc. Rivadavia",15,6,4000,0
+cmlfpx5we000ll704xb09wq8o,Activo,"INT1770674569501","7792798003938","patagonia vera ipa x473cm3",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlvju2na0005ky049c6pl1pd,Inactivo,"INT1771631806438","","gancia 950ml",Un,"bebidas",18000,"Global","Suc. Cepernic",0,0,18000,0
+cmlvju2na0005ky049c6pl1pd,Inactivo,"INT1771631806438","","gancia 950ml",Un,"bebidas",18000,"Global","Suc. Rivadavia",0,0,18000,0
+cmlvju2na0005ky049c6pl1pd,Inactivo,"INT1771631806438","","gancia 950ml",Un,"bebidas",18000,"Global","Suc. Perito Moreno",3,0,18000,0
+cmlvhneaw0000l804psc9akvx,Inactivo,"INT1771628135720","","Quilmes de 1 litro",Un,"bebidas",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlvhneaw0000l804psc9akvx,Inactivo,"INT1771628135720","","Quilmes de 1 litro",Un,"bebidas",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlvhneaw0000l804psc9akvx,Inactivo,"INT1771628135720","","Quilmes de 1 litro",Un,"bebidas",6000,"Global","Suc. Perito Moreno",25,0,6000,0
+cmlfqgvka0003jr04125w90cf,Activo,"INT1770675489226","7791843008294","vi¤a de balbo x1125ml",Un,"bebidas",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlfqgvka0003jr04125w90cf,Activo,"INT1770675489226","7791843008294","vi¤a de balbo x1125ml",Un,"bebidas",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlfqgvka0003jr04125w90cf,Activo,"INT1770675489226","7791843008294","vi¤a de balbo x1125ml",Un,"bebidas",6000,"Global","Suc. Perito Moreno",2,6,7000,1000
+cmlslxnxq0005jm04tt8164v8,Activo,"INT1771453934700","7798119220015","speed 250ml",Un,"kiosco",3000,"Global","Suc. Cepernic",45,3,3000,0
+cmlslxnxq0005jm04tt8164v8,Activo,"INT1771453934700","7798119220015","speed 250ml",Un,"kiosco",3000,"Global","Suc. Rivadavia",23,6,3000,0
+cmlslxnxq0005jm04tt8164v8,Activo,"INT1771453934700","7798119220015","speed 250ml",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,24,3000,0
+cmlvgjo77001il2043ogu1700,Activo,"INT1771626282307","","agua de 2 litros ",Un,"bebidas",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmlvgjo77001il2043ogu1700,Activo,"INT1771626282307","","agua de 2 litros ",Un,"bebidas",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlvgjo77001il2043ogu1700,Activo,"INT1771626282307","","agua de 2 litros ",Un,"bebidas",2500,"Global","Suc. Perito Moreno",15,0,2500,0
+cmlvjvk230005l704x69n8frg,Activo,"INT1771631875658","","vino finca Natalia",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjvk230005l704x69n8frg,Activo,"INT1771631875658","","vino finca Natalia",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjvk230005l704x69n8frg,Activo,"INT1771631875658","","vino finca Natalia",Un,"bebidas",10000,"Global","Suc. Perito Moreno",4,0,10000,0
+cmlvhou020005l804h8xukspm,Inactivo,"INT1771628202721","","Brama de 1 litro ",Un,"bebidas",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlvhou020005l804h8xukspm,Inactivo,"INT1771628202721","","Brama de 1 litro ",Un,"bebidas",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlvhou020005l804h8xukspm,Inactivo,"INT1771628202721","","Brama de 1 litro ",Un,"bebidas",6000,"Global","Suc. Perito Moreno",8,0,6000,0
+cmlfqjy1f0003jp044whlrsj6,Activo,"INT1770675632403","7790314057014","vino tinto resero x1l",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlfqjy1f0003jp044whlrsj6,Activo,"INT1770675632403","7790314057014","vino tinto resero x1l",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlfqjy1f0003jp044whlrsj6,Activo,"INT1770675632403","7790314057014","vino tinto resero x1l",Un,"bebidas",3000,"Global","Suc. Perito Moreno",13,6,3000,0
+cmlidl7mz000ljs04oq7nsgfb,Activo,"INT1770835255018","7798125811405","cintas crocantes sabor pancho c/mostaza x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidl7mz000ljs04oq7nsgfb,Activo,"INT1770835255018","7798125811405","cintas crocantes sabor pancho c/mostaza x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidl7mz000ljs04oq7nsgfb,Activo,"INT1770835255018","7798125811405","cintas crocantes sabor pancho c/mostaza x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlihg0u50000kz04ol8cr4un,Activo,"INT1770841731388","7798126073048","magdalenas Gaona frutilla",Un,"kiosco",2500,"Global","Suc. Cepernic",1,0,2500,0
+cmlihg0u50000kz04ol8cr4un,Activo,"INT1770841731388","7798126073048","magdalenas Gaona frutilla",Un,"kiosco",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlihg0u50000kz04ol8cr4un,Activo,"INT1770841731388","7798126073048","magdalenas Gaona frutilla",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmlfprpvr000klb04njhjz0ho,Activo,"INT1770674315451","7792798013975","stella artois x710cm3",Un,"bebidas",6000,"Global","Suc. Cepernic",18,6,6000,0
+cmlfprpvr000klb04njhjz0ho,Activo,"INT1770674315451","7792798013975","stella artois x710cm3",Un,"bebidas",6000,"Global","Suc. Rivadavia",18,6,6000,0
+cmlfprpvr000klb04njhjz0ho,Activo,"INT1770674315451","7792798013975","stella artois x710cm3",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfpllbj000fl704h0uoy6wb,Activo,"INT1770674029615","7790314063824","vino tinto toro x1l",Un,"bebidas",4000,"Global","Suc. Cepernic",38,6,4000,0
+cmlfpllbj000fl704h0uoy6wb,Activo,"INT1770674029615","7790314063824","vino tinto toro x1l",Un,"bebidas",4000,"Global","Suc. Rivadavia",25,6,4000,0
+cmlfpllbj000fl704h0uoy6wb,Activo,"INT1770674029615","7790314063824","vino tinto toro x1l",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlfrobjv0000lb04j5t1jcuj,Activo,"INT1770677516154","7798135763732","vodka arandanos y uva x1l",Un,"bebidas",10000,"Global","Suc. Cepernic",0,6,10000,0
+cmlfrobjv0000lb04j5t1jcuj,Activo,"INT1770677516154","7798135763732","vodka arandanos y uva x1l",Un,"bebidas",10000,"Global","Suc. Rivadavia",1,6,10000,0
+cmlfrobjv0000lb04j5t1jcuj,Activo,"INT1770677516154","7798135763732","vodka arandanos y uva x1l",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,6,10000,0
+cmlihi4el0003kz04c6ts2dsf,Activo,"INT1770841829324","7798126073871","magdalenas Gaona naranja c/chips",Un,"kiosco",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmlihi4el0003kz04c6ts2dsf,Activo,"INT1770841829324","7798126073871","magdalenas Gaona naranja c/chips",Un,"kiosco",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlihi4el0003kz04c6ts2dsf,Activo,"INT1770841829324","7798126073871","magdalenas Gaona naranja c/chips",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmliekhfg0000i6095jv7gvjm,Activo,"INT1770836900667","7797942007794","juan d´ juana malbec x750ml",Un,"bebidas",12000,"Global","Suc. Cepernic",5,6,12000,0
+cmliekhfg0000i6095jv7gvjm,Activo,"INT1770836900667","7797942007794","juan d´ juana malbec x750ml",Un,"bebidas",12000,"Global","Suc. Rivadavia",3,6,12000,0
+cmliekhfg0000i6095jv7gvjm,Activo,"INT1770836900667","7797942007794","juan d´ juana malbec x750ml",Un,"bebidas",12000,"Global","Suc. Perito Moreno",0,6,12000,0
+cmlieih5y0017l2044g9tivwu,Activo,"INT1770836807013","7790607002141","alfredo roca x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlieih5y0017l2044g9tivwu,Activo,"INT1770836807013","7790607002141","alfredo roca x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlieih5y0017l2044g9tivwu,Activo,"INT1770836807013","7790607002141","alfredo roca x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmliedknh0014l204jtrjrror,Activo,"INT1770836578252","7798353194653","cordero con piel de lobo malbec x750ml",Un,"bebidas",12000,"Global","Suc. Cepernic",0,6,12000,0
+cmliedknh0014l204jtrjrror,Activo,"INT1770836578252","7798353194653","cordero con piel de lobo malbec x750ml",Un,"bebidas",12000,"Global","Suc. Rivadavia",0,6,12000,0
+cmliedknh0014l204jtrjrror,Activo,"INT1770836578252","7798353194653","cordero con piel de lobo malbec x750ml",Un,"bebidas",12000,"Global","Suc. Perito Moreno",0,6,12000,0
+cmlieh8cx0000l204pi98lw15,Activo,"INT1770836748944","7790975198613","chandon extra brut x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlieh8cx0000l204pi98lw15,Activo,"INT1770836748944","7790975198613","chandon extra brut x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlieh8cx0000l204pi98lw15,Activo,"INT1770836748944","7790975198613","chandon extra brut x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmlibeql20000jp04flexul9e,Activo,"INT1770831593749","7790580716806","saladix sabor calabresa x100g",Un,"kiosco",2000,"Global","Suc. Cepernic",-2,3,2000,0
+cmlibeql20000jp04flexul9e,Activo,"INT1770831593749","7790580716806","saladix sabor calabresa x100g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,3,2000,0
+cmlibeql20000jp04flexul9e,Activo,"INT1770831593749","7790580716806","saladix sabor calabresa x100g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlidlsv7000gjm04ha27awrz,Activo,"INT1770835282530","7798125810354","cintas crocantes sabor clasica x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidlsv7000gjm04ha27awrz,Activo,"INT1770835282530","7798125810354","cintas crocantes sabor clasica x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidlsv7000gjm04ha27awrz,Activo,"INT1770835282530","7798125810354","cintas crocantes sabor clasica x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlihnfbq0000if04dlel3yyh,Activo,"INT1770842076758","7798125811221","Cintitas sabor ketchup",Un,"kiosco",2000,"Global","Suc. Cepernic",2,0,2000,0
+cmlihnfbq0000if04dlel3yyh,Activo,"INT1770842076758","7798125811221","Cintitas sabor ketchup",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlihnfbq0000if04dlel3yyh,Activo,"INT1770842076758","7798125811221","Cintitas sabor ketchup",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljutwnz0000lb04sn3vco6e,Activo,"INT1770924680350","7798428130050","ARROZ RENDIDOR",Un,"kiosco",5000,"Global","Suc. Cepernic",1,0,5000,0
+cmljutwnz0000lb04sn3vco6e,Activo,"INT1770924680350","7798428130050","ARROZ RENDIDOR",Un,"kiosco",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmljutwnz0000lb04sn3vco6e,Activo,"INT1770924680350","7798428130050","ARROZ RENDIDOR",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmljuweg10003lb046p3zrnlx,Activo,"INT1770924796704","7792180140708","HARINA LEUDANTE PUREZA",Un,"General",3000,"Global","Suc. Cepernic",1,0,3000,0
+cmljuweg10003lb046p3zrnlx,Activo,"INT1770924796704","7792180140708","HARINA LEUDANTE PUREZA",Un,"General",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmljuweg10003lb046p3zrnlx,Activo,"INT1770924796704","7792180140708","HARINA LEUDANTE PUREZA",Un,"General",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmljvnhzo0000l709xpyqjhbe,Activo,"INT1770926061012","7896306609817","chicle blong sabor tutti frutti",Un,"General",100,"Global","Suc. Cepernic",0,50,100,0
+cmljvnhzo0000l709xpyqjhbe,Activo,"INT1770926061012","7896306609817","chicle blong sabor tutti frutti",Un,"General",100,"Global","Suc. Rivadavia",90,50,100,0
+cmljvnhzo0000l709xpyqjhbe,Activo,"INT1770926061012","7896306609817","chicle blong sabor tutti frutti",Un,"General",100,"Global","Suc. Perito Moreno",0,50,100,0
+cmlfnm8od0003l704whi583na,Activo,"INT1770670700653","7798113302113","JUGO PLACER POMELO 1,5L",Un,"bebidas",2500,"Global","Suc. Cepernic",5,6,2500,0
+cmlfnm8od0003l704whi583na,Activo,"INT1770670700653","7798113302113","JUGO PLACER POMELO 1,5L",Un,"bebidas",2500,"Global","Suc. Rivadavia",6,6,2500,0
+cmlfnm8od0003l704whi583na,Activo,"INT1770670700653","7798113302113","JUGO PLACER POMELO 1,5L",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlmmv3cr0005l5040jf2dtx6,Activo,"INT1771092697264","6974766030974","libretas de capybara ",Un,"kiosco",5000,"Global","Suc. Cepernic",0,3,5000,0
+cmlmmv3cr0005l5040jf2dtx6,Activo,"INT1771092697264","6974766030974","libretas de capybara ",Un,"kiosco",5000,"Global","Suc. Rivadavia",5,3,5000,0
+cmlmmv3cr0005l5040jf2dtx6,Activo,"INT1771092697264","6974766030974","libretas de capybara ",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,3,5000,0
+cmlmmtnum0000l5044r6ldh8m,Activo,"INT1771092630525","6971109111284","libretas de kuromi ",Un,"kiosco",5000,"Global","Suc. Cepernic",0,3,5000,0
+cmlmmtnum0000l5044r6ldh8m,Activo,"INT1771092630525","6971109111284","libretas de kuromi ",Un,"kiosco",5000,"Global","Suc. Rivadavia",1,3,5000,0
+cmlmmtnum0000l5044r6ldh8m,Activo,"INT1771092630525","6971109111284","libretas de kuromi ",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,3,5000,0
+cmlihcegh0000l4042hnsu7s4,Activo,"INT1770841562417","7798113302649","manaos placer pomelo rosado 1,5l",Un,"bebidas",2500,"Global","Suc. Cepernic",8,6,2500,0
+cmlihcegh0000l4042hnsu7s4,Activo,"INT1770841562417","7798113302649","manaos placer pomelo rosado 1,5l",Un,"bebidas",2500,"Global","Suc. Rivadavia",0,6,2500,0
+cmlihcegh0000l4042hnsu7s4,Activo,"INT1770841562417","7798113302649","manaos placer pomelo rosado 1,5l",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlihdlp70000ib04betxvwyn,Activo,"INT1770841618458","7798113302069","manaos placer anana 1,5l",Un,"bebidas",2500,"Global","Suc. Cepernic",5,6,2500,0
+cmlihdlp70000ib04betxvwyn,Activo,"INT1770841618458","7798113302069","manaos placer anana 1,5l",Un,"bebidas",2500,"Global","Suc. Rivadavia",0,6,2500,0
+cmlihdlp70000ib04betxvwyn,Activo,"INT1770841618458","7798113302069","manaos placer anana 1,5l",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlfqiu5s0010l70458sprly3,Activo,"INT1770675580719","7791540053184","frizze blue x1l",Un,"bebidas",6000,"Global","Suc. Cepernic",1,6,6000,0
+cmlfqiu5s0010l70458sprly3,Activo,"INT1770675580719","7791540053184","frizze blue x1l",Un,"bebidas",6000,"Global","Suc. Rivadavia",3,6,6000,0
+cmlfqiu5s0010l70458sprly3,Activo,"INT1770675580719","7791540053184","frizze blue x1l",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfnq0nj0006l704iqhb78wn,Activo,"INT1770670876879","7791813402022","H2OH SINGAS X500ML",Un,"bebidas",2500,"Global","Suc. Cepernic",0,6,2500,0
+cmlfnq0nj0006l704iqhb78wn,Activo,"INT1770670876879","7791813402022","H2OH SINGAS X500ML",Un,"bebidas",2500,"Global","Suc. Rivadavia",3,6,2500,0
+cmlfnq0nj0006l704iqhb78wn,Activo,"INT1770670876879","7791813402022","H2OH SINGAS X500ML",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlfnh2jb0006l104ryp7gnly,Activo,"INT1770670459415","7792758372173","JUGO BALANCE PERA1,5L",Un,"bebidas",2000,"Global","Suc. Cepernic",0,6,2000,0
+cmlfnh2jb0006l104ryp7gnly,Activo,"INT1770670459415","7792758372173","JUGO BALANCE PERA1,5L",Un,"bebidas",2000,"Global","Suc. Rivadavia",3,6,2500,500
+cmlfnh2jb0006l104ryp7gnly,Activo,"INT1770670459415","7792758372173","JUGO BALANCE PERA1,5L",Un,"bebidas",2000,"Global","Suc. Perito Moreno",0,6,2000,0
+cmlfokqfr0009l504nawd21di,Activo,"INT1770672309974","7790895005015","SPRITE LIMA LIMON X1L",Un,"bebidas",5000,"Global","Suc. Cepernic",0,6,5000,0
+cmlfokqfr0009l504nawd21di,Activo,"INT1770672309974","7790895005015","SPRITE LIMA LIMON X1L",Un,"bebidas",5000,"Global","Suc. Rivadavia",11,6,5000,0
+cmlfokqfr0009l504nawd21di,Activo,"INT1770672309974","7790895005015","SPRITE LIMA LIMON X1L",Un,"bebidas",5000,"Global","Suc. Perito Moreno",0,6,5000,0
+cmlfojooe000cl104wb4oi0gu,Activo,"INT1770672261037","7790895000447","SPRITE LIMA LIMON X1,5L",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlfojooe000cl104wb4oi0gu,Activo,"INT1770672261037","7790895000447","SPRITE LIMA LIMON X1,5L",Un,"bebidas",6000,"Global","Suc. Rivadavia",13,6,6000,0
+cmlfojooe000cl104wb4oi0gu,Activo,"INT1770672261037","7790895000447","SPRITE LIMA LIMON X1,5L",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfpbfka000cl7047axpfmgf,Activo,"INT1770673555593","7792170042012","gatorade naranja x500ml",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfpbfka000cl7047axpfmgf,Activo,"INT1770673555593","7792170042012","gatorade naranja x500ml",Un,"bebidas",3000,"Global","Suc. Rivadavia",1,6,3000,0
+cmlfpbfka000cl7047axpfmgf,Activo,"INT1770673555593","7792170042012","gatorade naranja x500ml",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfov3vb0000lb04r0315sl7,Activo,"INT1770672793942","7798290580113","TUTTI MULTIFRUTAL X200ML",Un,"bebidas",1000,"Global","Suc. Cepernic",0,6,1000,0
+cmlfov3vb0000lb04r0315sl7,Activo,"INT1770672793942","7798290580113","TUTTI MULTIFRUTAL X200ML",Un,"bebidas",1000,"Global","Suc. Rivadavia",8,6,1000,0
+cmlfov3vb0000lb04r0315sl7,Activo,"INT1770672793942","7798290580113","TUTTI MULTIFRUTAL X200ML",Un,"bebidas",1000,"Global","Suc. Perito Moreno",0,6,1000,0
+cmlidq0iq000rjs04j39wkh0y,Activo,"INT1770835479074","7790040144071","galleta travieta x108g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,3,2000,0
+cmlidq0iq000rjs04j39wkh0y,Activo,"INT1770835479074","7790040144071","galleta travieta x108g",Un,"kiosco",2000,"Global","Suc. Rivadavia",3,3,2000,0
+cmlidq0iq000rjs04j39wkh0y,Activo,"INT1770835479074","7790040144071","galleta travieta x108g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmliho3ui000bl4041d95a1xc,Activo,"INT1770842108538","7798125811412","Cintitas sabor asado ",Un,"General",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmliho3ui000bl4041d95a1xc,Activo,"INT1770842108538","7798125811412","Cintitas sabor asado ",Un,"General",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmliho3ui000bl4041d95a1xc,Activo,"INT1770842108538","7798125811412","Cintitas sabor asado ",Un,"General",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlihp1ja000el404wek0wg3p,Activo,"INT1770842152198","7798125810385","Cintitas sabor pizza ",Un,"kiosco",2000,"Global","Suc. Cepernic",2,0,2000,0
+cmlihp1ja000el404wek0wg3p,Activo,"INT1770842152198","7798125810385","Cintitas sabor pizza ",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlihp1ja000el404wek0wg3p,Activo,"INT1770842152198","7798125810385","Cintitas sabor pizza ",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlibgtei0000jl04prwikx3q,Activo,"INT1770831690713","7790040613607","alfajor bon o bon blanco x40g",Un,"kiosco",2000,"Global","Suc. Cepernic",2,3,1500,-500
+cmlibgtei0000jl04prwikx3q,Activo,"INT1770831690713","7790040613607","alfajor bon o bon blanco x40g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,3,2000,0
+cmlibgtei0000jl04prwikx3q,Activo,"INT1770831690713","7790040613607","alfajor bon o bon blanco x40g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlibihri0003jl043y9y0gbw,Activo,"INT1770831768941","7790040152748","alfajor triple bon o bon blanco x60g",Un,"kiosco",2000,"Global","Suc. Cepernic",-2,2,2000,0
+cmlibihri0003jl043y9y0gbw,Activo,"INT1770831768941","7790040152748","alfajor triple bon o bon blanco x60g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlibihri0003jl043y9y0gbw,Activo,"INT1770831768941","7790040152748","alfajor triple bon o bon blanco x60g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlmmx50o0000jv04wekf77v4,Activo,"INT1771092792742","INT9278668782","tartas de jamon y queso xporciones",Un,"Comidas",2500,"Global","Suc. Cepernic",0,8,2500,0
+cmlmmx50o0000jv04wekf77v4,Activo,"INT1771092792742","INT9278668782","tartas de jamon y queso xporciones",Un,"Comidas",2500,"Global","Suc. Rivadavia",0,8,2500,0
+cmlmmx50o0000jv04wekf77v4,Activo,"INT1771092792742","INT9278668782","tartas de jamon y queso xporciones",Un,"Comidas",2500,"Global","Suc. Perito Moreno",0,8,2500,0
+cmlvglqtv001nl204ptfq1ue9,Activo,"INT1771626379027",""," agua saborisada 1.5",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvglqtv001nl204ptfq1ue9,Activo,"INT1771626379027",""," agua saborisada 1.5",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvglqtv001nl204ptfq1ue9,Activo,"INT1771626379027",""," agua saborisada 1.5",Un,"bebidas",3000,"Global","Suc. Perito Moreno",23,0,3000,0
+cmlvi5h9z002il204k4lhchwg,Activo,"INT1771628979383","","vino toro caja",Un,"bebidas",4500,"Global","Suc. Cepernic",0,0,4500,0
+cmlvi5h9z002il204k4lhchwg,Activo,"INT1771628979383","","vino toro caja",Un,"bebidas",4500,"Global","Suc. Rivadavia",0,0,4500,0
+cmlvi5h9z002il204k4lhchwg,Activo,"INT1771628979383","","vino toro caja",Un,"bebidas",4500,"Global","Suc. Perito Moreno",16,0,4500,0
+cmlvjwx06000fib0473p2jgqe,Activo,"INT1771631939094","","vino clasico finca Natalia",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjwx06000fib0473p2jgqe,Activo,"INT1771631939094","","vino clasico finca Natalia",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjwx06000fib0473p2jgqe,Activo,"INT1771631939094","","vino clasico finca Natalia",Un,"bebidas",10000,"Global","Suc. Perito Moreno",1,0,10000,0
+cmlvk1lhm000uib04qa9axm7o,Activo,"INT1771632157450","","LICORES ARTESANALES",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlvk1lhm000uib04qa9axm7o,Activo,"INT1771632157450","","LICORES ARTESANALES",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlvk1lhm000uib04qa9axm7o,Activo,"INT1771632157450","","LICORES ARTESANALES",Un,"bebidas",5000,"Global","Suc. Perito Moreno",5,0,5000,0
+cmliemts30003i609cfvilwkc,Activo,"INT1770837009986","7795232000715","el gran loco blend x750ml ",Un,"bebidas",12000,"Global","Suc. Cepernic",0,6,12000,0
+cmliemts30003i609cfvilwkc,Activo,"INT1770837009986","7795232000715","el gran loco blend x750ml ",Un,"bebidas",12000,"Global","Suc. Rivadavia",3,6,12000,0
+cmliemts30003i609cfvilwkc,Activo,"INT1770837009986","7795232000715","el gran loco blend x750ml ",Un,"bebidas",12000,"Global","Suc. Perito Moreno",0,6,12000,0
+cmljs2qgg0000jp04u5kvqe1a,Activo,"INT1770920053360","7500435154420","GILLETTE ULTRAGRIP 2",Un,"kiosco",2000,"Global","Suc. Cepernic",9,3,2000,0
+cmljs2qgg0000jp04u5kvqe1a,Activo,"INT1770920053360","7500435154420","GILLETTE ULTRAGRIP 2",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,3,2000,0
+cmljs2qgg0000jp04u5kvqe1a,Activo,"INT1770920053360","7500435154420","GILLETTE ULTRAGRIP 2",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmljuvla80000lh04ud08fc2n,Activo,"INT1770924758911","7792180139320","HARINA 000 ",Un,"General",3000,"Global","Suc. Cepernic",1,0,3000,0
+cmljuvla80000lh04ud08fc2n,Activo,"INT1770924758911","7792180139320","HARINA 000 ",Un,"General",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmljuvla80000lh04ud08fc2n,Activo,"INT1770924758911","7792180139320","HARINA 000 ",Un,"General",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmljvox1a0002la04as42i0ec,Activo,"INT1770926127165","7797942000313","VINO FINCA NATALINA MERLOT",Un,"bebidas",10000,"Global","Suc. Cepernic",3,1,10000,0
+cmljvox1a0002la04as42i0ec,Activo,"INT1770926127165","7797942000313","VINO FINCA NATALINA MERLOT",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvox1a0002la04as42i0ec,Activo,"INT1770926127165","7797942000313","VINO FINCA NATALINA MERLOT",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmljvpopr0005la04nw1zfyy9,Activo,"INT1770926163038","7797942007053","VINO FINCA NATALINA",Un,"bebidas",10000,"Global","Suc. Cepernic",3,1,10000,0
+cmljvpopr0005la04nw1zfyy9,Activo,"INT1770926163038","7797942007053","VINO FINCA NATALINA",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvpopr0005la04nw1zfyy9,Activo,"INT1770926163038","7797942007053","VINO FINCA NATALINA",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmljuxgt80003lh0481pnv8os,Activo,"INT1770924846428","7790199603030","ACEITUNAS MORIXE ",Un,"Almacen",5000,"Global","Suc. Cepernic",5,0,5000,0
+cmljuxgt80003lh0481pnv8os,Activo,"INT1770924846428","7790199603030","ACEITUNAS MORIXE ",Un,"Almacen",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmljuxgt80003lh0481pnv8os,Activo,"INT1770924846428","7790199603030","ACEITUNAS MORIXE ",Un,"Almacen",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlidqe3k000ujs04ozl4di3m,Activo,"INT1770835496671","7792798003716","corona 710",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlidqe3k000ujs04ozl4di3m,Activo,"INT1770835496671","7792798003716","corona 710",Un,"bebidas",6000,"Global","Suc. Rivadavia",2,6,7000,1000
+cmlidqe3k000ujs04ozl4di3m,Activo,"INT1770835496671","7792798003716","corona 710",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlidmhum000ojs0450j2foc1,Activo,"INT1770835314910","7798054013697","361 lager 710",Un,"bebidas",3000,"Global","Suc. Cepernic",2,6,3000,0
+cmlidmhum000ojs0450j2foc1,Activo,"INT1770835314910","7798054013697","361 lager 710",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,6,3000,0
+cmlidmhum000ojs0450j2foc1,Activo,"INT1770835314910","7798054013697","361 lager 710",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlsdutfs0000l404qa9c8qbs,Activo,"INT1771440364927","7790387015324","yerba mañanita",Un,"kiosco",3000,"Global","Suc. Cepernic",10,0,3000,0
+cmlsdutfs0000l404qa9c8qbs,Activo,"INT1771440364927","7790387015324","yerba mañanita",Un,"kiosco",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlsdutfs0000l404qa9c8qbs,Activo,"INT1771440364927","7790387015324","yerba mañanita",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmltnwpf60001vdxcgqyx67um,Inactivo,"INT1771517715378","10","Prueba de Adrian",Un,"Almacen",10,"Global","Suc. Cepernic",4,0,10,0
+cmltnwpf60001vdxcgqyx67um,Inactivo,"INT1771517715378","10","Prueba de Adrian",Un,"Almacen",10,"Global","Suc. Rivadavia",5,9,10,0
+cmltnwpf60001vdxcgqyx67um,Inactivo,"INT1771517715378","10","Prueba de Adrian",Un,"Almacen",10,"Global","Suc. Perito Moreno",0,9,10,0
+cmlvgsaym000ujo047133r0mp,Activo,"INT1771626685053","","manaos 2.25 ",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvgsaym000ujo047133r0mp,Activo,"INT1771626685053","","manaos 2.25 ",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvgsaym000ujo047133r0mp,Activo,"INT1771626685053","","manaos 2.25 ",Un,"bebidas",3000,"Global","Suc. Perito Moreno",18,0,3000,0
+cmlviasps000al504eb85g0t7,Activo,"INT1771629227487","","vino toro blanco ",Un,"bebidas",4500,"Global","Suc. Cepernic",0,0,4500,0
+cmlviasps000al504eb85g0t7,Activo,"INT1771629227487","","vino toro blanco ",Un,"bebidas",4500,"Global","Suc. Rivadavia",0,0,4500,0
+cmlviasps000al504eb85g0t7,Activo,"INT1771629227487","","vino toro blanco ",Un,"bebidas",4500,"Global","Suc. Perito Moreno",17,0,4500,0
+cmlvjy7ir000kib04n7sd8pld,Activo,"INT1771631999378","","vino cosecha tarda",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjy7ir000kib04n7sd8pld,Activo,"INT1771631999378","","vino cosecha tarda",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjy7ir000kib04n7sd8pld,Activo,"INT1771631999378","","vino cosecha tarda",Un,"bebidas",10000,"Global","Suc. Perito Moreno",2,0,10000,0
+cmlgyhki70000ky045v8pl6jm,Activo,"INT1770749424654","7790130002748","menoyo mayonesa x94g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgyhki70000ky045v8pl6jm,Activo,"INT1770749424654","7790130002748","menoyo mayonesa x94g",Un,"kiosco",1500,"Global","Suc. Rivadavia",5,0,1500,0
+cmlgyhki70000ky045v8pl6jm,Activo,"INT1770749424654","7790130002748","menoyo mayonesa x94g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlidmj45000fl204wm6xoql0,Activo,"INT1770835316549","7798125810767","cintas crocantes sabor cheddar x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidmj45000fl204wm6xoql0,Activo,"INT1770835316549","7798125810767","cintas crocantes sabor cheddar x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidmj45000fl204wm6xoql0,Activo,"INT1770835316549","7798125810767","cintas crocantes sabor cheddar x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlibjvff0000jj04r4uyzw5a,Activo,"INT1770831833306","7790040148840","alfajor triple bon o bon negro x60g",Un,"kiosco",2000,"Global","Suc. Cepernic",1,2,2000,0
+cmlibjvff0000jj04r4uyzw5a,Activo,"INT1770831833306","7790040148840","alfajor triple bon o bon negro x60g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlibjvff0000jj04r4uyzw5a,Activo,"INT1770831833306","7790040148840","alfajor triple bon o bon negro x60g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmliepyk20000ig09sbmpnsay,Activo,"INT1770837156145","7797942005721","finca natalia malbec x2 botella de x750cc",Un,"bebidas",40000,"Global","Suc. Cepernic",0,6,40000,0
+cmliepyk20000ig09sbmpnsay,Activo,"INT1770837156145","7797942005721","finca natalia malbec x2 botella de x750cc",Un,"bebidas",40000,"Global","Suc. Rivadavia",5,6,40000,0
+cmliepyk20000ig09sbmpnsay,Activo,"INT1770837156145","7797942005721","finca natalia malbec x2 botella de x750cc",Un,"bebidas",40000,"Global","Suc. Perito Moreno",0,6,40000,0
+cmljuymgt0007ky047204wtfd,Activo,"INT1770924900413","7790641000011","SAL COLOSAL ",Un,"General",2000,"Global","Suc. Cepernic",2,0,2000,0
+cmljuymgt0007ky047204wtfd,Activo,"INT1770924900413","7790641000011","SAL COLOSAL ",Un,"General",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmljuymgt0007ky047204wtfd,Activo,"INT1770924900413","7790641000011","SAL COLOSAL ",Un,"General",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljv0qx5000aky04s00q2tfp,Activo,"INT1770924999496","7790387800166","TE CHAI TARAGUI",Un,"kiosco",1500,"Global","Suc. Cepernic",2,0,1500,0
+cmljv0qx5000aky04s00q2tfp,Activo,"INT1770924999496","7790387800166","TE CHAI TARAGUI",Un,"kiosco",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmljv0qx5000aky04s00q2tfp,Activo,"INT1770924999496","7790387800166","TE CHAI TARAGUI",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmljvs7m9000hl104rgddvhki,Activo,"INT1770926280848","7798162679747","VINO SENSEI",Un,"bebidas",10000,"Global","Suc. Cepernic",3,1,10000,0
+cmljvs7m9000hl104rgddvhki,Activo,"INT1770926280848","7798162679747","VINO SENSEI",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvs7m9000hl104rgddvhki,Activo,"INT1770926280848","7798162679747","VINO SENSEI",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmljvssyw000pl104l44nl3x2,Activo,"INT1770926308520","7798162670133","VINO SIN PALABRAS",Un,"bebidas",10000,"Global","Suc. Cepernic",2,1,10000,0
+cmljvssyw000pl104l44nl3x2,Activo,"INT1770926308520","7798162670133","VINO SIN PALABRAS",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvssyw000pl104l44nl3x2,Activo,"INT1770926308520","7798162670133","VINO SIN PALABRAS",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmlmn131j0004k304i6dudf8i,Activo,"INT1771092976806","7798218162162","chimola set de arte x51 piezas",Un,"kiosco",45000,"Global","Suc. Cepernic",0,1,45000,0
+cmlmn131j0004k304i6dudf8i,Activo,"INT1771092976806","7798218162162","chimola set de arte x51 piezas",Un,"kiosco",45000,"Global","Suc. Rivadavia",1,1,45000,0
+cmlmn131j0004k304i6dudf8i,Activo,"INT1771092976806","7798218162162","chimola set de arte x51 piezas",Un,"kiosco",45000,"Global","Suc. Perito Moreno",0,1,45000,0
+cmljs6n9x0000l204qq9dl1kx,Activo,"INT1770920235861","7798113301024","MANAOS POMELO BLANCO 2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",-2,0,3000,0
+cmljs6n9x0000l204qq9dl1kx,Activo,"INT1770920235861","7798113301024","MANAOS POMELO BLANCO 2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",1,0,3000,0
+cmljs6n9x0000l204qq9dl1kx,Activo,"INT1770920235861","7798113301024","MANAOS POMELO BLANCO 2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmlfp1msq0006lb04lytzdf93,Activo,"INT1770673098410","7798113302465","MANAOS COLA X354L",Un,"bebidas",2000,"Global","Suc. Cepernic",-1,0,2000,0
+cmlfp1msq0006lb04lytzdf93,Activo,"INT1770673098410","7798113302465","MANAOS COLA X354L",Un,"bebidas",2000,"Global","Suc. Rivadavia",4,0,2000,0
+cmlfp1msq0006lb04lytzdf93,Activo,"INT1770673098410","7798113302465","MANAOS COLA X354L",Un,"bebidas",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlidozw40009l2045k22p5ww,Activo,"INT1770835431603","7790412000943","galleta leiva sandwich clasicas x110g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,3,2000,0
+cmlidozw40009l2045k22p5ww,Activo,"INT1770835431603","7790412000943","galleta leiva sandwich clasicas x110g",Un,"kiosco",2000,"Global","Suc. Rivadavia",3,3,2000,0
+cmlidozw40009l2045k22p5ww,Activo,"INT1770835431603","7790412000943","galleta leiva sandwich clasicas x110g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmliblyld0003jp04dr6pz0nx,Activo,"INT1770831930721","7790040150010","alfajor triple cofler choco creamy x60g",Un,"kiosco",2000,"Global","Suc. Cepernic",1,3,2000,0
+cmliblyld0003jp04dr6pz0nx,Activo,"INT1770831930721","7790040150010","alfajor triple cofler choco creamy x60g",Un,"kiosco",2000,"Global","Suc. Rivadavia",3,3,2000,0
+cmliblyld0003jp04dr6pz0nx,Activo,"INT1770831930721","7790040150010","alfajor triple cofler choco creamy x60g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlierw2v0003ig09o6xo8tth,Activo,"INT1770837246247","7798184920032","bodega argana x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlierw2v0003ig09o6xo8tth,Activo,"INT1770837246247","7798184920032","bodega argana x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlierw2v0003ig09o6xo8tth,Activo,"INT1770837246247","7798184920032","bodega argana x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmltr6afa000al10449rvd9hh,Activo,"INT1771523201350","7798094222813","budin natale x170g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,4,1500,0
+cmltr6afa000al10449rvd9hh,Activo,"INT1771523201350","7798094222813","budin natale x170g",Un,"kiosco",1500,"Global","Suc. Rivadavia",7,4,1500,0
+cmltr6afa000al10449rvd9hh,Activo,"INT1771523201350","7798094222813","budin natale x170g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,4,1500,0
+cmlfq3amb000rl704912gh17l,Activo,"INT1770674855555","7792798010882","patagonia vera ipax730cm3",Un,"bebidas",6000,"Global","Suc. Cepernic",-3,6,6000,0
+cmlfq3amb000rl704912gh17l,Activo,"INT1770674855555","7792798010882","patagonia vera ipax730cm3",Un,"bebidas",6000,"Global","Suc. Rivadavia",10,6,6000,0
+cmlfq3amb000rl704912gh17l,Activo,"INT1770674855555","7792798010882","patagonia vera ipax730cm3",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlvgufa5000al504jp2cacsp,Activo,"INT1771626783963","","seco 2.25",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvgufa5000al504jp2cacsp,Activo,"INT1771626783963","","seco 2.25",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvgufa5000al504jp2cacsp,Activo,"INT1771626783963","","seco 2.25",Un,"bebidas",3000,"Global","Suc. Perito Moreno",2,0,3000,0
+cmlvjz8l8000fjv04tyvkfv0y,Activo,"INT1771632047419","","vino prutuelo",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjz8l8000fjv04tyvkfv0y,Activo,"INT1771632047419","","vino prutuelo",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjz8l8000fjv04tyvkfv0y,Activo,"INT1771632047419","","vino prutuelo",Un,"bebidas",10000,"Global","Suc. Perito Moreno",1,0,10000,0
+cmlh01fzr0008ju046rl75vt3,Activo,"INT1770752031543","7790580141677","mogul extreme lenguamax x15",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlh01fzr0008ju046rl75vt3,Activo,"INT1770752031543","7790580141677","mogul extreme lenguamax x15",Un,"kiosco",1500,"Global","Suc. Rivadavia",3,0,1500,0
+cmlh01fzr0008ju046rl75vt3,Activo,"INT1770752031543","7790580141677","mogul extreme lenguamax x15",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlvidczc002nl204qbw7uy7u,Inactivo,"INT1771629347064","","vino resero tinto",Un,"bebidas",3000,"Global","Suc. Cepernic",-2,0,3000,0
+cmlvidczc002nl204qbw7uy7u,Inactivo,"INT1771629347064","","vino resero tinto",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvidczc002nl204qbw7uy7u,Inactivo,"INT1771629347064","","vino resero tinto",Un,"bebidas",3000,"Global","Suc. Perito Moreno",13,0,3000,0
+cmljuzlg70000l104qazbodbe,Activo,"INT1770924945750","6902004095218","ENCENDEDOR CANDELA",Un,"kiosco",1500,"Global","Suc. Cepernic",11,0,1500,0
+cmljuzlg70000l104qazbodbe,Activo,"INT1770924945750","6902004095218","ENCENDEDOR CANDELA",Un,"kiosco",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmljuzlg70000l104qazbodbe,Activo,"INT1770924945750","6902004095218","ENCENDEDOR CANDELA",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmljvtp470000js04x301s9d1,Activo,"INT1770926350182","7790703204968","VINO DON VALENTIN",Un,"bebidas",10000,"Global","Suc. Cepernic",14,1,10000,0
+cmljvtp470000js04x301s9d1,Activo,"INT1770926350182","7790703204968","VINO DON VALENTIN",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvtp470000js04x301s9d1,Activo,"INT1770926350182","7790703204968","VINO DON VALENTIN",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmlmn420c0008l804gtmkenn3,Activo,"INT1771093115435","7798113302076","jugo placer manzana 1,5l",Un,"bebidas",2500,"Global","Suc. Cepernic",4,0,2500,0
+cmlmn420c0008l804gtmkenn3,Activo,"INT1771093115435","7798113302076","jugo placer manzana 1,5l",Un,"bebidas",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlmn420c0008l804gtmkenn3,Activo,"INT1771093115435","7798113302076","jugo placer manzana 1,5l",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmltsa9tr0006i504mxgy8f5b,Activo,"INT1771525066814","78427754","boxer red",Un,"kiosco",3,"Global","Suc. Cepernic",0,0,3,0
+cmltsa9tr0006i504mxgy8f5b,Activo,"INT1771525066814","78427754","boxer red",Un,"kiosco",3,"Global","Suc. Rivadavia",0,0,3000,2997
+cmltsa9tr0006i504mxgy8f5b,Activo,"INT1771525066814","78427754","boxer red",Un,"kiosco",3,"Global","Suc. Perito Moreno",0,0,3,0
+cmlvh4mrb001yl2048283hihp,Activo,"INT1771627260214","","seco 3 litros",Un,"bebidas",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlvh4mrb001yl2048283hihp,Activo,"INT1771627260214","","seco 3 litros",Un,"bebidas",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlvh4mrb001yl2048283hihp,Activo,"INT1771627260214","","seco 3 litros",Un,"bebidas",4000,"Global","Suc. Perito Moreno",40,0,4000,0
+cmlihvdz50000jy04zdm8ey8f,Activo,"INT1770842448256","7798126074335","surtidas valenciano ",Un,"kiosco",1500,"Global","Suc. Cepernic",6,0,1500,0
+cmlihvdz50000jy04zdm8ey8f,Activo,"INT1770842448256","7798126074335","surtidas valenciano ",Un,"kiosco",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmlihvdz50000jy04zdm8ey8f,Activo,"INT1770842448256","7798126074335","surtidas valenciano ",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlvifxrr000al804kg89m586,Activo,"INT1771629467318","","vino botella canciller",Un,"bebidas",7000,"Global","Suc. Cepernic",0,0,7000,0
+cmlvifxrr000al804kg89m586,Activo,"INT1771629467318","","vino botella canciller",Un,"bebidas",7000,"Global","Suc. Rivadavia",0,0,7000,0
+cmlvifxrr000al804kg89m586,Activo,"INT1771629467318","","vino botella canciller",Un,"bebidas",7000,"Global","Suc. Perito Moreno",15,0,7000,0
+cmlvk09de000kjv04q9m4h8pk,Activo,"INT1771632095089","","chandon MUMM",Un,"bebidas",20000,"Global","Suc. Cepernic",0,0,20000,0
+cmlvk09de000kjv04q9m4h8pk,Activo,"INT1771632095089","","chandon MUMM",Un,"bebidas",20000,"Global","Suc. Rivadavia",0,0,20000,0
+cmlvk09de000kjv04q9m4h8pk,Activo,"INT1771632095089","","chandon MUMM",Un,"bebidas",20000,"Global","Suc. Perito Moreno",1,0,20000,0
+cmlids0pm0000jt09xblgo53v,Activo,"INT1770835572634","7790040946309","galleta criollitas s/sal x169g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,3,2000,0
+cmlids0pm0000jt09xblgo53v,Activo,"INT1770835572634","7790040946309","galleta criollitas s/sal x169g",Un,"kiosco",2000,"Global","Suc. Rivadavia",3,3,2000,0
+cmlids0pm0000jt09xblgo53v,Activo,"INT1770835572634","7790040946309","galleta criollitas s/sal x169g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlibnbig0000l504anng2mh4,Activo,"INT1770831994120","7790040659605","alfajor triple cofler block x60g",Un,"kiosco",2000,"Global","Suc. Cepernic",2,3,2000,0
+cmlibnbig0000l504anng2mh4,Activo,"INT1770831994120","7790040659605","alfajor triple cofler block x60g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,3,2000,0
+cmlibnbig0000l504anng2mh4,Activo,"INT1770831994120","7790040659605","alfajor triple cofler block x60g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlieugmn000ljm04j8ea4tuv,Activo,"INT1770837366191","7790415000834","escorihuela gascon malbec x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlieugmn000ljm04j8ea4tuv,Activo,"INT1770837366191","7790415000834","escorihuela gascon malbec x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlieugmn000ljm04j8ea4tuv,Activo,"INT1770837366191","7790415000834","escorihuela gascon malbec x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmlju702d0000ju04l17itmlg,Activo,"INT1770923611669","7798424300082","BARRA PROTEICA ARVEJA Y CHOC",Un,"kiosco",3000,"Global","Suc. Cepernic",2,0,3000,0
+cmlju702d0000ju04l17itmlg,Activo,"INT1770923611669","7798424300082","BARRA PROTEICA ARVEJA Y CHOC",Un,"kiosco",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlju702d0000ju04l17itmlg,Activo,"INT1770923611669","7798424300082","BARRA PROTEICA ARVEJA Y CHOC",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmljv1dtp0008jp04tsncmicv,Activo,"INT1770925029180","7790387013252","TE TARAGUI FRUTOS ROJOS",Un,"General",1500,"Global","Suc. Cepernic",3,0,1500,0
+cmljv1dtp0008jp04tsncmicv,Activo,"INT1770925029180","7790387013252","TE TARAGUI FRUTOS ROJOS",Un,"General",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmljv1dtp0008jp04tsncmicv,Activo,"INT1770925029180","7790387013252","TE TARAGUI FRUTOS ROJOS",Un,"General",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmljvwa540009js04t0xmppss,Activo,"INT1770926470743","7798182180018","CARBON NOROSO",Un,"kiosco",7000,"Global","Suc. Cepernic",5,2,7000,0
+cmljvwa540009js04t0xmppss,Activo,"INT1770926470743","7798182180018","CARBON NOROSO",Un,"kiosco",7000,"Global","Suc. Rivadavia",0,2,7000,0
+cmljvwa540009js04t0xmppss,Activo,"INT1770926470743","7798182180018","CARBON NOROSO",Un,"kiosco",7000,"Global","Suc. Perito Moreno",0,2,7000,0
+cmlmnf6uo0005jv04chh4ye7o,Activo,"INT1771093634927","7798113301789","´jugo pindapoy manzana 1l",Un,"kiosco",4000,"Global","Suc. Cepernic",8,0,3000,-1000
+cmlmnf6uo0005jv04chh4ye7o,Activo,"INT1771093634927","7798113301789","´jugo pindapoy manzana 1l",Un,"kiosco",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlmnf6uo0005jv04chh4ye7o,Activo,"INT1771093634927","7798113301789","´jugo pindapoy manzana 1l",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmltsd9cz0000kz04xnl3n8yn,Activo,"INT1771525206178","7798433750045","GO! SUELTOS",Un,"kiosco",200,"Global","Suc. Cepernic",0,20,200,0
+cmltsd9cz0000kz04xnl3n8yn,Activo,"INT1771525206178","7798433750045","GO! SUELTOS",Un,"kiosco",200,"Global","Suc. Rivadavia",60,20,200,0
+cmltsd9cz0000kz04xnl3n8yn,Activo,"INT1771525206178","7798433750045","GO! SUELTOS",Un,"kiosco",200,"Global","Suc. Perito Moreno",0,20,200,0
+cmlvh6t460023l204ssgc4654,Activo,"INT1771627361765","","soda de 2 litros ",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvh6t460023l204ssgc4654,Activo,"INT1771627361765","","soda de 2 litros ",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvh6t460023l204ssgc4654,Activo,"INT1771627361765","","soda de 2 litros ",Un,"bebidas",3000,"Global","Suc. Perito Moreno",6,0,3000,0
+cmlvh9el70028l204jw4bcd31,Activo,"INT1771627482907","","pepsi 2 litros ",Un,"bebidas",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlvh9el70028l204jw4bcd31,Activo,"INT1771627482907","","pepsi 2 litros ",Un,"bebidas",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlvh9el70028l204jw4bcd31,Activo,"INT1771627482907","","pepsi 2 litros ",Un,"bebidas",4000,"Global","Suc. Perito Moreno",5,0,4000,0
+cmlvijkok000dl704auxyp744,Activo,"INT1771629636980","","Damajuana 3litros",Un,"bebidas",25000,"Global","Suc. Cepernic",0,0,25000,0
+cmlvijkok000dl704auxyp744,Activo,"INT1771629636980","","Damajuana 3litros",Un,"bebidas",25000,"Global","Suc. Rivadavia",0,0,25000,0
+cmlvijkok000dl704auxyp744,Activo,"INT1771629636980","","Damajuana 3litros",Un,"bebidas",25000,"Global","Suc. Perito Moreno",2,0,25000,0
+cmlvk3dyi0000jx04t5ju5rpc,Activo,"INT1771632241001","","PETACAS",Un,"bebidas",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlvk3dyi0000jx04t5ju5rpc,Activo,"INT1771632241001","","PETACAS",Un,"bebidas",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlvk3dyi0000jx04t5ju5rpc,Activo,"INT1771632241001","","PETACAS",Un,"bebidas",6000,"Global","Suc. Perito Moreno",25,0,6000,0
+cmlidt9g80000l104mh3izpaj,Activo,"INT1770835630616","7790154007781","sidra sin alcohol",Un,"General",4000,"Global","Suc. Cepernic",2,0,4000,0
+cmlidt9g80000l104mh3izpaj,Activo,"INT1770835630616","7790154007781","sidra sin alcohol",Un,"General",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlidt9g80000l104mh3izpaj,Activo,"INT1770835630616","7790154007781","sidra sin alcohol",Un,"General",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlic7ytb0000lh04jqk0qa21,Activo,"INT1770832957438","7798126073536","gaona pepas de membrillo x300g",Un,"kiosco",2500,"Global","Suc. Cepernic",1,2,2500,0
+cmlic7ytb0000lh04jqk0qa21,Activo,"INT1770832957438","7798126073536","gaona pepas de membrillo x300g",Un,"kiosco",2500,"Global","Suc. Rivadavia",1,2,2500,0
+cmlic7ytb0000lh04jqk0qa21,Activo,"INT1770832957438","7798126073536","gaona pepas de membrillo x300g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,2,2500,0
+cmlju83qy0003ju04s3zaob9c,Activo,"INT1770923663098","7798424300099","BARRA PROTEICA ARAND. Y CHOCO",Un,"kiosco",3000,"Global","Suc. Cepernic",5,0,3000,0
+cmlju83qy0003ju04s3zaob9c,Activo,"INT1770923663098","7798424300099","BARRA PROTEICA ARAND. Y CHOCO",Un,"kiosco",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlju83qy0003ju04s3zaob9c,Activo,"INT1770923663098","7798424300099","BARRA PROTEICA ARAND. Y CHOCO",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmljv2itc000bjp043mto85lg,Activo,"INT1770925082303","7798078990110","GRASA 500g",Un,"kiosco",4000,"Global","Suc. Cepernic",1,0,4000,0
+cmljv2itc000bjp043mto85lg,Activo,"INT1770925082303","7798078990110","GRASA 500g",Un,"kiosco",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmljv2itc000bjp043mto85lg,Activo,"INT1770925082303","7798078990110","GRASA 500g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmljv74pa000ejp04ceczhghx,Activo,"INT1770925297293","7792410523165","FERNET BUHERO ",Un,"bebidas",13000,"Global","Suc. Cepernic",1,1,13000,0
+cmljv74pa000ejp04ceczhghx,Activo,"INT1770925297293","7792410523165","FERNET BUHERO ",Un,"bebidas",13000,"Global","Suc. Rivadavia",0,1,13000,0
+cmljv74pa000ejp04ceczhghx,Activo,"INT1770925297293","7792410523165","FERNET BUHERO ",Un,"bebidas",13000,"Global","Suc. Perito Moreno",0,1,13000,0
+cmljz6dhs0000jp04qp4kc209,Activo,"INT1770931980495","7790895000997","COCA COLA 2,25L",Un,"bebidas",8000,"Global","Suc. Cepernic",4,3,8000,0
+cmljz6dhs0000jp04qp4kc209,Activo,"INT1770931980495","7790895000997","COCA COLA 2,25L",Un,"bebidas",8000,"Global","Suc. Rivadavia",0,3,8000,0
+cmljz6dhs0000jp04qp4kc209,Activo,"INT1770931980495","7790895000997","COCA COLA 2,25L",Un,"bebidas",8000,"Global","Suc. Perito Moreno",0,3,8000,0
+cmligll2d001zl504325ocscx,Activo,"INT1770840311268","INT5086326153","marcianitos congelados",Un,"Heladeria",500,"Global","Suc. Cepernic",-3,0,500,0
+cmligll2d001zl504325ocscx,Activo,"INT1770840311268","INT5086326153","marcianitos congelados",Un,"Heladeria",500,"Global","Suc. Rivadavia",9,0,500,0
+cmligll2d001zl504325ocscx,Activo,"INT1770840311268","INT5086326153","marcianitos congelados",Un,"Heladeria",500,"Global","Suc. Perito Moreno",0,0,500,0
+cmlmnh2i5000al504dagmyyy7,Activo,"INT1771093722603","7798113301765","jugo pindapoy multifruta 1l",Un,"kiosco",4000,"Global","Suc. Cepernic",5,0,3000,-1000
+cmlmnh2i5000al504dagmyyy7,Activo,"INT1771093722603","7798113301765","jugo pindapoy multifruta 1l",Un,"kiosco",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlmnh2i5000al504dagmyyy7,Activo,"INT1771093722603","7798113301765","jugo pindapoy multifruta 1l",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlicpq3f0002l2043cr9f0o3,Activo,"INT1770833785946","7790040613706","alfajor bon o bon negro x40g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,4,1500,-500
+cmlicpq3f0002l2043cr9f0o3,Activo,"INT1770833785946","7790040613706","alfajor bon o bon negro x40g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,4,2000,0
+cmlicpq3f0002l2043cr9f0o3,Activo,"INT1770833785946","7790040613706","alfajor bon o bon negro x40g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,4,2000,0
+cmltsg0g5000ajv0412a89pak,Activo,"INT1771525334597","7798100200491","milenio verde ",Un,"kiosco",3000,"Global","Suc. Cepernic",0,3,3000,0
+cmltsg0g5000ajv0412a89pak,Activo,"INT1771525334597","7798100200491","milenio verde ",Un,"kiosco",3000,"Global","Suc. Rivadavia",3,3,3000,0
+cmltsg0g5000ajv0412a89pak,Activo,"INT1771525334597","7798100200491","milenio verde ",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,3,3000,0
+cmlh12v3g000sky04rrx9irle,Activo,"INT1770753777388","INT5376122384","pebetes grandes",Un,"Comidas",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlh12v3g000sky04rrx9irle,Activo,"INT1770753777388","INT5376122384","pebetes grandes",Un,"Comidas",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlh12v3g000sky04rrx9irle,Activo,"INT1770753777388","INT5376122384","pebetes grandes",Un,"Comidas",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlh18xli00btky04osbz8zty,Activo,"INT1770754060566","INT5404470935","pebete chico",Un,"Comidas",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh18xli00btky04osbz8zty,Activo,"INT1770754060566","INT5404470935","pebete chico",Un,"Comidas",1000,"Global","Suc. Rivadavia",0,0,1000,0
+cmlh18xli00btky04osbz8zty,Activo,"INT1770754060566","INT5404470935","pebete chico",Un,"Comidas",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlvh8381000fl504xzbilmjy,Activo,"INT1771627421520","","pritti de 2.25",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvh8381000fl504xzbilmjy,Activo,"INT1771627421520","","pritti de 2.25",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvh8381000fl504xzbilmjy,Activo,"INT1771627421520","","pritti de 2.25",Un,"bebidas",3000,"Global","Suc. Perito Moreno",9,0,3000,0
+cmlvjgarz0000ib04czcbp2ua,Activo,"INT1771631163790","","vino viña mayor",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjgarz0000ib04czcbp2ua,Activo,"INT1771631163790","","vino viña mayor",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjgarz0000ib04czcbp2ua,Activo,"INT1771631163790","","vino viña mayor",Un,"bebidas",10000,"Global","Suc. Perito Moreno",11,0,10000,0
+cmlie4zs1000ql204g242nj9s,Activo,"INT1770836177952","7798116330625","eclipse vino espumante x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlie4zs1000ql204g242nj9s,Activo,"INT1770836177952","7798116330625","eclipse vino espumante x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlie4zs1000ql204g242nj9s,Activo,"INT1770836177952","7798116330625","eclipse vino espumante x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmljucdgj0000ju04go8p0xeo,Activo,"INT1770923862307","7790077000104","VAINILLAS POZO",Un,"General",4000,"Global","Suc. Cepernic",3,0,4000,0
+cmljucdgj0000ju04go8p0xeo,Activo,"INT1770923862307","7790077000104","VAINILLAS POZO",Un,"General",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmljucdgj0000ju04go8p0xeo,Activo,"INT1770923862307","7790077000104","VAINILLAS POZO",Un,"General",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlgznd6n0000l204kjsp8akv,Activo,"INT1770751374718","121002292238","encendedores cancun",Un,"kiosco",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlgznd6n0000l204kjsp8akv,Activo,"INT1770751374718","121002292238","encendedores cancun",Un,"kiosco",1000,"Global","Suc. Rivadavia",23,0,1000,0
+cmlgznd6n0000l204kjsp8akv,Activo,"INT1770751374718","121002292238","encendedores cancun",Un,"kiosco",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmljv3ai50006lb04yahazxkh,Activo,"INT1770925118188","7798078990127","GRASA 1kg",Un,"General",8000,"Global","Suc. Cepernic",4,0,8000,0
+cmljv3ai50006lb04yahazxkh,Activo,"INT1770925118188","7798078990127","GRASA 1kg",Un,"General",8000,"Global","Suc. Rivadavia",0,0,8000,0
+cmljv3ai50006lb04yahazxkh,Activo,"INT1770925118188","7798078990127","GRASA 1kg",Un,"General",8000,"Global","Suc. Perito Moreno",0,0,8000,0
+cmll7bxtd0000jp04uat5vfas,Activo,"INT1771006143216","77903785","ALFAJOR MILKA MOUSSE 55g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,2,2000,0
+cmll7bxtd0000jp04uat5vfas,Activo,"INT1771006143216","77903785","ALFAJOR MILKA MOUSSE 55g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,2,2000,0
+cmll7bxtd0000jp04uat5vfas,Activo,"INT1771006143216","77903785","ALFAJOR MILKA MOUSSE 55g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlmrxlaq0005js04777rrzoc,Activo,"INT1771101211922","INT012040952","agua caliente para el mate ",Un,"kiosco",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlmrxlaq0005js04777rrzoc,Activo,"INT1771101211922","INT012040952","agua caliente para el mate ",Un,"kiosco",1000,"Global","Suc. Rivadavia",988,10,1000,0
+cmlmrxlaq0005js04777rrzoc,Activo,"INT1771101211922","INT012040952","agua caliente para el mate ",Un,"kiosco",1000,"Global","Suc. Perito Moreno",0,10,1000,0
+cmlign4j9001qjl04plru80ct,Activo,"INT1770840383156","77906618","milenio comun",Un,"kiosco",3000,"Global","Suc. Cepernic",4,5,3000,0
+cmlign4j9001qjl04plru80ct,Activo,"INT1770840383156","77906618","milenio comun",Un,"kiosco",3000,"Global","Suc. Rivadavia",0,5,3000,0
+cmlign4j9001qjl04plru80ct,Activo,"INT1770840383156","77906618","milenio comun",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,5,3000,0
+cmlfoxptk0003lb04tgtp00jc,Activo,"INT1770672915703","7791813888376","PEPSI X354ML",Un,"bebidas",2000,"Global","Suc. Cepernic",38,6,2000,0
+cmlfoxptk0003lb04tgtp00jc,Activo,"INT1770672915703","7791813888376","PEPSI X354ML",Un,"bebidas",2000,"Global","Suc. Rivadavia",5,6,2000,0
+cmlfoxptk0003lb04tgtp00jc,Activo,"INT1770672915703","7791813888376","PEPSI X354ML",Un,"bebidas",2000,"Global","Suc. Perito Moreno",0,6,2000,0
+cmlie6ie00000gl04auyavhj8,Activo,"INT1770836248727","7792798010615","stella artois 473cm",Un,"General",4000,"Global","Suc. Cepernic",-1,0,4000,0
+cmlie6ie00000gl04auyavhj8,Activo,"INT1770836248727","7792798010615","stella artois 473cm",Un,"General",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlie6ie00000gl04auyavhj8,Activo,"INT1770836248727","7792798010615","stella artois 473cm",Un,"General",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmligog1f001cl204zm1poz5a,Activo,"INT1770840444722","7798100200453","milenio mentolado ",Un,"kiosco",3000,"Global","Suc. Cepernic",15,5,3000,0
+cmligog1f001cl204zm1poz5a,Activo,"INT1770840444722","7798100200453","milenio mentolado ",Un,"kiosco",3000,"Global","Suc. Rivadavia",2,3,3000,0
+cmligog1f001cl204zm1poz5a,Activo,"INT1770840444722","7798100200453","milenio mentolado ",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,5,3000,0
+cmlvhak96000kl504meo1xvqx,Activo,"INT1771627536905","","terma 1.35",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvhak96000kl504meo1xvqx,Activo,"INT1771627536905","","terma 1.35",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvhak96000kl504meo1xvqx,Activo,"INT1771627536905","","terma 1.35",Un,"bebidas",3000,"Global","Suc. Perito Moreno",2,0,3000,0
+cmljv7rp60006lh04qvb5ub9c,Activo,"INT1770925327098","7790290101602","FERNET BRANCA x 750ml",Un,"bebidas",18000,"Global","Suc. Cepernic",0,0,18000,0
+cmljv7rp60006lh04qvb5ub9c,Activo,"INT1770925327098","7790290101602","FERNET BRANCA x 750ml",Un,"bebidas",18000,"Global","Suc. Rivadavia",0,0,18000,0
+cmljv7rp60006lh04qvb5ub9c,Activo,"INT1770925327098","7790290101602","FERNET BRANCA x 750ml",Un,"bebidas",18000,"Global","Suc. Perito Moreno",5,0,25000,7000
+cmltv9dyr000kla04kubbmyq3,Activo,"INT1771530064370","7792798007387","quilmes x1l",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmltv9dyr000kla04kubbmyq3,Activo,"INT1771530064370","7792798007387","quilmes x1l",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmltv9dyr000kla04kubbmyq3,Activo,"INT1771530064370","7792798007387","quilmes x1l",Un,"bebidas",5000,"Global","Suc. Perito Moreno",25,12,6000,1000
+cmlvjhjmb0000l704d07hbfys,Inactivo,"INT1771631221906","","vino viña balbo",Un,"bebidas",7000,"Global","Suc. Cepernic",0,0,7000,0
+cmlvjhjmb0000l704d07hbfys,Inactivo,"INT1771631221906","","vino viña balbo",Un,"bebidas",7000,"Global","Suc. Rivadavia",0,0,7000,0
+cmlvjhjmb0000l704d07hbfys,Inactivo,"INT1771631221906","","vino viña balbo",Un,"bebidas",7000,"Global","Suc. Perito Moreno",2,0,7000,0
+cmlics7u30002jm04gujq03d5,Activo,"INT1770833902250","7798126070931","sinfonia oblea clasicas x100g",Un,"kiosco",2500,"Global","Suc. Cepernic",2,2,2500,0
+cmlics7u30002jm04gujq03d5,Activo,"INT1770833902250","7798126070931","sinfonia oblea clasicas x100g",Un,"kiosco",2500,"Global","Suc. Rivadavia",2,2,2500,0
+cmlics7u30002jm04gujq03d5,Activo,"INT1770833902250","7798126070931","sinfonia oblea clasicas x100g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,2,2500,0
+cmljuf4300006ju04yyxgiuxa,Activo,"INT1770923990123","7798126072591","SINFONIA NARANJA Y CHOC",Un,"kiosco",2500,"Global","Suc. Cepernic",1,0,2500,0
+cmljuf4300006ju04yyxgiuxa,Activo,"INT1770923990123","7798126072591","SINFONIA NARANJA Y CHOC",Un,"kiosco",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmljuf4300006ju04yyxgiuxa,Activo,"INT1770923990123","7798126072591","SINFONIA NARANJA Y CHOC",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmljug6oo0009ju04fucrsjsk,Activo,"INT1770924040152","77903501","OPERA 55g",Un,"kiosco",1500,"Global","Suc. Cepernic",3,0,1500,0
+cmljug6oo0009ju04fucrsjsk,Activo,"INT1770924040152","77903501","OPERA 55g",Un,"kiosco",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmljug6oo0009ju04fucrsjsk,Activo,"INT1770924040152","77903501","OPERA 55g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmll7h2uh0000la040sm5ltte,Activo,"INT1771006383016","7622300457303","ALFAJOR MILKA MOUSSE BLANCO",Un,"kiosco",2000,"Global","Suc. Cepernic",4,2,2000,0
+cmll7h2uh0000la040sm5ltte,Activo,"INT1771006383016","7622300457303","ALFAJOR MILKA MOUSSE BLANCO",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,2,2000,0
+cmll7h2uh0000la040sm5ltte,Activo,"INT1771006383016","7622300457303","ALFAJOR MILKA MOUSSE BLANCO",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmll7i7fz0003la04zlbhizgc,Activo,"INT1771006435631","7622300835620","ALFAJOR MILKA OREO",Un,"kiosco",2000,"Global","Suc. Cepernic",0,1,2000,0
+cmll7i7fz0003la04zlbhizgc,Activo,"INT1771006435631","7622300835620","ALFAJOR MILKA OREO",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,1,2000,0
+cmll7i7fz0003la04zlbhizgc,Activo,"INT1771006435631","7622300835620","ALFAJOR MILKA OREO",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,1,2000,0
+cmll7kbwj0008la04b9jj9cpc,Activo,"INT1771006534723","7798094220963","ALFAJOR GENIO BLANCO 60g",Un,"kiosco",1500,"Global","Suc. Cepernic",5,2,1500,0
+cmll7kbwj0008la04b9jj9cpc,Activo,"INT1771006534723","7798094220963","ALFAJOR GENIO BLANCO 60g",Un,"kiosco",1500,"Global","Suc. Rivadavia",0,2,1500,0
+cmll7kbwj0008la04b9jj9cpc,Activo,"INT1771006534723","7798094220963","ALFAJOR GENIO BLANCO 60g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,2,1500,0
+cmlo3bvlh0000lh04gpdeyq4d,Activo,"INT1771180820404","INT8081700126","cigarrillos sueltos",Un,"kiosco",200,"Global","Suc. Cepernic",0,5,200,0
+cmlo3bvlh0000lh04gpdeyq4d,Activo,"INT1771180820404","INT8081700126","cigarrillos sueltos",Un,"kiosco",200,"Global","Suc. Rivadavia",2,5,200,0
+cmlo3bvlh0000lh04gpdeyq4d,Activo,"INT1771180820404","INT8081700126","cigarrillos sueltos",Un,"kiosco",200,"Global","Suc. Perito Moreno",0,5,200,0
+cmlfqemiz000xl7049qglp8i1,Activo,"INT1770675384203","7798054012980","361 lager x1l",Un,"bebidas",4000,"Global","Suc. Cepernic",17,6,4000,0
+cmlfqemiz000xl7049qglp8i1,Activo,"INT1770675384203","7798054012980","361 lager x1l",Un,"bebidas",4000,"Global","Suc. Rivadavia",1,6,4000,0
+cmlfqemiz000xl7049qglp8i1,Activo,"INT1770675384203","7798054012980","361 lager x1l",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmligp6kn0022l504p451ddxs,Activo,"INT1770840479110","77906595","mill comun",Un,"kiosco",2500,"Global","Suc. Cepernic",6,5,2500,0
+cmligp6kn0022l504p451ddxs,Activo,"INT1770840479110","77906595","mill comun",Un,"kiosco",2500,"Global","Suc. Rivadavia",2,3,3000,500
+cmligp6kn0022l504p451ddxs,Activo,"INT1770840479110","77906595","mill comun",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,5,2500,0
+cmlh26dvi0000ib046mzrvyzu,Activo,"INT1770755621309","INT5561859094","batido con crema",Un,"Heladeria",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlh26dvi0000ib046mzrvyzu,Activo,"INT1770755621309","INT5561859094","batido con crema",Un,"Heladeria",5000,"Global","Suc. Rivadavia",120,0,5000,0
+cmlh26dvi0000ib046mzrvyzu,Activo,"INT1770755621309","INT5561859094","batido con crema",Un,"Heladeria",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlicujdw0002l204xr8hdyb8,Activo,"INT1770834010531","7798126073598","sinfonia oblea coco y dulce de leche x100g",Un,"kiosco",2500,"Global","Suc. Cepernic",0,3,2500,0
+cmlicujdw0002l204xr8hdyb8,Activo,"INT1770834010531","7798126073598","sinfonia oblea coco y dulce de leche x100g",Un,"kiosco",2500,"Global","Suc. Rivadavia",3,3,2500,0
+cmlicujdw0002l204xr8hdyb8,Activo,"INT1770834010531","7798126073598","sinfonia oblea coco y dulce de leche x100g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,3,2500,0
+cmlfpe1po000kl504ceonhwt8,Activo,"INT1770673677612","7798113302038","jugo placer naranja x500ml",Un,"bebidas",1500,"Global","Suc. Cepernic",0,6,1500,0
+cmlfpe1po000kl504ceonhwt8,Activo,"INT1770673677612","7798113302038","jugo placer naranja x500ml",Un,"bebidas",1500,"Global","Suc. Rivadavia",12,6,2000,500
+cmlfpe1po000kl504ceonhwt8,Activo,"INT1770673677612","7798113302038","jugo placer naranja x500ml",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlfnw7o9000cl4044ab9g26c,Activo,"INT1770671165912","7798113301772","PINDAPOY NARANJA X1L",Un,"bebidas",4000,"Global","Suc. Cepernic",1,6,3000,-1000
+cmlfnw7o9000cl4044ab9g26c,Activo,"INT1770671165912","7798113301772","PINDAPOY NARANJA X1L",Un,"bebidas",4000,"Global","Suc. Rivadavia",3,6,4000,0
+cmlfnw7o9000cl4044ab9g26c,Activo,"INT1770671165912","7798113301772","PINDAPOY NARANJA X1L",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmltxntuq0000vdckoumcyp0p,Inactivo,"INT3409140661","INT3409140661","prueba 2",Un,"Almacen",22,"Global","Suc. Cepernic",0,6,22,0
+cmltxntuq0000vdckoumcyp0p,Inactivo,"INT3409140661","INT3409140661","prueba 2",Un,"Almacen",22,"Global","Suc. Rivadavia",0,6,22,0
+cmltxntuq0000vdckoumcyp0p,Inactivo,"INT3409140661","INT3409140661","prueba 2",Un,"Almacen",22,"Global","Suc. Perito Moreno",0,6,22,0
+cmlh128n9000pky04wzd224de,Activo,"INT1770753748293","INT5374442179","pizzetas",Un,"Comidas",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh128n9000pky04wzd224de,Activo,"INT1770753748293","INT5374442179","pizzetas",Un,"Comidas",1000,"Global","Suc. Rivadavia",0,0,1000,0
+cmlh128n9000pky04wzd224de,Activo,"INT1770753748293","INT5374442179","pizzetas",Un,"Comidas",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlvhbv2t0008l704x7p37wol,Activo,"INT1771627597588","","ades caja de 1 litro",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvhbv2t0008l704x7p37wol,Activo,"INT1771627597588","","ades caja de 1 litro",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvhbv2t0008l704x7p37wol,Activo,"INT1771627597588","","ades caja de 1 litro",Un,"bebidas",3000,"Global","Suc. Perito Moreno",3,0,3000,0
+cmlvjjm050000jv04vlb4m5rj,Activo,"INT1771631318309","","chandon baron b",Un,"bebidas",20000,"Global","Suc. Cepernic",0,0,20000,0
+cmlvjjm050000jv04vlb4m5rj,Activo,"INT1771631318309","","chandon baron b",Un,"bebidas",20000,"Global","Suc. Rivadavia",0,0,20000,0
+cmlvjjm050000jv04vlb4m5rj,Activo,"INT1771631318309","","chandon baron b",Un,"bebidas",20000,"Global","Suc. Perito Moreno",1,0,20000,0
+cmlh06p8q000bju040vjfhvpr,Activo,"INT1770752276809","7790950000160","americano gancia x950ml",Un,"bebidas",12000,"Global","Suc. Cepernic",0,0,12000,0
+cmlh06p8q000bju040vjfhvpr,Activo,"INT1770752276809","7790950000160","americano gancia x950ml",Un,"bebidas",12000,"Global","Suc. Rivadavia",0,0,12000,0
+cmlh06p8q000bju040vjfhvpr,Activo,"INT1770752276809","7790950000160","americano gancia x950ml",Un,"bebidas",12000,"Global","Suc. Perito Moreno",2,6,18000,6000
+cmligsmub0025l5049bsica11,Activo,"INT1770840640163","7790040143227","chocolinas 170g",Un,"kiosco",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmligsmub0025l5049bsica11,Activo,"INT1770840640163","7790040143227","chocolinas 170g",Un,"kiosco",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmligsmub0025l5049bsica11,Activo,"INT1770840640163","7790040143227","chocolinas 170g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmliixcyz0000l404oz6z9mig,Activo,"INT1770844219882","7798194560143","papelillo ",Un,"kiosco",200,"Global","Suc. Cepernic",49,50,200,0
+cmliixcyz0000l404oz6z9mig,Activo,"INT1770844219882","7798194560143","papelillo ",Un,"kiosco",200,"Global","Suc. Rivadavia",284,50,200,0
+cmliixcyz0000l404oz6z9mig,Activo,"INT1770844219882","7798194560143","papelillo ",Un,"kiosco",200,"Global","Suc. Perito Moreno",0,50,200,0
+cmlieb6vc0011l20419vwi2jx,Activo,"INT1770836467078","7790314080463","canciller blend dulce x1125ml",Un,"bebidas",10000,"Global","Suc. Cepernic",0,6,10000,0
+cmlieb6vc0011l20419vwi2jx,Activo,"INT1770836467078","7790314080463","canciller blend dulce x1125ml",Un,"bebidas",10000,"Global","Suc. Rivadavia",11,6,10000,0
+cmlieb6vc0011l20419vwi2jx,Activo,"INT1770836467078","7790314080463","canciller blend dulce x1125ml",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,6,10000,0
+cmlie6y3o000vl204ghvwhelv,Activo,"INT1770836269091","7793249102569","california vino tinto x3000ml",Un,"bebidas",40000,"Global","Suc. Cepernic",0,6,40000,0
+cmlie6y3o000vl204ghvwhelv,Activo,"INT1770836269091","7793249102569","california vino tinto x3000ml",Un,"bebidas",40000,"Global","Suc. Rivadavia",1,6,40000,0
+cmlie6y3o000vl204ghvwhelv,Activo,"INT1770836269091","7793249102569","california vino tinto x3000ml",Un,"bebidas",40000,"Global","Suc. Perito Moreno",0,6,40000,0
+cmlie90ek000yl2043jxq1k5z,Activo,"INT1770836365387","7798159946166","perro callejero x750ml",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlie90ek000yl2043jxq1k5z,Activo,"INT1770836365387","7798159946166","perro callejero x750ml",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlie90ek000yl2043jxq1k5z,Activo,"INT1770836365387","7798159946166","perro callejero x750ml",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmljui5zu0003ju044fz3mef4,Activo,"INT1770924132569","7790040143517","RUMBA 110g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,0,2000,0
+cmljui5zu0003ju044fz3mef4,Activo,"INT1770924132569","7790040143517","RUMBA 110g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmljui5zu0003ju044fz3mef4,Activo,"INT1770924132569","7790040143517","RUMBA 110g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljv8w8m000dky04mel35uoo,Activo,"INT1770925379638","7798135762926","VODKA NEW STYLE MARACUYA",Un,"bebidas",10000,"Global","Suc. Cepernic",2,1,10000,0
+cmljv8w8m000dky04mel35uoo,Activo,"INT1770925379638","7798135762926","VODKA NEW STYLE MARACUYA",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljv8w8m000dky04mel35uoo,Activo,"INT1770925379638","7798135762926","VODKA NEW STYLE MARACUYA",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmll7llry000bl404aywacg9b,Activo,"INT1771006594173","77956699","ALFAJOR TRI SHOT 60g",Un,"kiosco",2000,"Global","Suc. Cepernic",2,3,2000,0
+cmll7llry000bl404aywacg9b,Activo,"INT1771006594173","77956699","ALFAJOR TRI SHOT 60g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,3,2000,0
+cmll7llry000bl404aywacg9b,Activo,"INT1771006594173","77956699","ALFAJOR TRI SHOT 60g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,3,2000,0
+cmlgzoyt90000ju047mgb6gu5,Activo,"INT1770751449405","77965233","pipas clasicas x18g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgzoyt90000ju047mgb6gu5,Activo,"INT1770751449405","77965233","pipas clasicas x18g",Un,"kiosco",1500,"Global","Suc. Rivadavia",1,0,1500,0
+cmlgzoyt90000ju047mgb6gu5,Activo,"INT1770751449405","77965233","pipas clasicas x18g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgxlsxm0003ji04okd441xe,Activo,"INT1770747942585","7790040139169","polvorita sabor vainilla x81g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgxlsxm0003ji04okd441xe,Activo,"INT1770747942585","7790040139169","polvorita sabor vainilla x81g",Un,"kiosco",1500,"Global","Suc. Rivadavia",1,0,1500,0
+cmlgxlsxm0003ji04okd441xe,Activo,"INT1770747942585","7790040139169","polvorita sabor vainilla x81g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgyyguw0009ji049bpiwe7t,Activo,"INT1770750213079","7790310985830","3D original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgyyguw0009ji049bpiwe7t,Activo,"INT1770750213079","7790310985830","3D original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Rivadavia",3,0,5000,0
+cmlgyyguw0009ji049bpiwe7t,Activo,"INT1770750213079","7790310985830","3D original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgvpidu000bl504t28ku4mm,Activo,"INT1770744756306","7790040144149","alfajor hamlet x34,5g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgvpidu000bl504t28ku4mm,Activo,"INT1770744756306","7790040144149","alfajor hamlet x34,5g",Un,"kiosco",1500,"Global","Suc. Rivadavia",3,0,1500,0
+cmlgvpidu000bl504t28ku4mm,Activo,"INT1770744756306","7790040144149","alfajor hamlet x34,5g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgzyfma0005l704nb3fag6p,Activo,"INT1770751891090","6949586632035","geeleet triple hoja",Un,"kiosco",2000,"Global","Suc. Cepernic",15,0,2000,0
+cmlgzyfma0005l704nb3fag6p,Activo,"INT1770751891090","6949586632035","geeleet triple hoja",Un,"kiosco",2000,"Global","Suc. Rivadavia",22,0,2000,0
+cmlgzyfma0005l704nb3fag6p,Activo,"INT1770751891090","6949586632035","geeleet triple hoja",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgztuzr000gky04p0sbq6aj,Activo,"INT1770751677735","7622201746117","jugo en sobre tang sabor uva x15g",Un,"kiosco",500,"Global","Suc. Cepernic",0,0,500,0
+cmlgztuzr000gky04p0sbq6aj,Activo,"INT1770751677735","7622201746117","jugo en sobre tang sabor uva x15g",Un,"kiosco",500,"Global","Suc. Rivadavia",1,0,500,0
+cmlgztuzr000gky04p0sbq6aj,Activo,"INT1770751677735","7622201746117","jugo en sobre tang sabor uva x15g",Un,"kiosco",500,"Global","Suc. Perito Moreno",0,0,500,0
+cmlfnyubz0006l504fbw2picn,Activo,"INT1770671288591","7790580141967","ARCOR NARAJAN X1L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfnyubz0006l504fbw2picn,Activo,"INT1770671288591","7790580141967","ARCOR NARAJAN X1L",Un,"bebidas",3000,"Global","Suc. Rivadavia",1,6,3000,0
+cmlfnyubz0006l504fbw2picn,Activo,"INT1770671288591","7790580141967","ARCOR NARAJAN X1L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfnssfe0009l704ea3f1tw2,Activo,"INT1770671006186","7798113302090","JUGO PLACER NARANJA X1,5L",Un,"bebidas",2500,"Global","Suc. Cepernic",7,6,2500,0
+cmlfnssfe0009l704ea3f1tw2,Activo,"INT1770671006186","7798113302090","JUGO PLACER NARANJA X1,5L",Un,"bebidas",2500,"Global","Suc. Rivadavia",1,6,2500,0
+cmlfnssfe0009l704ea3f1tw2,Activo,"INT1770671006186","7798113302090","JUGO PLACER NARANJA X1,5L",Un,"bebidas",2500,"Global","Suc. Perito Moreno",0,6,2500,0
+cmlgwgrq9000elb04w1hmf949,Activo,"INT1770746028128","7790310987766","lays barbacoa x77g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgwgrq9000elb04w1hmf949,Activo,"INT1770746028128","7790310987766","lays barbacoa x77g",Un,"kiosco",5000,"Global","Suc. Rivadavia",1,0,5000,0
+cmlgwgrq9000elb04w1hmf949,Activo,"INT1770746028128","7790310987766","lays barbacoa x77g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgw9njq000blb04u66rek3x,Activo,"INT1770745696118","7790310985465","lays clasicas x134g",Un,"kiosco",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlgw9njq000blb04u66rek3x,Activo,"INT1770745696118","7790310985465","lays clasicas x134g",Un,"kiosco",6000,"Global","Suc. Rivadavia",0,0,6000,0
+cmlgw9njq000blb04u66rek3x,Activo,"INT1770745696118","7790310985465","lays clasicas x134g",Un,"kiosco",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlgyuq6o0006ji04erykiqtu,Activo,"INT1770750038543","7790310985458","lays clasicas x85g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgyuq6o0006ji04erykiqtu,Activo,"INT1770750038543","7790310985458","lays clasicas x85g",Un,"kiosco",5000,"Global","Suc. Rivadavia",3,0,5000,0
+cmlgyuq6o0006ji04erykiqtu,Activo,"INT1770750038543","7790310985458","lays clasicas x85g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgwdlug000il5048itd3di6,Activo,"INT1770745880536","7790310985328","lays flamin'hot x70g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgwdlug000il5048itd3di6,Activo,"INT1770745880536","7790310985328","lays flamin'hot x70g",Un,"kiosco",5000,"Global","Suc. Rivadavia",8,0,5000,0
+cmlgwdlug000il5048itd3di6,Activo,"INT1770745880536","7790310985328","lays flamin'hot x70g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlh1c19n00bwky04ymyk5r56,Activo,"INT1770754205291","INT5420297316","pote de 1/2 kg",Un,"Heladeria",10500,"Global","Suc. Cepernic",21,0,10500,0
+cmlh1c19n00bwky04ymyk5r56,Activo,"INT1770754205291","INT5420297316","pote de 1/2 kg",Un,"Heladeria",10500,"Global","Suc. Rivadavia",20,0,10500,0
+cmlh1c19n00bwky04ymyk5r56,Activo,"INT1770754205291","INT5420297316","pote de 1/2 kg",Un,"Heladeria",10500,"Global","Suc. Perito Moreno",0,0,10500,0
+cmlh1jjnn00bzky04fy5heypj,Activo,"INT1770754555714","INT5455206215","pote de 1/4 kg",Un,"Heladeria",7000,"Global","Suc. Cepernic",5,0,7000,0
+cmlh1jjnn00bzky04fy5heypj,Activo,"INT1770754555714","INT5455206215","pote de 1/4 kg",Un,"Heladeria",7000,"Global","Suc. Rivadavia",187,0,7000,0
+cmlh1jjnn00bzky04fy5heypj,Activo,"INT1770754555714","INT5455206215","pote de 1/4 kg",Un,"Heladeria",7000,"Global","Suc. Perito Moreno",0,0,7000,0
+cmlh0v9ec000dl7042dzasaqk,Activo,"INT1770753422675","INT5332877479","ramos de golosinas",Un,"kiosco",10000,"Global","Suc. Cepernic",1,4,10000,0
+cmlh0v9ec000dl7042dzasaqk,Activo,"INT1770753422675","INT5332877479","ramos de golosinas",Un,"kiosco",10000,"Global","Suc. Rivadavia",3,4,15000,5000
+cmlh0v9ec000dl7042dzasaqk,Activo,"INT1770753422675","INT5332877479","ramos de golosinas",Un,"kiosco",10000,"Global","Suc. Perito Moreno",0,4,10000,0
+cmlvhd676000zjo04gfd2dz1e,Activo,"INT1771627658658","","geitore 750",Un,"bebidas",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlvhd676000zjo04gfd2dz1e,Activo,"INT1771627658658","","geitore 750",Un,"bebidas",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlvhd676000zjo04gfd2dz1e,Activo,"INT1771627658658","","geitore 750",Un,"bebidas",4000,"Global","Suc. Perito Moreno",3,0,4000,0
+cmlfq6ix1000qlb047lxavl58,Activo,"INT1770675006277","7790950144253","rojo naranja x473ml",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfq6ix1000qlb047lxavl58,Activo,"INT1770675006277","7790950144253","rojo naranja x473ml",Un,"bebidas",3000,"Global","Suc. Rivadavia",13,6,3000,0
+cmlfq6ix1000qlb047lxavl58,Activo,"INT1770675006277","7790950144253","rojo naranja x473ml",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfppt2g000il704dg98haqm,Activo,"INT1770674226279","7792798014835","quilmes clasica x710cm3",Un,"bebidas",4000,"Global","Suc. Cepernic",0,6,4000,0
+cmlfppt2g000il704dg98haqm,Activo,"INT1770674226279","7792798014835","quilmes clasica x710cm3",Un,"bebidas",4000,"Global","Suc. Rivadavia",5,6,4000,0
+cmlfppt2g000il704dg98haqm,Activo,"INT1770674226279","7792798014835","quilmes clasica x710cm3",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlfpt6dz000nlb04bke1o11d,Activo,"INT1770674383510","7792798013357","budiveiser x710cm3",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlfpt6dz000nlb04bke1o11d,Activo,"INT1770674383510","7792798013357","budiveiser x710cm3",Un,"bebidas",6000,"Global","Suc. Rivadavia",8,6,6000,0
+cmlfpt6dz000nlb04bke1o11d,Activo,"INT1770674383510","7792798013357","budiveiser x710cm3",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlh1ae1j0000jr04h6jvmu0i,Activo,"INT1770754128535","INT5406381379","pote de 1 kilo",Un,"Heladeria",20000,"Global","Suc. Cepernic",9,0,20000,0
+cmlh1ae1j0000jr04h6jvmu0i,Activo,"INT1770754128535","INT5406381379","pote de 1 kilo",Un,"Heladeria",20000,"Global","Suc. Rivadavia",20,0,20000,0
+cmlh1ae1j0000jr04h6jvmu0i,Activo,"INT1770754128535","INT5406381379","pote de 1 kilo",Un,"Heladeria",20000,"Global","Suc. Perito Moreno",0,0,20000,0
+cmlfpnwsj000flb04xoaak97h,Activo,"INT1770674137794","7792798014705","cerveza corona x473cm3",Un,"bebidas",4000,"Global","Suc. Cepernic",0,6,4000,0
+cmlfpnwsj000flb04xoaak97h,Activo,"INT1770674137794","7792798014705","cerveza corona x473cm3",Un,"bebidas",4000,"Global","Suc. Rivadavia",14,6,4000,0
+cmlfpnwsj000flb04xoaak97h,Activo,"INT1770674137794","7792798014705","cerveza corona x473cm3",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlgvizyc0008l504w5qtwgqz,Activo,"INT1770744452484","7798094225616","rapsodia minitorta x80g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgvizyc0008l504w5qtwgqz,Activo,"INT1770744452484","7798094225616","rapsodia minitorta x80g",Un,"kiosco",1500,"Global","Suc. Rivadavia",2,0,1500,0
+cmlgvizyc0008l504w5qtwgqz,Activo,"INT1770744452484","7798094225616","rapsodia minitorta x80g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlh16ts300bqky04hgnu1wxu,Activo,"INT1770753962307","INT5395987075","sandwich de miga x3",Un,"Comidas",9000,"Global","Suc. Cepernic",-2,0,9000,0
+cmlh16ts300bqky04hgnu1wxu,Activo,"INT1770753962307","INT5395987075","sandwich de miga x3",Un,"Comidas",9000,"Global","Suc. Rivadavia",6,0,9000,0
+cmlh16ts300bqky04hgnu1wxu,Activo,"INT1770753962307","INT5395987075","sandwich de miga x3",Un,"Comidas",9000,"Global","Suc. Perito Moreno",0,0,9000,0
+cmlie7giw0015js040dospvvz,Activo,"INT1770836292967","7792798013487","stella artois sin alcohol 473cm",Un,"General",3000,"Global","Suc. Cepernic",4,0,3000,0
+cmlie7giw0015js040dospvvz,Activo,"INT1770836292967","7792798013487","stella artois sin alcohol 473cm",Un,"General",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlie7giw0015js040dospvvz,Activo,"INT1770836292967","7792798013487","stella artois sin alcohol 473cm",Un,"General",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmlijdw5v0000ky04ij9qkm5y,Activo,"INT1770844991251","6972698235863","q version labubu ",Un,"kiosco",18000,"Global","Suc. Cepernic",0,2,18000,0
+cmlijdw5v0000ky04ij9qkm5y,Activo,"INT1770844991251","6972698235863","q version labubu ",Un,"kiosco",18000,"Global","Suc. Rivadavia",2,2,18000,0
+cmlijdw5v0000ky04ij9qkm5y,Activo,"INT1770844991251","6972698235863","q version labubu ",Un,"kiosco",18000,"Global","Suc. Perito Moreno",0,2,18000,0
+cmligx3l2001kl204gzkv3i2x,Activo,"INT1770840848485","7798113300058","manaos agua tonica ",Un,"bebidas",3000,"Global","Suc. Cepernic",12,6,3000,0
+cmligx3l2001kl204gzkv3i2x,Activo,"INT1770840848485","7798113300058","manaos agua tonica ",Un,"bebidas",3000,"Global","Suc. Rivadavia",6,6,3000,0
+cmligx3l2001kl204gzkv3i2x,Activo,"INT1770840848485","7798113300058","manaos agua tonica ",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmljujla90002l704bik3nlvn,Activo,"INT1770924199040","7798338290479","LECHE APOSTOLES ",Un,"General",2000,"Global","Suc. Cepernic",8,0,2000,0
+cmljujla90002l704bik3nlvn,Activo,"INT1770924199040","7798338290479","LECHE APOSTOLES ",Un,"General",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmljujla90002l704bik3nlvn,Activo,"INT1770924199040","7798338290479","LECHE APOSTOLES ",Un,"General",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljv9mx9000hjp04t8vao5sa,Activo,"INT1770925414221","7798135762902","VODKA NEW STYLE CITRUS",Un,"bebidas",10000,"Global","Suc. Cepernic",1,1,10000,0
+cmljv9mx9000hjp04t8vao5sa,Activo,"INT1770925414221","7798135762902","VODKA NEW STYLE CITRUS",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljv9mx9000hjp04t8vao5sa,Activo,"INT1770925414221","7798135762902","VODKA NEW STYLE CITRUS",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmll7mmlf0006l404tsc8a5bi,Activo,"INT1771006641890","7790040133570","ALFAJOR FANTOCHE MINI TORTA BLANCO",Un,"kiosco",2000,"Global","Suc. Cepernic",4,2,2000,0
+cmll7mmlf0006l404tsc8a5bi,Activo,"INT1771006641890","7790040133570","ALFAJOR FANTOCHE MINI TORTA BLANCO",Un,"kiosco",2000,"Global","Suc. Rivadavia",-1,0,2000,0
+cmll7mmlf0006l404tsc8a5bi,Activo,"INT1771006641890","7790040133570","ALFAJOR FANTOCHE MINI TORTA BLANCO",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlh15cbo00bnky04xwftkfdh,Activo,"INT1770753893027","INT5389045588","sandwich de miga x unidad",Un,"Comidas",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlh15cbo00bnky04xwftkfdh,Activo,"INT1770753893027","INT5389045588","sandwich de miga x unidad",Un,"Comidas",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmlh15cbo00bnky04xwftkfdh,Activo,"INT1770753893027","INT5389045588","sandwich de miga x unidad",Un,"Comidas",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgyzp8c000yl8042u54mm1x,Activo,"INT1770750270587","7790310985670","cheetos ondulados sabor queso crema x85g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgyzp8c000yl8042u54mm1x,Activo,"INT1770750270587","7790310985670","cheetos ondulados sabor queso crema x85g",Un,"kiosco",5000,"Global","Suc. Rivadavia",4,0,5000,0
+cmlgyzp8c000yl8042u54mm1x,Activo,"INT1770750270587","7790310985670","cheetos ondulados sabor queso crema x85g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgwqr7z000fl4044gvoqixj,Activo,"INT1770746494030","7790310985809","cheetos original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgwqr7z000fl4044gvoqixj,Activo,"INT1770746494030","7790310985809","cheetos original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Rivadavia",1,0,5000,0
+cmlgwqr7z000fl4044gvoqixj,Activo,"INT1770746494030","7790310985809","cheetos original sabor queso x85g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgvtwkj0006l404javk4sj9,Activo,"INT1770744961314","7790380040286","chocolate daqui max x120g",Un,"kiosco",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlgvtwkj0006l404javk4sj9,Activo,"INT1770744961314","7790380040286","chocolate daqui max x120g",Un,"kiosco",4000,"Global","Suc. Rivadavia",3,0,4000,0
+cmlgvtwkj0006l404javk4sj9,Activo,"INT1770744961314","7790380040286","chocolate daqui max x120g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlicx2510000js04czg49d1g,Activo,"INT1770834128148","7798126073918","magdalenas rellenas c/chocolate x200g",Un,"kiosco",3000,"Global","Suc. Cepernic",0,3,3000,0
+cmlicx2510000js04czg49d1g,Activo,"INT1770834128148","7798126073918","magdalenas rellenas c/chocolate x200g",Un,"kiosco",3000,"Global","Suc. Rivadavia",1,3,3000,0
+cmlicx2510000js04czg49d1g,Activo,"INT1770834128148","7798126073918","magdalenas rellenas c/chocolate x200g",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,3,3000,0
+cmlgw3kir0008lb04hmy49q0m,Activo,"INT1770745412257","7891000377543","chocolate nestle choco trio x90g",Un,"kiosco",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlgw3kir0008lb04hmy49q0m,Activo,"INT1770745412257","7891000377543","chocolate nestle choco trio x90g",Un,"kiosco",6000,"Global","Suc. Rivadavia",1,0,6000,0
+cmlgw3kir0008lb04hmy49q0m,Activo,"INT1770745412257","7891000377543","chocolate nestle choco trio x90g",Un,"kiosco",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlgz1xlb000bky04xl3g3v2t,Activo,"INT1770750374734","7790310985434","lays sabor jamon serrano x77g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgz1xlb000bky04xl3g3v2t,Activo,"INT1770750374734","7790310985434","lays sabor jamon serrano x77g",Un,"kiosco",5000,"Global","Suc. Rivadavia",1,0,5000,0
+cmlgz1xlb000bky04xl3g3v2t,Activo,"INT1770750374734","7790310985434","lays sabor jamon serrano x77g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgyjddb000gl804fbyp0cy3,Activo,"INT1770749508718","7794000006515","savora original x60g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgyjddb000gl804fbyp0cy3,Activo,"INT1770749508718","7794000006515","savora original x60g",Un,"kiosco",1500,"Global","Suc. Rivadavia",3,0,1500,0
+cmlgyjddb000gl804fbyp0cy3,Activo,"INT1770749508718","7794000006515","savora original x60g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlvfyb9o0018l204xu3vwbe6,Inactivo,"INT1771625285772","","coca de litro ",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlvfyb9o0018l204xu3vwbe6,Inactivo,"INT1771625285772","","coca de litro ",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlvfyb9o0018l204xu3vwbe6,Inactivo,"INT1771625285772","","coca de litro ",Un,"bebidas",5000,"Global","Suc. Perito Moreno",16,0,5000,0
+cmlfpv6uu000il1047vmm9nmu,Activo,"INT1770674477430","7792798005888","brahma x473cm3",Un,"bebidas",3000,"Global","Suc. Cepernic",-13,6,3000,0
+cmlfpv6uu000il1047vmm9nmu,Activo,"INT1770674477430","7792798005888","brahma x473cm3",Un,"bebidas",3000,"Global","Suc. Rivadavia",11,6,3000,0
+cmlfpv6uu000il1047vmm9nmu,Activo,"INT1770674477430","7792798005888","brahma x473cm3",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfq4uk9000ul704rkyswdpp,Activo,"INT1770674928056","7792798015061","brahma x710cm3",Un,"bebidas",4000,"Global","Suc. Cepernic",105,6,4000,0
+cmlfq4uk9000ul704rkyswdpp,Activo,"INT1770674928056","7792798015061","brahma x710cm3",Un,"bebidas",4000,"Global","Suc. Rivadavia",14,6,4000,0
+cmlfq4uk9000ul704rkyswdpp,Activo,"INT1770674928056","7792798015061","brahma x710cm3",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlvjl7tm0000kz045io97jqq,Inactivo,"INT1771631393242","","vino profugo",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjl7tm0000kz045io97jqq,Inactivo,"INT1771631393242","","vino profugo",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjl7tm0000kz045io97jqq,Inactivo,"INT1771631393242","","vino profugo",Un,"bebidas",10000,"Global","Suc. Perito Moreno",4,0,10000,0
+cmlh25i2m0000jo04n3f8504q,Activo,"INT1770755580093","7798138004887","seitu extra acido palito de agua",Un,"Heladeria",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh25i2m0000jo04n3f8504q,Activo,"INT1770755580093","7798138004887","seitu extra acido palito de agua",Un,"Heladeria",1000,"Global","Suc. Rivadavia",13,0,1000,0
+cmlh25i2m0000jo04n3f8504q,Activo,"INT1770755580093","7798138004887","seitu extra acido palito de agua",Un,"Heladeria",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlh283nq00kdjp04ba9d9yz8,Activo,"INT1770755701381","7798138002203","seitu fan palito de agua sabor uva",Un,"Heladeria",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh283nq00kdjp04ba9d9yz8,Activo,"INT1770755701381","7798138002203","seitu fan palito de agua sabor uva",Un,"Heladeria",1000,"Global","Suc. Rivadavia",26,0,1000,0
+cmlh283nq00kdjp04ba9d9yz8,Activo,"INT1770755701381","7798138002203","seitu fan palito de agua sabor uva",Un,"Heladeria",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlh23r2t00ccky04yvxtayyf,Activo,"INT1770755498452","7798138002210","seitu fan palitos de agua sabor frutilla",Un,"Heladeria",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh23r2t00ccky04yvxtayyf,Activo,"INT1770755498452","7798138002210","seitu fan palitos de agua sabor frutilla",Un,"Heladeria",1000,"Global","Suc. Rivadavia",17,0,1000,0
+cmlh23r2t00ccky04yvxtayyf,Activo,"INT1770755498452","7798138002210","seitu fan palitos de agua sabor frutilla",Un,"Heladeria",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlh2bf50005rib04ebr9ewqo,Activo,"INT1770755856227","7798138002449","seitu giovi palito de crema sabor frutilla",Un,"Heladeria",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlh2bf50005rib04ebr9ewqo,Activo,"INT1770755856227","7798138002449","seitu giovi palito de crema sabor frutilla",Un,"Heladeria",1500,"Global","Suc. Rivadavia",-1,0,1500,0
+cmlh2bf50005rib04ebr9ewqo,Activo,"INT1770755856227","7798138002449","seitu giovi palito de crema sabor frutilla",Un,"Heladeria",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgvb20k0002lb04f2uehzev,Activo,"INT1770744081908","77991584","alfajor fantoche triple blanco x85g",Un,"kiosco",2000,"Global","Suc. Cepernic",5,0,2000,0
+cmlgvb20k0002lb04f2uehzev,Activo,"INT1770744081908","77991584","alfajor fantoche triple blanco x85g",Un,"kiosco",2000,"Global","Suc. Rivadavia",3,2,2000,0
+cmlgvb20k0002lb04f2uehzev,Activo,"INT1770744081908","77991584","alfajor fantoche triple blanco x85g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlide8pu000cl204cgoxyhap,Activo,"INT1770834929825","7798125810361","cintas crocantes sabor cebolla x125",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlide8pu000cl204cgoxyhap,Activo,"INT1770834929825","7798125810361","cintas crocantes sabor cebolla x125",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlide8pu000cl204cgoxyhap,Activo,"INT1770834929825","7798125810361","cintas crocantes sabor cebolla x125",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlijgmeo0003ky04tq5mze7w,Activo,"INT1770845118575","6920241712316","helle sunshine acesorios",Un,"kiosco",6900,"Global","Suc. Cepernic",0,1,6900,0
+cmlijgmeo0003ky04tq5mze7w,Activo,"INT1770845118575","6920241712316","helle sunshine acesorios",Un,"kiosco",6900,"Global","Suc. Rivadavia",1,1,6900,0
+cmlijgmeo0003ky04tq5mze7w,Activo,"INT1770845118575","6920241712316","helle sunshine acesorios",Un,"kiosco",6900,"Global","Suc. Perito Moreno",0,1,6900,0
+cmlh2a30h0003jo040x65dye0,Activo,"INT1770755793856","7798138002135","seitu giovi supercrema",Un,"Heladeria",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlh2a30h0003jo040x65dye0,Activo,"INT1770755793856","7798138002135","seitu giovi supercrema",Un,"Heladeria",1500,"Global","Suc. Rivadavia",18,0,1500,0
+cmlh2a30h0003jo040x65dye0,Activo,"INT1770755793856","7798138002135","seitu giovi supercrema",Un,"Heladeria",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlh2cfpp00nsky04h5029mfa,Activo,"INT1770755903628","7798138002326","seitu palito de agua sabor limon",Un,"Heladeria",1000,"Global","Suc. Cepernic",0,0,1000,0
+cmlh2cfpp00nsky04h5029mfa,Activo,"INT1770755903628","7798138002326","seitu palito de agua sabor limon",Un,"Heladeria",1000,"Global","Suc. Rivadavia",14,0,1000,0
+cmlh2cfpp00nsky04h5029mfa,Activo,"INT1770755903628","7798138002326","seitu palito de agua sabor limon",Un,"Heladeria",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmlgyt9yy000rl804g5evbh18,Activo,"INT1770749970873","7790040143616","serranitas packx3  x315g",Un,"kiosco",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlgyt9yy000rl804g5evbh18,Activo,"INT1770749970873","7790040143616","serranitas packx3  x315g",Un,"kiosco",3000,"Global","Suc. Rivadavia",2,0,3000,0
+cmlgyt9yy000rl804g5evbh18,Activo,"INT1770749970873","7790040143616","serranitas packx3  x315g",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmljukvxf0000jp046mgl9r8r,Activo,"INT1770924259491","7790040143531","AMOR 110g",Un,"kiosco",2000,"Global","Suc. Cepernic",6,0,2000,0
+cmljukvxf0000jp046mgl9r8r,Activo,"INT1770924259491","7790040143531","AMOR 110g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmljukvxf0000jp046mgl9r8r,Activo,"INT1770924259491","7790040143531","AMOR 110g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmll7ya460009jp04iwy2kbkj,Activo,"INT1771007185589","INT0718279717","postres ",Un,"Comidas",4000,"Global","Suc. Cepernic",0,4,4000,0
+cmll7ya460009jp04iwy2kbkj,Activo,"INT1771007185589","INT0718279717","postres ",Un,"Comidas",4000,"Global","Suc. Rivadavia",9,4,4000,0
+cmll7ya460009jp04iwy2kbkj,Activo,"INT1771007185589","INT0718279717","postres ",Un,"Comidas",4000,"Global","Suc. Perito Moreno",0,4,4000,0
+cmlgxwa6m000mlb0423fn4kk8,Activo,"INT1770748431502","7798063140889","snack aritos de harina de maiz tunkix80g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgxwa6m000mlb0423fn4kk8,Activo,"INT1770748431502","7798063140889","snack aritos de harina de maiz tunkix80g",Un,"kiosco",1500,"Global","Suc. Rivadavia",1,0,1500,0
+cmlgxwa6m000mlb0423fn4kk8,Activo,"INT1770748431502","7798063140889","snack aritos de harina de maiz tunkix80g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlvhf1270005l504sqygll8h,Activo,"INT1771627745310","","sidra 7.20",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlvhf1270005l504sqygll8h,Activo,"INT1771627745310","","sidra 7.20",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlvhf1270005l504sqygll8h,Activo,"INT1771627745310","","sidra 7.20",Un,"bebidas",5000,"Global","Suc. Perito Moreno",7,0,5000,0
+cmlgxpwbo0003l804zaphdess,Activo,"INT1770748133603","7792200000159","9 de oro clasicos x200g",Un,"kiosco",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmlgxpwbo0003l804zaphdess,Activo,"INT1770748133603","7792200000159","9 de oro clasicos x200g",Un,"kiosco",2500,"Global","Suc. Rivadavia",2,0,2500,0
+cmlgxpwbo0003l804zaphdess,Activo,"INT1770748133603","7792200000159","9 de oro clasicos x200g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmlvjn2ca0005ib04o2sm2wbi,Activo,"INT1771631479449","","vino canciller blanco",Un,"bebidas",7000,"Global","Suc. Cepernic",0,0,7000,0
+cmlvjn2ca0005ib04o2sm2wbi,Activo,"INT1771631479449","","vino canciller blanco",Un,"bebidas",7000,"Global","Suc. Rivadavia",0,0,7000,0
+cmlvjn2ca0005ib04o2sm2wbi,Activo,"INT1771631479449","","vino canciller blanco",Un,"bebidas",7000,"Global","Suc. Perito Moreno",5,0,7000,0
+cmlid9o8q0009l204bg7l87c1,Activo,"INT1770834716666","7798126073901","magdalenas rellenas c/dulce de leche x200g",Un,"kiosco",3000,"Global","Suc. Cepernic",0,3,3000,0
+cmlid9o8q0009l204bg7l87c1,Activo,"INT1770834716666","7798126073901","magdalenas rellenas c/dulce de leche x200g",Un,"kiosco",3000,"Global","Suc. Rivadavia",1,3,3000,0
+cmlid9o8q0009l204bg7l87c1,Activo,"INT1770834716666","7798126073901","magdalenas rellenas c/dulce de leche x200g",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,3,3000,0
+cmlvg3814001dl204ezrq7t9j,Inactivo,"INT1771625514856","","coca de 500",Un,"bebidas",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlvg3814001dl204ezrq7t9j,Inactivo,"INT1771625514856","","coca de 500",Un,"bebidas",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlvg3814001dl204ezrq7t9j,Inactivo,"INT1771625514856","","coca de 500",Un,"bebidas",2000,"Global","Suc. Perito Moreno",22,0,20000,18000
+cmlgvhlia0000l404s9rfgmgw,Activo,"INT1770744387104","7790040133587","aguila minitorta clasica x69g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlgvhlia0000l404s9rfgmgw,Activo,"INT1770744387104","7790040133587","aguila minitorta clasica x69g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlgvhlia0000l404s9rfgmgw,Activo,"INT1770744387104","7790040133587","aguila minitorta clasica x69g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgveg5c0005l5043tfiefy2,Activo,"INT1770744240192","7790040133594","aguila minitorta brownie x71,5g",Un,"kiosco",2000,"Global","Suc. Cepernic",-5,0,2000,0
+cmlgveg5c0005l5043tfiefy2,Activo,"INT1770744240192","7790040133594","aguila minitorta brownie x71,5g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlgveg5c0005l5043tfiefy2,Activo,"INT1770744240192","7790040133594","aguila minitorta brownie x71,5g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgw02510009l404ofw0k78f,Activo,"INT1770745248469","7891000368992","chocolate nestle classico blanco x80g",Un,"kiosco",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlgw02510009l404ofw0k78f,Activo,"INT1770745248469","7891000368992","chocolate nestle classico blanco x80g",Un,"kiosco",6000,"Global","Suc. Rivadavia",6,0,6000,0
+cmlgw02510009l404ofw0k78f,Activo,"INT1770745248469","7891000368992","chocolate nestle classico blanco x80g",Un,"kiosco",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlgvsm8g0006ky046rs6or71,Activo,"INT1770744901264","7891000369371","chocolate nestle crunch negro x80g",Un,"kiosco",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlgvsm8g0006ky046rs6or71,Activo,"INT1770744901264","7891000369371","chocolate nestle crunch negro x80g",Un,"kiosco",4000,"Global","Suc. Rivadavia",2,0,4000,0
+cmlgvsm8g0006ky046rs6or71,Activo,"INT1770744901264","7891000369371","chocolate nestle crunch negro x80g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlgw6mx8000cl4046a68nrr3,Activo,"INT1770745555339","7891000369098","chocolate nestle negro classico x80g",Un,"kiosco",6000,"Global","Suc. Cepernic",0,0,6000,0
+cmlgw6mx8000cl4046a68nrr3,Activo,"INT1770745555339","7891000369098","chocolate nestle negro classico x80g",Un,"kiosco",6000,"Global","Suc. Rivadavia",3,0,6000,0
+cmlgw6mx8000cl4046a68nrr3,Activo,"INT1770745555339","7891000369098","chocolate nestle negro classico x80g",Un,"kiosco",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlgydvmh0003ji04b5312x30,Activo,"INT1770749252441","7790040143234","chocolinas original x250g",Un,"kiosco",4000,"Global","Suc. Cepernic",1,0,4000,0
+cmlgydvmh0003ji04b5312x30,Activo,"INT1770749252441","7790040143234","chocolinas original x250g",Un,"kiosco",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlgydvmh0003ji04b5312x30,Activo,"INT1770749252441","7790040143234","chocolinas original x250g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmljvjzt80003l1046m1bswgo,Activo,"INT1770925897484","7798162670713","VINO PROFUGO ",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmljvjzt80003l1046m1bswgo,Activo,"INT1770925897484","7798162670713","VINO PROFUGO ",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmljvjzt80003l1046m1bswgo,Activo,"INT1770925897484","7798162670713","VINO PROFUGO ",Un,"bebidas",10000,"Global","Suc. Perito Moreno",4,6,10000,0
+cmlgxxebp0006l804xcs2n0li,Activo,"INT1770748483525","7798063140872","snack bolitas de harina de maiz tunki x80g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgxxebp0006l804xcs2n0li,Activo,"INT1770748483525","7798063140872","snack bolitas de harina de maiz tunki x80g",Un,"kiosco",1500,"Global","Suc. Rivadavia",1,0,1500,0
+cmlgxxebp0006l804xcs2n0li,Activo,"INT1770748483525","7798063140872","snack bolitas de harina de maiz tunki x80g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmlgv7s7h0000l504tg2ctz1u,Activo,"INT1770743929228","77980267","alfajor guaymallen blanco x70gr",Un,"kiosco",2000,"Global","Suc. Cepernic",10,6,2000,0
+cmlgv7s7h0000l504tg2ctz1u,Activo,"INT1770743929228","77980267","alfajor guaymallen blanco x70gr",Un,"kiosco",2000,"Global","Suc. Rivadavia",8,6,2000,0
+cmlgv7s7h0000l504tg2ctz1u,Activo,"INT1770743929228","77980267","alfajor guaymallen blanco x70gr",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,6,2000,0
+cmlvg6syj0000jl04hui7prhp,Activo,"INT1771625681947","INT2566697389","manaus de 600 chica ",Un,"bebidas",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlvg6syj0000jl04hui7prhp,Activo,"INT1771625681947","INT2566697389","manaus de 600 chica ",Un,"bebidas",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmlvg6syj0000jl04hui7prhp,Activo,"INT1771625681947","INT2566697389","manaus de 600 chica ",Un,"bebidas",1500,"Global","Suc. Perito Moreno",40,0,15000,13500
+cmlvhgu93000pl504xyn23geq,Activo,"INT1771627829799","","latas de 1890",Un,"bebidas",3000,"Global","Suc. Cepernic",0,0,3000,0
+cmlvhgu93000pl504xyn23geq,Activo,"INT1771627829799","","latas de 1890",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmlvhgu93000pl504xyn23geq,Activo,"INT1771627829799","","latas de 1890",Un,"bebidas",3000,"Global","Suc. Perito Moreno",11,0,3000,0
+cmlidczde0009js04hb12vkxf,Activo,"INT1770834871058","7798125810347","cintas crocantes sabor queso x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidczde0009js04hb12vkxf,Activo,"INT1770834871058","7798125810347","cintas crocantes sabor queso x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidczde0009js04hb12vkxf,Activo,"INT1770834871058","7798125810347","cintas crocantes sabor queso x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlvjojmc0000ky04nc6c0vt7,Activo,"INT1771631548499","","aperintivo manzon",Un,"bebidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlvjojmc0000ky04nc6c0vt7,Activo,"INT1771631548499","","aperintivo manzon",Un,"bebidas",5000,"Global","Suc. Rivadavia",0,0,5000,0
+cmlvjojmc0000ky04nc6c0vt7,Activo,"INT1771631548499","","aperintivo manzon",Un,"bebidas",5000,"Global","Suc. Perito Moreno",2,0,5000,0
+cmlieex58001djs04avg0nxiy,Activo,"INT1770836641099","7790314078996","vino flama rosado 1l",Un,"General",2500,"Global","Suc. Cepernic",2,0,2500,0
+cmlieex58001djs04avg0nxiy,Activo,"INT1770836641099","7790314078996","vino flama rosado 1l",Un,"General",2500,"Global","Suc. Rivadavia",0,0,2500,0
+cmlieex58001djs04avg0nxiy,Activo,"INT1770836641099","7790314078996","vino flama rosado 1l",Un,"General",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmlgyx0xj0006ky04jwkshqe0,Activo,"INT1770750145782","7790310987780","lays sabor panceta x77g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgyx0xj0006ky04jwkshqe0,Activo,"INT1770750145782","7790310987780","lays sabor panceta x77g",Un,"kiosco",5000,"Global","Suc. Rivadavia",4,0,5000,0
+cmlgyx0xj0006ky04jwkshqe0,Activo,"INT1770750145782","7790310987780","lays sabor panceta x77g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgyw3dj000ul804k0g9ldxv,Activo,"INT1770750102294","7790310986813","lays sabor provoleta x77g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgyw3dj000ul804k0g9ldxv,Activo,"INT1770750102294","7790310986813","lays sabor provoleta x77g",Un,"kiosco",5000,"Global","Suc. Rivadavia",4,0,5000,0
+cmlgyw3dj000ul804k0g9ldxv,Activo,"INT1770750102294","7790310986813","lays sabor provoleta x77g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlgz0pkg000cji04obuz7jr4,Activo,"INT1770750317679","7790310985557","lays sabor queso crema y cebolla x77g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgz0pkg000cji04obuz7jr4,Activo,"INT1770750317679","7790310985557","lays sabor queso crema y cebolla x77g",Un,"kiosco",5000,"Global","Suc. Rivadavia",2,0,5000,0
+cmlgz0pkg000cji04obuz7jr4,Activo,"INT1770750317679","7790310985557","lays sabor queso crema y cebolla x77g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlh3gccz0006i604etuv8acs,Activo,"INT1770757765523","INT5776308861","lemon champ vaso de 1L",Un,"Tragos",12000,"Global","Suc. Cepernic",0,0,12000,0
+cmlh3gccz0006i604etuv8acs,Activo,"INT1770757765523","INT5776308861","lemon champ vaso de 1L",Un,"Tragos",12000,"Global","Suc. Rivadavia",354,0,12000,0
+cmlh3gccz0006i604etuv8acs,Activo,"INT1770757765523","INT5776308861","lemon champ vaso de 1L",Un,"Tragos",12000,"Global","Suc. Perito Moreno",0,0,12000,0
+cmlijiice0006ky046206fr1o,Activo,"INT1770845206621","6975693752342","stikers de capybara ",Un,"kiosco",1000,"Global","Suc. Cepernic",0,2,1000,0
+cmlijiice0006ky046206fr1o,Activo,"INT1770845206621","6975693752342","stikers de capybara ",Un,"kiosco",1000,"Global","Suc. Rivadavia",6,2,1000,0
+cmlijiice0006ky046206fr1o,Activo,"INT1770845206621","6975693752342","stikers de capybara ",Un,"kiosco",1000,"Global","Suc. Perito Moreno",0,2,1000,0
+cmlieevpk001ajs04f84myqmj,Activo,"INT1770836639240","7790975198712","chandon x750ml ",Un,"bebidas",30000,"Global","Suc. Cepernic",0,6,30000,0
+cmlieevpk001ajs04f84myqmj,Activo,"INT1770836639240","7790975198712","chandon x750ml ",Un,"bebidas",30000,"Global","Suc. Rivadavia",1,6,30000,0
+cmlieevpk001ajs04f84myqmj,Activo,"INT1770836639240","7790975198712","chandon x750ml ",Un,"bebidas",30000,"Global","Suc. Perito Moreno",0,6,30000,0
+cmlgxqzp50006l804cosd9jxd,Activo,"INT1770748184633","7790040143548","mellizas sabor limon x110g",Un,"kiosco",2000,"Global","Suc. Cepernic",4,0,2000,0
+cmlgxqzp50006l804cosd9jxd,Activo,"INT1770748184633","7790040143548","mellizas sabor limon x110g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,0,2000,0
+cmlgxqzp50006l804cosd9jxd,Activo,"INT1770748184633","7790040143548","mellizas sabor limon x110g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljup4yx0000ky04tisw55of,Activo,"INT1770924457832","7798085998390","PEPEL HIG. OKEY X4",Un,"kiosco",3000,"Global","Suc. Cepernic",3,0,3000,0
+cmljup4yx0000ky04tisw55of,Activo,"INT1770924457832","7798085998390","PEPEL HIG. OKEY X4",Un,"kiosco",3000,"Global","Suc. Rivadavia",0,0,3000,0
+cmljup4yx0000ky04tisw55of,Activo,"INT1770924457832","7798085998390","PEPEL HIG. OKEY X4",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmlgy0ll3000plb049qyyqrfw,Activo,"INT1770748632902","7790040143364","diversion surtido x400g",Un,"kiosco",4500,"Global","Suc. Cepernic",0,0,4500,0
+cmlgy0ll3000plb049qyyqrfw,Activo,"INT1770748632902","7790040143364","diversion surtido x400g",Un,"kiosco",4500,"Global","Suc. Rivadavia",1,0,4500,0
+cmlgy0ll3000plb049qyyqrfw,Activo,"INT1770748632902","7790040143364","diversion surtido x400g",Un,"kiosco",4500,"Global","Suc. Perito Moreno",0,0,4500,0
+cmljvkkjc0000jo04l5eeb6ht,Activo,"INT1770925924343","7798162671673","VINO OVEJA BLACK",Un,"bebidas",10000,"Global","Suc. Cepernic",8,1,10000,0
+cmljvkkjc0000jo04l5eeb6ht,Activo,"INT1770925924343","7798162671673","VINO OVEJA BLACK",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvkkjc0000jo04l5eeb6ht,Activo,"INT1770925924343","7798162671673","VINO OVEJA BLACK",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmlgzqood0003ju04pf7tiu8m,Activo,"INT1770751529580","7798094222547","nevares oblea sabor chcolate x80g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlgzqood0003ju04pf7tiu8m,Activo,"INT1770751529580","7798094222547","nevares oblea sabor chcolate x80g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,0,2000,0
+cmlgzqood0003ju04pf7tiu8m,Activo,"INT1770751529580","7798094222547","nevares oblea sabor chcolate x80g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgxivyt0000l8045oz2ovd3,Activo,"INT1770747806548","7798094222967","nevares oblea sabor vainilla x80g",Un,"kiosco",-2000,"Global","Suc. Cepernic",0,0,-2000,0
+cmlgxivyt0000l8045oz2ovd3,Activo,"INT1770747806548","7798094222967","nevares oblea sabor vainilla x80g",Un,"kiosco",-2000,"Global","Suc. Rivadavia",1,0,-2000,0
+cmlgxivyt0000l8045oz2ovd3,Activo,"INT1770747806548","7798094222967","nevares oblea sabor vainilla x80g",Un,"kiosco",-2000,"Global","Suc. Perito Moreno",0,0,-2000,0
+cmlih4kla0000l7041fpimu6j,Activo,"INT1770841197117","7798113301918","pindapoy durazno 1l",Un,"bebidas",4000,"Global","Suc. Cepernic",11,6,3000,-1000
+cmlih4kla0000l7041fpimu6j,Activo,"INT1770841197117","7798113301918","pindapoy durazno 1l",Un,"bebidas",4000,"Global","Suc. Rivadavia",0,6,4000,0
+cmlih4kla0000l7041fpimu6j,Activo,"INT1770841197117","7798113301918","pindapoy durazno 1l",Un,"bebidas",4000,"Global","Suc. Perito Moreno",0,6,4000,0
+cmlfpadqw000hl504x1dafv4p,Activo,"INT1770673506584","7798113302489","manaos naranja x354cm3",Un,"bebidas",1500,"Global","Suc. Cepernic",8,6,1500,0
+cmlfpadqw000hl504x1dafv4p,Activo,"INT1770673506584","7798113302489","manaos naranja x354cm3",Un,"bebidas",1500,"Global","Suc. Rivadavia",17,6,2000,500
+cmlfpadqw000hl504x1dafv4p,Activo,"INT1770673506584","7798113302489","manaos naranja x354cm3",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlfn7c6k0000l104wvwijnmv,Activo,"INT1770670005356","7798113300010","manaos cola x 2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,1,3000,0
+cmlfn7c6k0000l104wvwijnmv,Activo,"INT1770670005356","7798113300010","manaos cola x 2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",1,1,3000,0
+cmlfn7c6k0000l104wvwijnmv,Activo,"INT1770670005356","7798113300010","manaos cola x 2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,1,3000,0
+cmll83pkl0000jp04dwxli87w,Activo,"INT1771007438900","736211846181","BIDON DE AGUA LH 8L",Un,"bebidas",5000,"Global","Suc. Cepernic",7,3,5000,0
+cmll83pkl0000jp04dwxli87w,Activo,"INT1771007438900","736211846181","BIDON DE AGUA LH 8L",Un,"bebidas",5000,"Global","Suc. Rivadavia",10,3,8000,3000
+cmll83pkl0000jp04dwxli87w,Activo,"INT1771007438900","736211846181","BIDON DE AGUA LH 8L",Un,"bebidas",5000,"Global","Suc. Perito Moreno",0,3,5000,0
+cmlgxgkaa0000l804ry8iv8wp,Activo,"INT1770747698098","7798094222523","nevares obleas sabor frutilla x80g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlgxgkaa0000l804ry8iv8wp,Activo,"INT1770747698098","7798094222523","nevares obleas sabor frutilla x80g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,0,2000,0
+cmlgxgkaa0000l804ry8iv8wp,Activo,"INT1770747698098","7798094222523","nevares obleas sabor frutilla x80g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgxkrci0003l804sq0g24un,Activo,"INT1770747893873","7798094222530","nevares obleas sabor limon x80g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlgxkrci0003l804sq0g24un,Activo,"INT1770747893873","7798094222530","nevares obleas sabor limon x80g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,0,2000,0
+cmlgxkrci0003l804sq0g24un,Activo,"INT1770747893873","7798094222530","nevares obleas sabor limon x80g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlgxeffp000jlb04ogqkof69,Activo,"INT1770747598500","7790349851175","obleas banana split x100g",Un,"kiosco",2500,"Global","Suc. Cepernic",0,0,2500,0
+cmlgxeffp000jlb04ogqkof69,Activo,"INT1770747598500","7790349851175","obleas banana split x100g",Un,"kiosco",2500,"Global","Suc. Rivadavia",1,0,2500,0
+cmlgxeffp000jlb04ogqkof69,Activo,"INT1770747598500","7790349851175","obleas banana split x100g",Un,"kiosco",2500,"Global","Suc. Perito Moreno",0,0,2500,0
+cmlh2lk7f00vsjp04d7x56x8j,Activo,"INT1770756329355","INT5632668737","panchos",Un,"Comidas",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlh2lk7f00vsjp04d7x56x8j,Activo,"INT1770756329355","INT5632668737","panchos",Un,"Comidas",5000,"Global","Suc. Rivadavia",10,0,5000,0
+cmlh2lk7f00vsjp04d7x56x8j,Activo,"INT1770756329355","INT5632668737","panchos",Un,"Comidas",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmlidfan3000cjs04g674693d,Activo,"INT1770834978974","7798125810965","cintas crocantes sabor salame x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidfan3000cjs04g674693d,Activo,"INT1770834978974","7798125810965","cintas crocantes sabor salame x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,2,2000,0
+cmlidfan3000cjs04g674693d,Activo,"INT1770834978974","7798125810965","cintas crocantes sabor salame x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlidgkfj000fjs04lq6cxbdy,Activo,"INT1770835038318","7798125811214","cintas crocantes sabor jalapeño y limon x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidgkfj000fjs04lq6cxbdy,Activo,"INT1770835038318","7798125811214","cintas crocantes sabor jalapeño y limon x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidgkfj000fjs04lq6cxbdy,Activo,"INT1770835038318","7798125811214","cintas crocantes sabor jalapeño y limon x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlgv9gn80000ky042aqx1fdm,Activo,"INT1770744007555","77980274","alfajor guaymallen negro x70gr",Un,"kiosco",2000,"Global","Suc. Cepernic",1,0,1900,-100
+cmlgv9gn80000ky042aqx1fdm,Activo,"INT1770744007555","77980274","alfajor guaymallen negro x70gr",Un,"kiosco",2000,"Global","Suc. Rivadavia",13,0,2000,0
+cmlgv9gn80000ky042aqx1fdm,Activo,"INT1770744007555","77980274","alfajor guaymallen negro x70gr",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlidjvuz000ijs04bi38q1g4,Activo,"INT1770835193097","7798125810958","cintas crocantes sabor provoleta x125g",Un,"kiosco",2000,"Global","Suc. Cepernic",-1,2,2000,0
+cmlidjvuz000ijs04bi38q1g4,Activo,"INT1770835193097","7798125810958","cintas crocantes sabor provoleta x125g",Un,"kiosco",2000,"Global","Suc. Rivadavia",2,2,2000,0
+cmlidjvuz000ijs04bi38q1g4,Activo,"INT1770835193097","7798125810958","cintas crocantes sabor provoleta x125g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmljuq36t0002jy047hlmebah,Activo,"INT1770924502181","","PAPEL HIG OKEY SUELTO",Un,"General",1000,"Global","Suc. Cepernic",-2,0,1000,0
+cmljuq36t0002jy047hlmebah,Activo,"INT1770924502181","","PAPEL HIG OKEY SUELTO",Un,"General",1000,"Global","Suc. Rivadavia",0,0,1000,0
+cmljuq36t0002jy047hlmebah,Activo,"INT1770924502181","","PAPEL HIG OKEY SUELTO",Un,"General",1000,"Global","Suc. Perito Moreno",0,0,1000,0
+cmljvkweh0000js04z66yol32,Activo,"INT1770925939720","7896306609848","chicle blong sabor frambruesa",Un,"General",100,"Global","Suc. Cepernic",0,50,100,0
+cmljvkweh0000js04z66yol32,Activo,"INT1770925939720","7896306609848","chicle blong sabor frambruesa",Un,"General",100,"Global","Suc. Rivadavia",72,50,100,0
+cmljvkweh0000js04z66yol32,Activo,"INT1770925939720","7896306609848","chicle blong sabor frambruesa",Un,"General",100,"Global","Suc. Perito Moreno",0,50,100,0
+cmlfpd81g0009lb0454bobzp1,Activo,"INT1770673639156","7798113302045","jugo placer pera x500ml",Un,"bebidas",1500,"Global","Suc. Cepernic",0,6,1500,0
+cmlfpd81g0009lb0454bobzp1,Activo,"INT1770673639156","7798113302045","jugo placer pera x500ml",Un,"bebidas",1500,"Global","Suc. Rivadavia",10,6,2000,500
+cmlfpd81g0009lb0454bobzp1,Activo,"INT1770673639156","7798113302045","jugo placer pera x500ml",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlgvly160005lb04m2ducudv,Activo,"INT1770744589961","77976307","alfajor oreo triple x56g",Un,"kiosco",2000,"Global","Suc. Cepernic",5,0,2000,0
+cmlgvly160005lb04m2ducudv,Activo,"INT1770744589961","77976307","alfajor oreo triple x56g",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,0,2000,0
+cmlgvly160005lb04m2ducudv,Activo,"INT1770744589961","77976307","alfajor oreo triple x56g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlh3erx500vyjp04h7h5bjqs,Activo,"INT1770757692377","INT5768769199","caipiroska vaso de 1L",Un,"Tragos",12000,"Global","Suc. Cepernic",0,0,12000,0
+cmlh3erx500vyjp04h7h5bjqs,Activo,"INT1770757692377","INT5768769199","caipiroska vaso de 1L",Un,"Tragos",12000,"Global","Suc. Rivadavia",354,0,12000,0
+cmlh3erx500vyjp04h7h5bjqs,Activo,"INT1770757692377","INT5768769199","caipiroska vaso de 1L",Un,"Tragos",12000,"Global","Suc. Perito Moreno",0,0,12000,0
+cmlh2pj9r00vvjp04cv3yz0so,Activo,"INT1770756514767","INT5651187287","conos de 1 bocha",Un,"Heladeria",2000,"Global","Suc. Cepernic",0,0,2000,0
+cmlh2pj9r00vvjp04cv3yz0so,Activo,"INT1770756514767","INT5651187287","conos de 1 bocha",Un,"Heladeria",2000,"Global","Suc. Rivadavia",20,0,2000,0
+cmlh2pj9r00vvjp04cv3yz0so,Activo,"INT1770756514767","INT5651187287","conos de 1 bocha",Un,"Heladeria",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlh324ej00brib0489t2m64j,Activo,"INT1770757102027","INT5709808775","cucurucho dulce de 2 bochas",Un,"Heladeria",4500,"Global","Suc. Cepernic",0,0,4500,0
+cmlh324ej00brib0489t2m64j,Activo,"INT1770757102027","INT5709808775","cucurucho dulce de 2 bochas",Un,"Heladeria",4500,"Global","Suc. Rivadavia",51,0,4500,0
+cmlh324ej00brib0489t2m64j,Activo,"INT1770757102027","INT5709808775","cucurucho dulce de 2 bochas",Un,"Heladeria",4500,"Global","Suc. Perito Moreno",0,0,4500,0
+cmlh2z42w00boib04d2xjt4zz,Activo,"INT1770756961637","INT5695815250","cucurucho dulce de 3 bochas",Un,"Heladeria",6000,"Global","Suc. Cepernic",-4,0,6000,0
+cmlh2z42w00boib04d2xjt4zz,Activo,"INT1770756961637","INT5695815250","cucurucho dulce de 3 bochas",Un,"Heladeria",6000,"Global","Suc. Rivadavia",64,0,6000,0
+cmlh2z42w00boib04d2xjt4zz,Activo,"INT1770756961637","INT5695815250","cucurucho dulce de 3 bochas",Un,"Heladeria",6000,"Global","Suc. Perito Moreno",0,0,6000,0
+cmlvgavpf000fjo04othtzxzg,Activo,"INT1771625872130","","lata de manaos ",Un,"bebidas",1000,"Global","Suc. Cepernic",-1,0,1000,0
+cmlvgavpf000fjo04othtzxzg,Activo,"INT1771625872130","","lata de manaos ",Un,"bebidas",1000,"Global","Suc. Rivadavia",0,0,1000,0
+cmlvgavpf000fjo04othtzxzg,Activo,"INT1771625872130","","lata de manaos ",Un,"bebidas",1000,"Global","Suc. Perito Moreno",118,0,1000,0
+cmlgvo1sl0003l404iq89tra0,Activo,"INT1770744688149","77915481","alfajor pepito x57g",Un,"kiosco",2000,"Global","Suc. Cepernic",2,0,2000,0
+cmlgvo1sl0003l404iq89tra0,Activo,"INT1770744688149","77915481","alfajor pepito x57g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlgvo1sl0003l404iq89tra0,Activo,"INT1770744688149","77915481","alfajor pepito x57g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmljvlg1t0003js045bybsq1h,Activo,"INT1770925965184","7790036001098","VINO MALBEC BODEGA PRIVADA",Un,"bebidas",10000,"Global","Suc. Cepernic",12,1,10000,0
+cmljvlg1t0003js045bybsq1h,Activo,"INT1770925965184","7790036001098","VINO MALBEC BODEGA PRIVADA",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,1,10000,0
+cmljvlg1t0003js045bybsq1h,Activo,"INT1770925965184","7790036001098","VINO MALBEC BODEGA PRIVADA",Un,"bebidas",10000,"Global","Suc. Perito Moreno",0,1,10000,0
+cmlh1mc5200c6ky040kavfq7n,Activo,"INT1770754685941","INT5468375880","batidos s/crema",Un,"Heladeria",4000,"Global","Suc. Cepernic",76,0,4000,0
+cmlh1mc5200c6ky040kavfq7n,Activo,"INT1770754685941","INT5468375880","batidos s/crema",Un,"Heladeria",4000,"Global","Suc. Rivadavia",189,0,4000,0
+cmlh1mc5200c6ky040kavfq7n,Activo,"INT1770754685941","INT5468375880","batidos s/crema",Un,"Heladeria",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlh3aqkk00bxib04j23sokho,Activo,"INT1770757504003","INT5750195223","bon o bon vaso de 1L",Un,"Tragos",12000,"Global","Suc. Cepernic",0,0,12000,0
+cmlh3aqkk00bxib04j23sokho,Activo,"INT1770757504003","INT5750195223","bon o bon vaso de 1L",Un,"Tragos",12000,"Global","Suc. Rivadavia",354,0,12000,0
+cmlh3aqkk00bxib04j23sokho,Activo,"INT1770757504003","INT5750195223","bon o bon vaso de 1L",Un,"Tragos",12000,"Global","Suc. Perito Moreno",0,0,12000,0
+cmlh2dnco00biib04otwzx7pg,Activo,"INT1770755960183","7798088854358","caritas de cremas",Un,"Heladeria",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlh2dnco00biib04otwzx7pg,Activo,"INT1770755960183","7798088854358","caritas de cremas",Un,"Heladeria",1500,"Global","Suc. Rivadavia",12,0,1500,0
+cmlh2dnco00biib04otwzx7pg,Activo,"INT1770755960183","7798088854358","caritas de cremas",Un,"Heladeria",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmljvmky90006js04hnt70e2e,Activo,"INT1770926018193","7896306609893","chicle blong sabor menta",Un,"General",100,"Global","Suc. Cepernic",0,50,100,0
+cmljvmky90006js04hnt70e2e,Activo,"INT1770926018193","7896306609893","chicle blong sabor menta",Un,"General",100,"Global","Suc. Rivadavia",90,50,100,0
+cmljvmky90006js04hnt70e2e,Activo,"INT1770926018193","7896306609893","chicle blong sabor menta",Un,"General",100,"Global","Suc. Perito Moreno",0,50,100,0
+cmlh2qzo300blib04cfzsfilm,Activo,"INT1770756582675","INT5657992626","conos de 2 bochas",Un,"Heladeria",4000,"Global","Suc. Cepernic",-4,0,4000,0
+cmlh2qzo300blib04cfzsfilm,Activo,"INT1770756582675","INT5657992626","conos de 2 bochas",Un,"Heladeria",4000,"Global","Suc. Rivadavia",6,0,4000,0
+cmlh2qzo300blib04cfzsfilm,Activo,"INT1770756582675","INT5657992626","conos de 2 bochas",Un,"Heladeria",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlgwjuy9000ll504k03j4skh,Activo,"INT1770746172272","7790310987926","doritos dinamita extra flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Cepernic",0,0,3500,0
+cmlgwjuy9000ll504k03j4skh,Activo,"INT1770746172272","7790310987926","doritos dinamita extra flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Rivadavia",1,0,3500,0
+cmlgwjuy9000ll504k03j4skh,Activo,"INT1770746172272","7790310987926","doritos dinamita extra flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Perito Moreno",0,0,3500,0
+cmlgwnwsd0000ji04uojay1jb,Activo,"INT1770746361276","7790310987582","doritos dinamita flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Cepernic",0,0,3500,0
+cmlgwnwsd0000ji04uojay1jb,Activo,"INT1770746361276","7790310987582","doritos dinamita flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Rivadavia",2,0,3500,0
+cmlgwnwsd0000ji04uojay1jb,Activo,"INT1770746361276","7790310987582","doritos dinamita flamin'hot x82g",Un,"kiosco",3500,"Global","Suc. Perito Moreno",0,0,3500,0
+cmlgxz3zz0000ji04v6q546f6,Activo,"INT1770748563454","7790310987070","doritos sweet chjlj x74g",Un,"kiosco",5000,"Global","Suc. Cepernic",0,0,5000,0
+cmlgxz3zz0000ji04v6q546f6,Activo,"INT1770748563454","7790310987070","doritos sweet chjlj x74g",Un,"kiosco",5000,"Global","Suc. Rivadavia",4,0,5000,0
+cmlgxz3zz0000ji04v6q546f6,Activo,"INT1770748563454","7790310987070","doritos sweet chjlj x74g",Un,"kiosco",5000,"Global","Suc. Perito Moreno",0,0,5000,0
+cmll8scx80007l504t6thlfxb,Activo,"INT1771008588907","7792170110704","gatorade cool blue x1,25l",Un,"bebidas",4500,"Global","Suc. Cepernic",0,6,4500,0
+cmll8scx80007l504t6thlfxb,Activo,"INT1771008588907","7792170110704","gatorade cool blue x1,25l",Un,"bebidas",4500,"Global","Suc. Rivadavia",5,6,4500,0
+cmll8scx80007l504t6thlfxb,Activo,"INT1771008588907","7792170110704","gatorade cool blue x1,25l",Un,"bebidas",4500,"Global","Suc. Perito Moreno",0,6,4500,0
+cmlfpf1e9000clb04ist46t7w,Activo,"INT1770673723856","7798113302052","jugo placer pomelo x500ml",Un,"bebidas",1500,"Global","Suc. Cepernic",0,6,1500,0
+cmlfpf1e9000clb04ist46t7w,Activo,"INT1770673723856","7798113302052","jugo placer pomelo x500ml",Un,"bebidas",1500,"Global","Suc. Rivadavia",10,6,2000,500
+cmlfpf1e9000clb04ist46t7w,Activo,"INT1770673723856","7798113302052","jugo placer pomelo x500ml",Un,"bebidas",1500,"Global","Suc. Perito Moreno",0,6,1500,0
+cmlh38hvm00buib04olleo5an,Activo,"INT1770757399421","INT5739676997","fernet vaso de 1L",Un,"Tragos",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlh38hvm00buib04olleo5an,Activo,"INT1770757399421","INT5739676997","fernet vaso de 1L",Un,"Tragos",10000,"Global","Suc. Rivadavia",354,0,10000,0
+cmlh38hvm00buib04olleo5an,Activo,"INT1770757399421","INT5739676997","fernet vaso de 1L",Un,"Tragos",10000,"Global","Suc. Perito Moreno",0,0,10000,0
+cmlvhiwue002dl204xnxxnvw8,Activo,"INT1771627926469","","latas de d.lemos",Un,"bebidas",3500,"Global","Suc. Cepernic",-1,0,3500,0
+cmlvhiwue002dl204xnxxnvw8,Activo,"INT1771627926469","","latas de d.lemos",Un,"bebidas",3500,"Global","Suc. Rivadavia",0,0,3500,0
+cmlvhiwue002dl204xnxxnvw8,Activo,"INT1771627926469","","latas de d.lemos",Un,"bebidas",3500,"Global","Suc. Perito Moreno",3,0,3500,0
+cmlvjq4bf000aib04aizgtht4,Activo,"INT1771631621978","","vino estancia mendoza",Un,"bebidas",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlvjq4bf000aib04aizgtht4,Activo,"INT1771631621978","","vino estancia mendoza",Un,"bebidas",10000,"Global","Suc. Rivadavia",0,0,10000,0
+cmlvjq4bf000aib04aizgtht4,Activo,"INT1771631621978","","vino estancia mendoza",Un,"bebidas",10000,"Global","Suc. Perito Moreno",8,0,10000,0
+cmlgvbwb50003ky042exsao14,Activo,"INT1770744121168","77991577","alfajor fantoche triple negro x85g",Un,"kiosco",2000,"Global","Suc. Cepernic",3,0,2000,0
+cmlgvbwb50003ky042exsao14,Activo,"INT1770744121168","77991577","alfajor fantoche triple negro x85g",Un,"kiosco",2000,"Global","Suc. Rivadavia",0,0,2000,0
+cmlgvbwb50003ky042exsao14,Activo,"INT1770744121168","77991577","alfajor fantoche triple negro x85g",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,0,2000,0
+cmlh3dwc10003i604t8t09tj7,Activo,"INT1770757651440","INT5764580939","daiquiri vaso de 1L",Un,"Tragos",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlh3dwc10003i604t8t09tj7,Activo,"INT1770757651440","INT5764580939","daiquiri vaso de 1L",Un,"Tragos",10000,"Global","Suc. Rivadavia",354,0,10000,0
+cmlh3dwc10003i604t8t09tj7,Activo,"INT1770757651440","INT5764580939","daiquiri vaso de 1L",Un,"Tragos",10000,"Global","Suc. Perito Moreno",0,0,10000,0
+cmlh3fkmt0009jo04qjun9w50,Activo,"INT1770757729588","INT5772716080","gin paff vaso de 1L",Un,"Tragos",12000,"Global","Suc. Cepernic",0,0,12000,0
+cmlh3fkmt0009jo04qjun9w50,Activo,"INT1770757729588","INT5772716080","gin paff vaso de 1L",Un,"Tragos",12000,"Global","Suc. Rivadavia",354,0,12000,0
+cmlh3fkmt0009jo04qjun9w50,Activo,"INT1770757729588","INT5772716080","gin paff vaso de 1L",Un,"Tragos",12000,"Global","Suc. Perito Moreno",0,0,12000,0
+cmlh39g7q0000i604njk56sm9,Activo,"INT1770757443925","INT5744167135","gin tonic vaso de 1L",Un,"Tragos",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlh39g7q0000i604njk56sm9,Activo,"INT1770757443925","INT5744167135","gin tonic vaso de 1L",Un,"Tragos",10000,"Global","Suc. Rivadavia",352,0,10000,0
+cmlh39g7q0000i604njk56sm9,Activo,"INT1770757443925","INT5744167135","gin tonic vaso de 1L",Un,"Tragos",10000,"Global","Suc. Perito Moreno",0,0,10000,0
+cmlfqyb2d0000jo04dm8bs6pz,Activo,"INT1770676302469","INT7628367442","gomitas",Kg,"kiosco",30000,"Global","Suc. Cepernic",0,0,30000,0
+cmlfqyb2d0000jo04dm8bs6pz,Activo,"INT1770676302469","INT7628367442","gomitas",Kg,"kiosco",30000,"Global","Suc. Rivadavia",3.703,0,30000,0
+cmlfqyb2d0000jo04dm8bs6pz,Activo,"INT1770676302469","INT7628367442","gomitas",Kg,"kiosco",30000,"Global","Suc. Perito Moreno",0,0,30000,0
+cmlidhfqy000djm04lu7eesoo,Activo,"INT1770835078905","7798125810521","cintas crocantes sabor jamon x125g ",Un,"kiosco",2000,"Global","Suc. Cepernic",0,2,2000,0
+cmlidhfqy000djm04lu7eesoo,Activo,"INT1770835078905","7798125810521","cintas crocantes sabor jamon x125g ",Un,"kiosco",2000,"Global","Suc. Rivadavia",1,2,2000,0
+cmlidhfqy000djm04lu7eesoo,Activo,"INT1770835078905","7798125810521","cintas crocantes sabor jamon x125g ",Un,"kiosco",2000,"Global","Suc. Perito Moreno",0,2,2000,0
+cmlgygcnh000dl804x2schwnl,Activo,"INT1770749367821","7794000006195","hellmann's ketchup x60g",Un,"kiosco",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlgygcnh000dl804x2schwnl,Activo,"INT1770749367821","7794000006195","hellmann's ketchup x60g",Un,"kiosco",1500,"Global","Suc. Rivadavia",4,0,1500,0
+cmlgygcnh000dl804x2schwnl,Activo,"INT1770749367821","7794000006195","hellmann's ketchup x60g",Un,"kiosco",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmliejw1k001al204nhrjeqdd,Activo,"INT1770836872951","7798113302472","manaos lima limon 354cm",Un,"General",1500,"Global","Suc. Cepernic",16,0,1500,0
+cmliejw1k001al204nhrjeqdd,Activo,"INT1770836872951","7798113302472","manaos lima limon 354cm",Un,"General",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmliejw1k001al204nhrjeqdd,Activo,"INT1770836872951","7798113302472","manaos lima limon 354cm",Un,"General",1500,"Global","Suc. Perito Moreno",0,0,1500,0
+cmljusxm10003jp04m2222ho2,Activo,"INT1770924634921","7798085996846","SERVILLETA OKEY X3",Un,"General",4000,"Global","Suc. Cepernic",7,0,4000,0
+cmljusxm10003jp04m2222ho2,Activo,"INT1770924634921","7798085996846","SERVILLETA OKEY X3",Un,"General",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmljusxm10003jp04m2222ho2,Activo,"INT1770924634921","7798085996846","SERVILLETA OKEY X3",Un,"General",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlfp02760006l704rz3o74ri,Activo,"INT1770673025058","7792758321591","SECCO TONICA X1,5L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfp02760006l704rz3o74ri,Activo,"INT1770673025058","7792758321591","SECCO TONICA X1,5L",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,6,3000,0
+cmlfp02760006l704rz3o74ri,Activo,"INT1770673025058","7792758321591","SECCO TONICA X1,5L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlgypu5b000ol804oefnoj4q,Activo,"INT1770749810399","7794626010330","toallas higienicas linas x8un.",Un,"kiosco",3500,"Global","Suc. Cepernic",0,0,3500,0
+cmlgypu5b000ol804oefnoj4q,Activo,"INT1770749810399","7794626010330","toallas higienicas linas x8un.",Un,"kiosco",3500,"Global","Suc. Rivadavia",1,0,3500,0
+cmlgypu5b000ol804oefnoj4q,Activo,"INT1770749810399","7794626010330","toallas higienicas linas x8un.",Un,"kiosco",3500,"Global","Suc. Perito Moreno",0,0,3500,0
+cmlh2jfa00006jo04lcp4isld,Activo,"INT1770756229655","INT5610824233","bolsa de hielo",Un,"kiosco",3000,"Global","Suc. Cepernic",28,0,3000,0
+cmlh2jfa00006jo04lcp4isld,Activo,"INT1770756229655","INT5610824233","bolsa de hielo",Un,"kiosco",3000,"Global","Suc. Rivadavia",15,0,3000,0
+cmlh2jfa00006jo04lcp4isld,Activo,"INT1770756229655","INT5610824233","bolsa de hielo",Un,"kiosco",3000,"Global","Suc. Perito Moreno",0,0,3000,0
+cmlh0svq10008ky04blknvw5p,Activo,"INT1770753311641","INT5326200587","vasos de gomitas x600g",Un,"kiosco",7000,"Global","Suc. Cepernic",13,0,7000,0
+cmlh0svq10008ky04blknvw5p,Activo,"INT1770753311641","INT5326200587","vasos de gomitas x600g",Un,"kiosco",7000,"Global","Suc. Rivadavia",7,0,7000,0
+cmlh0svq10008ky04blknvw5p,Activo,"INT1770753311641","INT5326200587","vasos de gomitas x600g",Un,"kiosco",7000,"Global","Suc. Perito Moreno",0,0,7000,0
+cmlh3gzcr00c0ib04wkb10fez,Activo,"INT1770757795322","INT5779194320","vodka vaso de 1L",Un,"Tragos",10000,"Global","Suc. Cepernic",0,0,10000,0
+cmlh3gzcr00c0ib04wkb10fez,Activo,"INT1770757795322","INT5779194320","vodka vaso de 1L",Un,"Tragos",10000,"Global","Suc. Rivadavia",353,0,10000,0
+cmlh3gzcr00c0ib04wkb10fez,Activo,"INT1770757795322","INT5779194320","vodka vaso de 1L",Un,"Tragos",10000,"Global","Suc. Perito Moreno",0,0,10000,0
+cmlgyn0og0002l7046a5n321b,Activo,"INT1770749678896","7793704000911","yerba mate playadito x500g",Un,"kiosco",4000,"Global","Suc. Cepernic",12,0,4000,0
+cmlgyn0og0002l7046a5n321b,Activo,"INT1770749678896","7793704000911","yerba mate playadito x500g",Un,"kiosco",4000,"Global","Suc. Rivadavia",3,0,4000,0
+cmlgyn0og0002l7046a5n321b,Activo,"INT1770749678896","7793704000911","yerba mate playadito x500g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlgyo8bh0003ky04vg43wr17,Activo,"INT1770749735453","7790387013504","yerba mate taragui x500g",Un,"kiosco",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlgyo8bh0003ky04vg43wr17,Activo,"INT1770749735453","7790387013504","yerba mate taragui x500g",Un,"kiosco",4000,"Global","Suc. Rivadavia",7,0,4000,0
+cmlgyo8bh0003ky04vg43wr17,Activo,"INT1770749735453","7790387013504","yerba mate taragui x500g",Un,"kiosco",4000,"Global","Suc. Perito Moreno",0,0,4000,0
+cmlfo4q5m000cl704dokw3k2z,Activo,"INT1770671563113","7790895068027","SPRITE LIMA LIMON 2,5L",Un,"bebidas",7000,"Global","Suc. Cepernic",4,6,7000,0
+cmlfo4q5m000cl704dokw3k2z,Activo,"INT1770671563113","7790895068027","SPRITE LIMA LIMON 2,5L",Un,"bebidas",7000,"Global","Suc. Rivadavia",11,6,8000,1000
+cmlfo4q5m000cl704dokw3k2z,Activo,"INT1770671563113","7790895068027","SPRITE LIMA LIMON 2,5L",Un,"bebidas",7000,"Global","Suc. Perito Moreno",0,6,7000,0
+cmlh0y6jd000mky04l2uqe5zb,Activo,"INT1770753558936","INT5348970567","hamburguesas",Un,"Comidas",5000,"Global","Suc. Cepernic",-2,5,5000,0
+cmlh0y6jd000mky04l2uqe5zb,Activo,"INT1770753558936","INT5348970567","hamburguesas",Un,"Comidas",5000,"Global","Suc. Rivadavia",17,6,5000,0
+cmlh0y6jd000mky04l2uqe5zb,Activo,"INT1770753558936","INT5348970567","hamburguesas",Un,"Comidas",5000,"Global","Suc. Perito Moreno",0,6,5000,0
+cmlvgf0iv0000l504ugprjmlz,Activo,"INT1771626064986","","agua mineral manaos 600",Un,"bebidas",1500,"Global","Suc. Cepernic",0,0,1500,0
+cmlvgf0iv0000l504ugprjmlz,Activo,"INT1771626064986","","agua mineral manaos 600",Un,"bebidas",1500,"Global","Suc. Rivadavia",0,0,1500,0
+cmlvgf0iv0000l504ugprjmlz,Activo,"INT1771626064986","","agua mineral manaos 600",Un,"bebidas",1500,"Global","Suc. Perito Moreno",68,0,1500,0
+cmlvhlj0p000ul504y5q47nq0,Activo,"INT1771628048521",""," cerveza 361",Un,"bebidas",4000,"Global","Suc. Cepernic",0,0,4000,0
+cmlvhlj0p000ul504y5q47nq0,Activo,"INT1771628048521",""," cerveza 361",Un,"bebidas",4000,"Global","Suc. Rivadavia",0,0,4000,0
+cmlvhlj0p000ul504y5q47nq0,Activo,"INT1771628048521",""," cerveza 361",Un,"bebidas",4000,"Global","Suc. Perito Moreno",5,0,4000,0
+cmlh0o6ww0002ky04d9pcwjn2,Activo,"INT1770753092864","7790154000027","sidra del valle anana fizz x720cc",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlh0o6ww0002ky04d9pcwjn2,Activo,"INT1770753092864","7790154000027","sidra del valle anana fizz x720cc",Un,"bebidas",6000,"Global","Suc. Rivadavia",1,6,6000,0
+cmlh0o6ww0002ky04d9pcwjn2,Activo,"INT1770753092864","7790154000027","sidra del valle anana fizz x720cc",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlh0mtlz000jky04qwhn5sfq,Activo,"INT1770753028967","7790154000652","sidra del valle x720cc",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlh0mtlz000jky04qwhn5sfq,Activo,"INT1770753028967","7790154000652","sidra del valle x720cc",Un,"bebidas",6000,"Global","Suc. Rivadavia",1,6,6000,0
+cmlh0mtlz000jky04qwhn5sfq,Activo,"INT1770753028967","7790154000652","sidra del valle x720cc",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlh0pada0005ky04d81wb80x,Activo,"INT1770753143998","7792316001019","sidra la victoria x720ml",Un,"bebidas",6000,"Global","Suc. Cepernic",0,6,6000,0
+cmlh0pada0005ky04d81wb80x,Activo,"INT1770753143998","7792316001019","sidra la victoria x720ml",Un,"bebidas",6000,"Global","Suc. Rivadavia",4,6,6000,0
+cmlh0pada0005ky04d81wb80x,Activo,"INT1770753143998","7792316001019","sidra la victoria x720ml",Un,"bebidas",6000,"Global","Suc. Perito Moreno",0,6,6000,0
+cmlfnn5gw0006l4044n148ju5,Activo,"INT1770670743152","7792758001066","SECCO  COLA 2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfnn5gw0006l4044n148ju5,Activo,"INT1770670743152","7792758001066","SECCO  COLA 2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",4,6,3000,0
+cmlfnn5gw0006l4044n148ju5,Activo,"INT1770670743152","7792758001066","SECCO  COLA 2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfnrpl60003l50460vlbkfj,Activo,"INT1770670955849","7792758012253","SECCO LIMA LIMON X2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfnrpl60003l50460vlbkfj,Activo,"INT1770670955849","7792758012253","SECCO LIMA LIMON X2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",1,6,3000,0
+cmlfnrpl60003l50460vlbkfj,Activo,"INT1770670955849","7792758012253","SECCO LIMA LIMON X2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlfnu0260009l404ndh113y7,Activo,"INT1770671062734","7792758372258","SECCO POMELO INTESO X2,25L",Un,"bebidas",3000,"Global","Suc. Cepernic",0,6,3000,0
+cmlfnu0260009l404ndh113y7,Activo,"INT1770671062734","7792758372258","SECCO POMELO INTESO X2,25L",Un,"bebidas",3000,"Global","Suc. Rivadavia",0,6,3000,0
+cmlfnu0260009l404ndh113y7,Activo,"INT1770671062734","7792758372258","SECCO POMELO INTESO X2,25L",Un,"bebidas",3000,"Global","Suc. Perito Moreno",0,6,3000,0
+cmlvhqxyb0014l504t047yuyi,Activo,"INT1771628301155","","toro tinto caja ",Un,"General",4500,"Global","Suc. Cepernic",0,0,4500,0
+cmlvhqxyb0014l504t047yuyi,Activo,"INT1771628301155","","toro tinto caja ",Un,"General",4500,"Global","Suc. Rivadavia",0,0,4500,0
+cmlvhqxyb0014l504t047yuyi,Activo,"INT1771628301155","","toro tinto caja ",Un,"General",4500,"Global","Suc. Perito Moreno",33,0,4500,0
+cmlvjrjvv0005jv04ms3z699f,Activo,"INT1771631688810","","w doble",Un,"bebidas",20000,"Global","Suc. Cepernic",0,0,20000,0
+cmlvjrjvv0005jv04ms3z699f,Activo,"INT1771631688810","","w doble",Un,"bebidas",20000,"Global","Suc. Rivadavia",0,0,20000,0
+cmlvjrjvv0005jv04ms3z699f,Activo,"INT1771631688810","","w doble",Un,"bebidas",20000,"Global","Suc. Perito Moreno",3,0,20000,0
+cmlvjswbe000ajv0467bhc2c5,Inactivo,"INT1771631751578","","fernet 750ml",Un,"bebidas",25000,"Global","Suc. Cepernic",0,0,25000,0
+cmlvjswbe000ajv0467bhc2c5,Inactivo,"INT1771631751578","","fernet 750ml",Un,"bebidas",25000,"Global","Suc. Rivadavia",0,0,25000,0
+cmlvjswbe000ajv0467bhc2c5,Inactivo,"INT1771631751578","","fernet 750ml",Un,"bebidas",25000,"Global","Suc. Perito Moreno",5,0,25000,0

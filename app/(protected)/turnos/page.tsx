@@ -9,6 +9,7 @@ export default function TurnosPage() {
   const { settings } = useSettings();
   const [currentShift, setCurrentShift] = useState<any>(null);
   const [shifts, setShifts] = useState<any[]>([]);
+  const [pagination, setPagination] = useState({ total: 0, pages: 1, currentPage: 1, pageSize: 100 });
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [closeModal, setCloseModal] = useState(false);
@@ -33,19 +34,29 @@ export default function TurnosPage() {
     if (startDate) params.append("startDate", startDate);
     if (endDate) params.append("endDate", endDate);
     if (filterBranchId) params.append("branchId", filterBranchId);
+    params.append("page", pagination.currentPage.toString());
 
-    const [curr, all, brs] = await Promise.all([
-      fetch("/api/shifts/current").then(r => r.json()),
-      fetch(`/api/shifts?${params.toString()}`).then(r => r.json()),
-      fetch("/api/branches").then(r => r.json())
-    ]);
-    setCurrentShift(curr?.id ? curr : null);
-    setShifts(all || []);
-    setBranches(Array.isArray(brs) ? brs : []);
+    try {
+      const [curr, allData, brs] = await Promise.all([
+        fetch("/api/shifts/current").then(r => r.json()),
+        fetch(`/api/shifts?${params.toString()}`).then(r => r.json()),
+        fetch("/api/branches").then(r => r.json())
+      ]);
+      setCurrentShift(curr?.id ? curr : null);
+
+      const shiftsData = allData.shifts || [];
+      const paginationData = allData.pagination || { total: 0, pages: 1, currentPage: 1, pageSize: 100 };
+
+      setShifts(shiftsData);
+      setPagination(paginationData);
+      setBranches(Array.isArray(brs) ? brs : []);
+    } catch (error) {
+      console.error("Error fetching shifts:", error);
+    }
     setLoading(false);
   };
 
-  useEffect(() => { fetchData(); }, [startDate, endDate, filterBranchId]);
+  useEffect(() => { fetchData(); }, [startDate, endDate, filterBranchId, pagination.currentPage]);
 
   const openShift = async () => {
     if (!selectedBranchId) {
@@ -132,25 +143,25 @@ export default function TurnosPage() {
               </button>
             </div>
           </div>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div className="bg-white rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-500">Caja Inicial</p>
-              <p className="text-xl font-bold">{formatPrice(currentShift.initialCash ?? 0, settings.useDecimals)}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-green-100">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Caja Inicial</p>
+              <p className="text-xl font-black text-gray-900">{formatPrice(currentShift.initialCash ?? 0, settings.useDecimals)}</p>
             </div>
-            <div className="bg-white rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-500">Ventas del Turno</p>
-              <p className="text-xl font-bold">{formatPrice(shiftTotal, settings.useDecimals)}</p>
-              <div className="flex justify-center gap-2 text-[10px] mt-1 text-gray-400">
+            <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-green-100">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ventas del Turno</p>
+              <p className="text-xl font-black text-gray-900">{formatPrice(shiftTotal, settings.useDecimals)}</p>
+              <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 text-[9px] mt-2 text-gray-400 font-bold uppercase">
                 <span>Efe: {formatPrice(cashSales, settings.useDecimals)}</span>
-                <span>•</span>
+                <span className="hidden xs:inline">•</span>
                 <span>QR: {formatPrice(qrSales, settings.useDecimals)}</span>
-                <span>•</span>
+                <span className="hidden xs:inline">•</span>
                 <span>Otros: {formatPrice(shiftTotal - cashSales - qrSales, settings.useDecimals)}</span>
               </div>
             </div>
-            <div className="bg-white rounded-lg p-4 text-center">
-              <p className="text-sm text-gray-500">Efectivo Esperado</p>
-              <p className="text-xl font-bold">{formatPrice(expectedAmount, settings.useDecimals)}</p>
+            <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-green-100">
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Efectivo Esperado</p>
+              <p className="text-xl font-black text-green-700">{formatPrice(expectedAmount, settings.useDecimals)}</p>
             </div>
           </div>
         </div>
@@ -200,7 +211,45 @@ export default function TurnosPage() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          {/* Mobile History View */}
+          <div className="grid grid-cols-1 gap-3 sm:hidden pb-4">
+            {(shifts ?? []).filter(s => s?.closedAt).map(s => (
+              <div key={s.id} className="bg-gray-50 rounded-2xl p-4 border border-gray-100 shadow-sm relative overflow-hidden">
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <p className="font-black text-gray-900 leading-tight">{s.user?.name}</p>
+                    <span className="px-2 py-0.5 bg-white border border-gray-100 rounded text-[9px] font-black uppercase tracking-widest text-gray-500">
+                      {s.branch?.name || "Global"}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => router.push(`/historial?shiftId=${s.id}`)}
+                    className="p-2.5 bg-blue-600 text-white rounded-xl shadow-md shadow-blue-100"
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 border-t border-dashed border-gray-200 pt-3 mt-3">
+                  <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Apertura / Cierre</p>
+                    <p className="text-[11px] text-gray-600 font-bold">{formatDateTime(s.openedAt)}</p>
+                    <p className="text-[11px] text-gray-600 font-bold">{formatDateTime(s.closedAt)}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Diferencia</p>
+                    <p className={`text-lg font-black ${s.discrepancy && s.discrepancy !== 0 ? (s.discrepancy > 0 ? "text-green-600" : "text-red-600") : "text-gray-400"}`}>
+                      {s.discrepancy ? (s.discrepancy > 0 ? `+$${s.discrepancy.toLocaleString()}` : `-$${Math.abs(s.discrepancy).toLocaleString()}`) : "$0"}
+                    </p>
+                    {s.discrepancyReason && <p className="text-[10px] font-bold text-gray-500 uppercase">{s.discrepancyReason}</p>}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View */}
+          <table className="w-full text-sm hidden sm:table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-3 text-left">Usuario</th>
@@ -226,7 +275,7 @@ export default function TurnosPage() {
                   <td className="px-4 py-3">{formatDateTime(s.closedAt)}</td>
                   <td className="px-4 py-3 text-right font-bold">{s._count?.sales || 0}</td>
                   <td className={`px-4 py-3 text-right font-medium ${s.discrepancy && s.discrepancy !== 0 ? (s.discrepancy > 0 ? "text-green-600" : "text-red-600") : ""}`}>
-                    {s.discrepancy ? `$${s.discrepancy.toLocaleString()}` : "-"}
+                    {s.discrepancy ? (s.discrepancy > 0 ? `+$${s.discrepancy.toLocaleString()}` : `-$${Math.abs(s.discrepancy).toLocaleString()}`) : "-"}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1 group relative cursor-help">
@@ -234,7 +283,6 @@ export default function TurnosPage() {
                       {s.discrepancyNote && (
                         <span className="text-xs text-blue-500 font-bold" title={s.discrepancyNote}>(i)</span>
                       )}
-                      {/* Simple browser native tooltip via title is easiest, but let's make it robust */}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-center">
@@ -250,6 +298,32 @@ export default function TurnosPage() {
               ))}
             </tbody>
           </table>
+        </div>
+
+        {/* Pagination Footer - Always visible to help control records */}
+        <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500 font-medium mt-auto">
+          <div>
+            Mostrando <span className="text-gray-900 font-bold">{shifts.filter(s => s?.closedAt).length}</span> de <span className="text-gray-900 font-bold">{pagination.total}</span> turnos
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setPagination(p => ({ ...p, currentPage: Math.max(1, p.currentPage - 1) }))}
+              disabled={pagination.currentPage === 1}
+              className="p-1 px-3 rounded bg-white border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Anterior
+            </button>
+            <span className="px-2">
+              Página <span className="text-gray-900 font-bold">{pagination.currentPage}</span> de <span className="text-gray-900 font-bold">{pagination.pages}</span>
+            </span>
+            <button
+              onClick={() => setPagination(p => ({ ...p, currentPage: Math.min(pagination.pages, p.currentPage + 1) }))}
+              disabled={pagination.currentPage === pagination.pages}
+              className="p-1 px-3 rounded bg-white border hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            >
+              Siguiente
+            </button>
+          </div>
         </div>
       </div>
 

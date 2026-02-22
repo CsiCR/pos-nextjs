@@ -3,9 +3,12 @@ import { useState, useEffect, useRef } from "react";
 import { Search, Package, ScanBarcode } from "lucide-react";
 import { BarcodeScanner } from "@/components/BarcodeScanner";
 import { useSession } from "next-auth/react";
+import { formatPrice } from "@/lib/utils";
+import { useSettings } from "@/hooks/use-settings";
 
 export default function VerificadorPage() {
   const { data: session } = useSession() || {};
+  const { settings } = useSettings();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -77,8 +80,8 @@ export default function VerificadorPage() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Código, EAN o Nombre..."
-          className="input input-lg pl-20 pr-14 text-2xl font-bold shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl w-full"
+          placeholder="EAN o Producto..."
+          className="input input-lg pl-14 sm:pl-20 pr-14 text-xl sm:text-2xl font-black shadow-xl border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all rounded-2xl w-full h-16 sm:h-20"
           autoFocus
         />
         <button
@@ -118,7 +121,7 @@ export default function VerificadorPage() {
       )}
 
       {!loading && results.length > 0 && (
-        <div className={results.length === 1 ? "max-w-lg mx-auto" : "grid grid-cols-1 md:grid-cols-2 gap-6"}>
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3">
           {results.map((product) => {
             const qty = Number(product.displayStock || 0);
             const min = Number(product.displayMinStock || 0);
@@ -130,37 +133,38 @@ export default function VerificadorPage() {
             let stockColor = "text-green-600";
             if (isCritical) stockColor = "text-red-600";
             else if (isLowStock) stockColor = "text-orange-500";
-            else if (qty <= 0) stockColor = "text-gray-400"; // 0 stock but 0 min -> neutral
-
-            const isGlobal = (session?.user as any)?.role === "GERENTE" || (session?.user as any)?.role === "ADMIN";
+            else if (qty <= 0) stockColor = "text-gray-400";
 
             return (
-              <div key={product.id} className="card bg-white border border-gray-100 shadow-xl overflow-hidden group hover:border-blue-500 transition-all duration-300 rounded-3xl p-8">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-20 h-20 bg-blue-50 rounded-3xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-                    <Package className="w-10 h-10 text-blue-600" />
+              <div key={product.id} className="card bg-white border border-gray-100 shadow-lg overflow-hidden group hover:border-blue-500 transition-all duration-200 rounded-2xl p-3 sm:p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <p className="text-[8px] sm:text-[9px] text-gray-400 font-mono tracking-tighter uppercase font-bold">COD: {product.code}</p>
+                    <span className="bg-gray-50 text-[8px] sm:text-[9px] font-black text-gray-400 px-1.5 py-0.5 rounded-full uppercase truncate max-w-[60px]">
+                      {product.category?.name || "General"}
+                    </span>
                   </div>
-                  <p className="text-xs text-gray-400 font-mono tracking-tighter mb-1 uppercase">{product.code}</p>
-                  <h2 className="text-2xl font-black text-gray-900 mb-6 min-h-[3rem] flex items-center">{product.name}</h2>
+                  <h2 className="text-xs sm:text-sm font-black text-gray-800 mb-2 line-clamp-2 min-h-[2rem] leading-tight group-hover:text-blue-600 transition-colors uppercase">
+                    {product.name}
+                  </h2>
+                </div>
 
-                  <div className="bg-blue-600 w-full py-6 rounded-2xl shadow-lg shadow-blue-100 mb-6">
-                    <p className="text-5xl font-black text-white">${(product.displayPrice || product.basePrice)?.toLocaleString()}</p>
+                <div className="space-y-2">
+                  <div className="bg-blue-600 w-full py-2 rounded-xl shadow-sm text-center group-hover:bg-blue-700 transition-colors">
+                    <p className="text-lg sm:text-xl font-black text-white leading-none">
+                      {formatPrice(product.displayPrice || product.basePrice, settings.useDecimals)}
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 w-full">
-                    <div className={`bg-gray-50 p-3 rounded-xl border border-gray-100 ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : ''}`}>
-                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">{isShowingGlobal ? 'Stock Global' : 'Stock Sucursal'}</p>
-                      <p className={`font-bold ${stockColor}`}>
-                        {qty} {product.baseUnit?.symbol || 'un'}
-                      </p>
-                      {min > 0 && <p className="text-[8px] font-bold text-gray-400 uppercase mt-1">Mín: {min}</p>}
-                    </div>
-                    <div className="bg-gray-50 p-3 rounded-xl border border-gray-100">
-                      <p className="text-[10px] font-black text-gray-400 uppercase mb-1">Categoría</p>
-                      <p className="font-bold text-gray-700 truncate">
-                        {product.category?.name || "General"}
+                  <div className={`p-1.5 rounded-xl border text-center ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : 'bg-gray-50 border-gray-100'}`}>
+                    <div className="flex items-center justify-center gap-1">
+                      <p className={`font-black text-xs sm:text-sm ${stockColor}`}>
+                        {qty} <span className="text-[8px] uppercase opacity-70 font-bold">{product.baseUnit?.symbol || 'un'}</span>
                       </p>
                     </div>
+                    <p className="text-[7px] sm:text-[8px] font-black text-gray-400 uppercase tracking-tighter leading-none">
+                      {isShowingGlobal ? 'Global' : 'Sucursal'}
+                    </p>
                   </div>
                 </div>
               </div>

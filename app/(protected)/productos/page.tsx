@@ -159,35 +159,35 @@ function ProductosContent() {
   const [categories, setCategories] = useState<any[]>([]);
   const [units, setUnits] = useState<any[]>([]);
   const [branches, setBranches] = useState<any[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState("");
-  const [onlyMyBranch, setOnlyMyBranch] = useState(isSupervisor);
+  const searchParams = useSearchParams();
+  const initialFilter = searchParams.get("filterMode") || "all";
+  const initialBranch = searchParams.get("branchId") || "";
+
+  const [filterMode, setFilterMode] = useState(initialFilter);
+  const [selectedBranch, setSelectedBranch] = useState(initialBranch);
+  const [onlyMyBranch, setOnlyMyBranch] = useState(isSupervisor && !initialBranch);
   const [search, setSearch] = useState("");
   const [modal, setModal] = useState<any>(null);
-  const nameInputRef = useRef<HTMLInputElement>(null); // [NEW] Focus Ref
+  const nameInputRef = useRef<HTMLInputElement>(null);
   const [priceLists, setPriceLists] = useState<any[]>([]);
   const [form, setForm] = useState<any>({
     name: "",
-    basePrice: "", // Changed to ""
-    minStock: "",  // Changed to ""
-    stock: "",     // Changed to ""
+    basePrice: "",
+    minStock: "",
+    stock: "",
     categoryId: "",
     baseUnitId: "",
     ean: "",
     active: true,
-    prices: {}, // { priceListId: price }
-    branchMinStocks: {}, // { branchId: minStock }
-    branchQuantities: {} // { branchId: quantity }
+    prices: {},
+    branchMinStocks: {},
+    branchQuantities: {}
   });
   const [loading, setLoading] = useState(false);
   const [importModal, setImportModal] = useState(false);
-  const [transferModal, setTransferModal] = useState<any[] | null>(null); // [NEW]
+  const [transferModal, setTransferModal] = useState<any[] | null>(null);
   const [importing, setImporting] = useState(false);
   const [previewData, setPreviewData] = useState<any[]>([]);
-
-  const searchParams = useSearchParams();
-  const initialFilter = searchParams.get("filterMode") || "all";
-
-  const [filterMode, setFilterMode] = useState(initialFilter);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]); // [NEW] Selection State
   const [showFilters, setShowFilters] = useState(false);
@@ -581,8 +581,63 @@ function ProductosContent() {
       </div>
 
       <div className="card p-0 border border-gray-100 shadow-sm overflow-hidden">
-        <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-sm min-w-[800px] md:min-w-full">
+        {/* Mobile View: Cards */}
+        <div className="grid grid-cols-1 gap-4 p-4 md:hidden">
+          {(products ?? []).map(p => {
+            const stock = p.displayStock ?? (p.stocks?.[0]?.quantity || 0);
+            const unit = p.baseUnit?.symbol || "-";
+            const isSelected = selectedIds.includes(p.id);
+            return (
+              <div
+                key={p.id}
+                className={`p-4 rounded-2xl border transition-all ${isSelected ? 'bg-blue-50 border-blue-200 shadow-md ring-1 ring-blue-100' : 'bg-white border-gray-100 shadow-sm'}`}
+                onClick={() => toggleSelect(p.id)}
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-black text-gray-900 text-lg leading-tight">{p.name}</span>
+                      {!p.active && <span className="text-[9px] font-black bg-red-100 text-red-600 px-1.5 py-0.5 rounded-full uppercase tracking-tighter">Inactivo</span>}
+                    </div>
+                    <p className="text-[10px] font-bold text-gray-400 font-mono mt-1 uppercase tracking-tighter">COD: {p.code}</p>
+                  </div>
+                  <div className={`shrink-0 inline-flex items-center px-3 py-1 rounded-full font-bold text-xs ${Number(stock) <= 0 ? "bg-red-100 text-red-600" :
+                    Number(stock) < Number(p.displayMinStock || 0) ? "bg-orange-100 text-orange-600" :
+                      "bg-green-100 text-green-600"
+                    }`}>
+                    {formatStock(stock, p.baseUnit)} {unit}
+                  </div>
+                </div>
+
+                <div className="flex items-end justify-between gap-4 mt-2">
+                  <div className="space-y-2">
+                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg font-medium text-[10px] uppercase">
+                      {p.category?.name || "General"}
+                    </span>
+                    <div className={`font-black text-xl ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
+                      {formatPrice(p.displayPrice, settings.useDecimals)}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => openEdit(p)} className="p-2.5 bg-gray-50 text-blue-600 rounded-xl border border-gray-100">
+                      <Edit2 className="w-5 h-5" />
+                    </button>
+                    {(canDelete || isSupervisor) && (
+                      <button onClick={() => remove(p.id)} className="p-2.5 bg-gray-50 text-red-500 rounded-xl border border-gray-100">
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop View: Table */}
+        <div className="hidden md:block overflow-x-auto custom-scrollbar">
+          <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="px-6 py-4 text-left font-bold text-gray-600 uppercase tracking-wider w-10">
@@ -652,20 +707,14 @@ function ProductosContent() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex justify-center gap-1 transition-opacity">
-
-                        {/* Edit Button */}
                         <button onClick={() => openEdit(p)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-blue-600" title="Editar">
                           <Edit2 className="w-4 h-4" />
                         </button>
-
-                        {/* Transfer Button - Only if module enabled */}
                         {settings.isClearingEnabled && (
                           <button onClick={() => setTransferModal([p])} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-orange-600" title="Traspasar">
                             <ArrowRightLeft className="w-4 h-4" />
                           </button>
                         )}
-
-                        {/* Delete Button - Show if Admin/Gerente OR Supervisor */}
                         {(canDelete || isSupervisor) && (
                           <button onClick={() => remove(p.id)} className="p-2 hover:bg-white hover:shadow-md border border-transparent hover:border-gray-100 rounded-xl transition text-red-500" title="Eliminar">
                             <Trash2 className="w-4 h-4" />
@@ -680,8 +729,9 @@ function ProductosContent() {
           </table>
         </div>
 
+
         {/* Pagination Controls */}
-        {totalPages > 1 && (
+        {products.length > 0 && (
           <div className="flex items-center justify-between px-6 py-4 bg-gray-50/50 border-t border-gray-100 italic">
             <div className="flex items-center gap-2 text-xs text-gray-500 font-bold">
               Mostrando {products.length} de {totalItems} productos

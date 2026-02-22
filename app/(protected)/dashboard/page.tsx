@@ -37,8 +37,7 @@ export default function DashboardPage() {
       // This matches the user request indirectly (default view shows up to today).
       // Let's keep endDate empty in state but verify link logic.
       branchId: "",
-      userId: "",
-      paymentMethod: ""
+      userId: ""
     };
   });
 
@@ -69,7 +68,6 @@ export default function DashboardPage() {
     if (filters.endDate) params.append("endDate", filters.endDate);
     if (filters.branchId) params.append("branchId", filters.branchId);
     if (filters.userId) params.append("userId", filters.userId);
-    if (filters.paymentMethod) params.append("paymentMethod", filters.paymentMethod);
 
     fetch(`/api/dashboard?${params.toString()}`)
       .then(r => r.json())
@@ -85,7 +83,7 @@ export default function DashboardPage() {
     const y = firstDay.getFullYear();
     const m = String(firstDay.getMonth() + 1).padStart(2, '0');
     const d = String(firstDay.getDate()).padStart(2, '0');
-    setFilters({ startDate: `${y}-${m}-${d}`, endDate: "", branchId: "", userId: "", paymentMethod: "" });
+    setFilters({ startDate: `${y}-${m}-${d}`, endDate: "", branchId: "", userId: "" });
   };
 
   const [showFilters, setShowFilters] = useState(false);
@@ -98,7 +96,7 @@ export default function DashboardPage() {
     </div>
   );
 
-  const hasActiveFilters = filters.branchId || filters.userId || filters.paymentMethod || filters.endDate;
+  const hasActiveFilters = filters.branchId || filters.userId || filters.endDate;
 
   return (
     <div className="space-y-6">
@@ -173,10 +171,13 @@ export default function DashboardPage() {
                     else if (!supId) setFilters({ ...filters, branchId: "" });
                   }}
                 >
-                  <option value="">Todos</option>
-                  {(usersList || []).filter((u: any) => u.role === "SUPERVISOR").map((s: any) => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
+                  <option value="">Todos los Supervisores</option>
+                  {(usersList || [])
+                    .filter((u: any) => u.role === "SUPERVISOR")
+                    .filter((u: any) => !filters.branchId || u.branchId === filters.branchId)
+                    .map((s: any) => (
+                      <option key={s.id} value={s.id}>{s.name}</option>
+                    ))}
                 </select>
               </div>
             )}
@@ -184,12 +185,23 @@ export default function DashboardPage() {
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Sucursal</label>
               <select
-                className="input text-sm py-1.5 w-full"
+                className="input text-sm py-1.5 w-full font-bold"
                 value={filters.branchId}
-                onChange={e => setFilters({ ...filters, branchId: e.target.value })}
+                onChange={e => {
+                  const newBranchId = e.target.value;
+                  const currentUser = usersList.find(u => u.id === filters.userId);
+                  let newUserId = filters.userId;
+
+                  // Reset user filter if inconsistent with NEW branch (unless global)
+                  if (newBranchId && currentUser && currentUser.branchId !== newBranchId) {
+                    newUserId = "";
+                  }
+
+                  setFilters({ ...filters, branchId: newBranchId, userId: newUserId });
+                }}
                 disabled={!canFilterBranch}
               >
-                <option value="">{canFilterBranch ? "Todas" : "Mi Sucursal"}</option>
+                <option value="">{canFilterBranch ? "Todas las Sucursales" : "Mi Sucursal"}</option>
                 {Array.isArray(branches) && branches.map((b: any) => (
                   <option key={b.id} value={b.id}>{b.name}</option>
                 ))}
@@ -198,25 +210,20 @@ export default function DashboardPage() {
 
             <div>
               <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Vendedor</label>
-              <select className="input text-sm py-1.5 w-full" value={filters.userId} onChange={e => setFilters({ ...filters, userId: e.target.value })}>
-                <option value="">Todos</option>
-                {Array.isArray(usersList) && usersList.map((u: any) => (
-                  <option key={u.id} value={u.id}>{u.name}</option>
-                ))}
+              <select
+                className="input text-sm py-1.5 w-full"
+                value={filters.userId}
+                onChange={e => setFilters({ ...filters, userId: e.target.value })}
+              >
+                <option value="">Todos los Vendedores</option>
+                {(Array.isArray(usersList) ? usersList : [])
+                  .filter((u: any) => !filters.branchId || u.branchId === filters.branchId)
+                  .map((u: any) => (
+                    <option key={u.id} value={u.id}>{u.name}</option>
+                  ))}
               </select>
             </div>
 
-            <div>
-              <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Método</label>
-              <select className="input text-sm py-1.5 w-full" value={filters.paymentMethod} onChange={e => setFilters({ ...filters, paymentMethod: e.target.value })}>
-                <option value="">Todos</option>
-                <option value="EFECTIVO">Efectivo</option>
-                <option value="TARJETA">Tarjeta</option>
-                <option value="TRANSFERENCIA">Transferencia</option>
-                <option value="QR">QR</option>
-                <option value="MIXTO">Mixto</option>
-              </select>
-            </div>
           </div>
         </div>
       )}
@@ -341,32 +348,35 @@ export default function DashboardPage() {
             </div>
           )}
         </>
-      )}
+      )
+      }
 
       {/* FOOTER LINKS (Only for Supervisor/Admin as Cashier has them inline above) */}
-      {isSupervisorOrHigher && (
-        <div className="grid md:grid-cols-2 gap-4 pt-4">
-          <Link href="/pos" className="card hover:shadow-xl hover:-translate-y-1 transition duration-300 flex items-center gap-5 border border-gray-100 group">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 transition duration-300">
-              <ShoppingCart className="w-8 h-8 text-blue-600 group-hover:text-white transition duration-300" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Punto de Venta</h3>
-              <p className="text-gray-500">Realizar ventas y facturación rápida</p>
-            </div>
-          </Link>
-          <Link href="/verificador" className="card hover:shadow-xl hover:-translate-y-1 transition duration-300 flex items-center gap-5 border border-gray-100 group">
-            <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center group-hover:bg-green-600 transition duration-300">
-              <Package className="w-8 h-8 text-green-600 group-hover:text-white transition duration-300" />
-            </div>
-            <div>
-              <h3 className="text-lg font-bold text-gray-900">Verificador de Precios</h3>
-              <p className="text-gray-500">Consulta rápida de stock y precios</p>
-            </div>
-          </Link>
-        </div>
-      )}
-    </div>
+      {
+        isSupervisorOrHigher && (
+          <div className="grid md:grid-cols-2 gap-4 pt-4">
+            <Link href="/pos" className="card hover:shadow-xl hover:-translate-y-1 transition duration-300 flex items-center gap-5 border border-gray-100 group">
+              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:bg-blue-600 transition duration-300">
+                <ShoppingCart className="w-8 h-8 text-blue-600 group-hover:text-white transition duration-300" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Punto de Venta</h3>
+                <p className="text-gray-500">Realizar ventas y facturación rápida</p>
+              </div>
+            </Link>
+            <Link href="/verificador" className="card hover:shadow-xl hover:-translate-y-1 transition duration-300 flex items-center gap-5 border border-gray-100 group">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center group-hover:bg-green-600 transition duration-300">
+                <Package className="w-8 h-8 text-green-600 group-hover:text-white transition duration-300" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Verificador de Precios</h3>
+                <p className="text-gray-500">Consulta rápida de stock y precios</p>
+              </div>
+            </Link>
+          </div>
+        )
+      }
+    </div >
   );
 }
 

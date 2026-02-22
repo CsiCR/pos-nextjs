@@ -401,27 +401,28 @@ export default function HistorialPage() {
                     ) : (
                         <div className="grid gap-3">
                             {sales.map(sale => (
-                                <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex items-center justify-between ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
+                                <div key={sale.id} className={`group rounded-2xl p-4 border shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${sale.type === 'REFUND' ? 'bg-red-50 border-red-100 hover:border-red-200' : 'bg-white border-gray-100 hover:border-blue-100'}`}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${sale.type === 'REFUND' ? 'bg-red-100 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
                                             {sale.type === 'REFUND' ? <ArrowUpDown className="w-6 h-6" /> : <Hash className="w-6 h-6" />}
                                         </div>
-                                        <div>
-                                            <div className="flex items-center gap-2">
-                                                <span className={`font-black text-lg ${sale.type === 'REFUND' ? 'text-red-700' : 'text-gray-800'}`}>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 flex-wrap">
+                                                <span className={`font-black text-lg truncate ${sale.type === 'REFUND' ? 'text-red-700' : 'text-gray-800'}`}>
                                                     #{sale.number || sale.id.slice(-6).toUpperCase()}
                                                 </span>
-                                                <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase">{sale.paymentMethod}</span>
-                                                {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase">NOTA CRÉDITO</span>}
+                                                <span className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded font-bold uppercase whitespace-nowrap">{sale.paymentMethod}</span>
+                                                {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase whitespace-nowrap">NOTA CRÉDITO</span>}
                                             </div>
-                                            <div className="flex items-center gap-3 text-xs text-gray-500 mt-0.5">
-                                                <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
-                                                <span className="flex items-center gap-1"><User className="w-3 h-3" /> {sale.user?.name}</span>
+                                            <div className="flex items-center gap-3 text-xs text-gray-500 mt-1 flex-wrap">
+                                                <span className="flex items-center gap-1 whitespace-nowrap"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
+                                                <span className="flex items-center gap-1 whitespace-nowrap truncate"><User className="w-3 h-3" /> {sale.user?.name}</span>
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="flex items-center gap-8">
-                                        <div className="text-right">
+                                    <div className="flex items-center justify-between sm:justify-end gap-8 border-t sm:border-t-0 pt-3 sm:pt-0">
+                                        <div className="text-left sm:text-right">
+                                            <p className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter sm:hidden">Total</p>
                                             {Number(sale.discount) !== 0 || Number(sale.adjustment) !== 0 ? (
                                                 <TooltipProvider>
                                                     <Tooltip>
@@ -460,7 +461,60 @@ export default function HistorialPage() {
                 ) : (
                     // ITEMS TABLE VIEW
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                        <div className="overflow-x-auto">
+                        {/* Mobile Items View */}
+                        <div className="grid grid-cols-1 gap-3 p-3 md:hidden">
+                            {items.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400">Sin resultados</div>
+                            ) : items.map((item) => (
+                                <div key={item.id} className={`p-4 rounded-xl border transition-all ${item.sale?.type === 'REFUND' ? 'bg-red-50 border-red-100 ring-1 ring-red-50' : 'bg-white border-gray-100 shadow-sm'}`}>
+                                    <div className="flex justify-between items-start mb-2">
+                                        <div className="flex-1">
+                                            <p className="font-black text-gray-900 leading-tight">{item.product?.name || "Producto Eliminado"}</p>
+                                            <div className="flex items-center gap-2 mt-1">
+                                                <span className="text-[10px] font-bold text-gray-500 font-mono">#{item.sale?.number || "N/A"}</span>
+                                                <span className="text-[10px] font-medium text-gray-400 uppercase">{formatDateTime(item.sale?.createdAt)}</span>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={async () => {
+                                                if (item.sale?.id) {
+                                                    setLoading(true);
+                                                    const res = await fetch(`/api/sales/${item.sale.id}`);
+                                                    if (res.ok) {
+                                                        const fullSale = await res.json();
+                                                        setSelectedSale(fullSale);
+                                                    }
+                                                    setLoading(false);
+                                                }
+                                            }}
+                                            className="p-2 bg-gray-50 text-gray-400 rounded-lg"
+                                        >
+                                            <Eye className="w-4 h-4" />
+                                        </button>
+                                    </div>
+                                    <div className="flex items-end justify-between border-t pt-3 mt-3">
+                                        <div className="flex flex-col">
+                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sucursal / Vendedor</span>
+                                            <p className="text-[11px] text-gray-600 font-bold truncate max-w-[150px] uppercase">
+                                                {item.sale?.branch?.name || "-"} • {item.sale?.user?.name || "N/A"}
+                                            </p>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase">
+                                                {item.quantity} {item.quantity > 1 ? 'unidades' : 'unidad'}
+                                            </p>
+                                            <p className={`text-lg font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
+                                                {item.sale?.type === 'REFUND' && "-"}
+                                                {formatPrice(roundCurrency(item.price * item.quantity), settings.useDecimals)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto">
                             <table className="w-full text-left text-sm">
                                 <thead className="bg-gray-50 border-b border-gray-100 text-xs font-black text-gray-500 uppercase tracking-wider">
                                     <tr>
@@ -549,11 +603,6 @@ export default function HistorialPage() {
                                             <td className="px-6 py-3 text-center">
                                                 <button
                                                     onClick={async () => {
-                                                        // Need to fetch full sale for ticket? Or if item.sale has enough info?
-                                                        // Ticket component usually needs full items list.
-                                                        // We can just open the ticket modal and let it fetch or pass the sale ID.
-                                                        // Current Ticket component takes `sale` object. 
-                                                        // We might need to fetch the full sale details first.
                                                         if (item.sale?.id) {
                                                             setLoading(true);
                                                             const res = await fetch(`/api/sales/${item.sale.id}`);
@@ -577,8 +626,8 @@ export default function HistorialPage() {
                         </div>
                     </div>
                 )}
-                {/* Pagination Footer - Conditional based on viewMode and data presence */}
-                {((viewMode === "sales" && sales.length > 0) || (viewMode === "items" && items.length > 0)) && (
+                {/* Pagination Footer - Always visible if viewed */}
+                {viewMode && (
                     <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500 font-medium mt-auto">
                         <div>
                             Mostrando <span className="text-gray-900 font-bold">
