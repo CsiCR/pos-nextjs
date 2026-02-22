@@ -110,6 +110,33 @@ export async function GET(req: Request) {
     prisma.sale.aggregate({ where, _sum: { total: true } })
   ]);
 
+  let totalAmount = Number(totalSum._sum?.total || 0);
+
+  // If filtering by payment method, we need the sum of specific parts (Mixed Payments support)
+  if (paymentMethod) {
+    const paymentMethodEnum = paymentMethod as any;
+    const [detailsSum, fallbackSum] = await Promise.all([
+      prisma.paymentDetail.aggregate({
+        where: {
+          method: paymentMethodEnum,
+          sale: where
+        },
+        _sum: { amount: true }
+      }),
+      prisma.sale.aggregate({
+        where: {
+          AND: [
+            where,
+            { paymentMethod: paymentMethodEnum },
+            { paymentDetails: { none: {} } }
+          ]
+        },
+        _sum: { total: true }
+      })
+    ]);
+    totalAmount = Number(detailsSum._sum?.amount || 0) + Number(fallbackSum._sum?.total || 0);
+  }
+
   const sales = await (prisma as any).sale.findMany({
     where,
     include: {
@@ -130,7 +157,7 @@ export async function GET(req: Request) {
       pages: Math.ceil(totalSalesCount / pageSize),
       currentPage: page,
       pageSize,
-      totalAmount: totalSum._sum?.total || 0
+      totalAmount
     }
   });
 }
