@@ -53,9 +53,10 @@ export async function GET(req: Request) {
 
     // 2. Filters
     if (startDate || endDate) {
-        saleWhere.createdAt = {};
-        if (startDate) saleWhere.createdAt.gte = getZonedStartOfDay(startDate);
-        if (endDate) saleWhere.createdAt.lte = getZonedEndOfDay(endDate);
+        const dateRange: any = {};
+        if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
+        if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
+        itemWhere.AND.push({ sale: { createdAt: dateRange } });
     }
 
     if (userId) saleWhere.userId = userId;

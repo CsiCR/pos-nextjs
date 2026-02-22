@@ -14,6 +14,11 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const branchId = searchParams.get("branchId") || userBranchId;
         const status = searchParams.get("status");
+        const startDate = searchParams.get("startDate");
+        const endDate = searchParams.get("endDate");
+        const page = parseInt(searchParams.get("page") || "1");
+        const pageSize = parseInt(searchParams.get("pageSize") || "100");
+        const skip = (page - 1) * pageSize;
 
         // Check if module is enabled
         const settings = (await prisma.systemSetting.findUnique({ where: { key: "global" } })) as any;
@@ -21,22 +26,36 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: "El módulo de Clearing está desactivado" }, { status: 403 });
         }
 
-        const where: any = {};
+        const where: any = { AND: [] };
         if (userRole === "SUPERVISOR" || userRole === "CAJERO") {
-            where.OR = [
-                { sourceBranchId: userBranchId },
-                { targetBranchId: userBranchId }
-            ];
+            where.AND.push({
+                OR: [
+                    { sourceBranchId: userBranchId },
+                    { targetBranchId: userBranchId }
+                ]
+            });
         } else if (branchId) {
-            where.OR = [
-                { sourceBranchId: branchId },
-                { targetBranchId: branchId }
-            ];
+            where.AND.push({
+                OR: [
+                    { sourceBranchId: branchId },
+                    { targetBranchId: branchId }
+                ]
+            });
         }
 
         if (status) {
-            where.status = status;
+            where.AND.push({ status });
         }
+
+        if (startDate || endDate) {
+            const { getZonedStartOfDay, getZonedEndOfDay } = require("@/lib/utils");
+            const dateRange: any = {};
+            if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
+            if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
+            where.AND.push({ createdAt: dateRange });
+        }
+
+        const totalTransfers = await prisma.stockTransfer.count({ where });
 
         const transfers = await (prisma as any).stockTransfer.findMany({
             where,
@@ -52,10 +71,20 @@ export async function GET(req: Request) {
                     }
                 }
             },
-            orderBy: { createdAt: "desc" }
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: pageSize
         });
 
-        return NextResponse.json(transfers);
+        return NextResponse.json({
+            transfers,
+            pagination: {
+                total: totalTransfers,
+                pages: Math.ceil(totalTransfers / pageSize),
+                currentPage: page,
+                pageSize
+            }
+        });
     } catch (error) {
         console.error("Error fetching transfers:", error);
         return NextResponse.json({ error: "Error interno" }, { status: 500 });

@@ -85,9 +85,24 @@ export async function GET(req: Request) {
 
         const { searchParams } = new URL(req.url);
         const branchId = searchParams.get("branchId");
+        const startDate = searchParams.get("startDate");
+        const endDate = searchParams.get("endDate");
+        const page = parseInt(searchParams.get("page") || "1");
+        const pageSize = parseInt(searchParams.get("pageSize") || "100");
+        const skip = (page - 1) * pageSize;
 
-        const where: any = {};
-        if (branchId) where.branchId = branchId;
+        const where: any = { AND: [] };
+        if (branchId) where.AND.push({ branchId });
+
+        if (startDate || endDate) {
+            const { getZonedStartOfDay, getZonedEndOfDay } = require("@/lib/utils");
+            const dateRange: any = {};
+            if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
+            if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
+            where.AND.push({ createdAt: dateRange });
+        }
+
+        const totalEntries = await prisma.stockEntry.count({ where });
 
         const entries = await (prisma as any).stockEntry.findMany({
             where,
@@ -100,10 +115,20 @@ export async function GET(req: Request) {
                     }
                 }
             },
-            orderBy: { createdAt: "desc" }
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: pageSize
         });
 
-        return NextResponse.json(entries);
+        return NextResponse.json({
+            entries,
+            pagination: {
+                total: totalEntries,
+                pages: Math.ceil(totalEntries / pageSize),
+                currentPage: page,
+                pageSize
+            }
+        });
     } catch (error) {
         console.error("Error fetching stock entries:", error);
         return NextResponse.json({ error: "Error al cargar los ingresos" }, { status: 500 });
