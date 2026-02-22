@@ -30,48 +30,37 @@ export async function GET(req: Request) {
     const filterPaymentMethod = searchParams.get("paymentMethod");
 
     // Build where clause
-    const whereClause: any = {};
+    const whereClause: any = { AND: [] };
 
-    if (branchId && !isGerente && !isSupervisor /* Admin is also supervisor in logic but we want global */) {
-      // Wait, logic check:
-      // const isSupervisor = role === SUPERVISOR || role === ADMIN
-      // If Role is ADMIN, isSupervisor is true.
-      // We want ADMIN to see GLOBAL.
-      // Current logic: if (branchId && !isGerente) -> filter by branch.
-      // We need: if (branchId && !isGerente && role !== 'ADMIN') -> filter by branch.
-    }
-
-    // 40. Correct logic implementation:
     const isAdmin = (session.user as any).role === "ADMIN";
 
-    // SCOPING RULES
-    // Supervisor: MUST see only their branch data.
-    // Gerente (Manager): Can see ALL, or filter by specific branch.
-    // Admin: Can see ALL, or filter by specific branch.
-
     if (branchId && !isGerente && !isAdmin) {
-      // Supervisors (non-admin/non-gerente) bound to their branch
-      whereClause.branchId = branchId;
+      whereClause.AND.push({ branchId });
     } else if (filterBranchId) {
-      // Gerente OR Admin can filter by specific branch
-      whereClause.branchId = filterBranchId;
+      whereClause.AND.push({ branchId: filterBranchId });
     }
 
     if (filterUserId) {
-      whereClause.userId = filterUserId;
+      whereClause.AND.push({ userId: filterUserId });
     }
 
     if (filterStartDate || filterEndDate) {
-      whereClause.createdAt = {};
-      if (filterStartDate) whereClause.createdAt.gte = getZonedStartOfDay(filterStartDate);
-      if (filterEndDate) whereClause.createdAt.lte = getZonedEndOfDay(filterEndDate);
+      const dateRange: any = {};
+      if (filterStartDate) dateRange.gte = getZonedStartOfDay(filterStartDate);
+      if (filterEndDate) dateRange.lte = getZonedEndOfDay(filterEndDate);
+      whereClause.AND.push({ createdAt: dateRange });
     }
 
     if (filterPaymentMethod) {
-      whereClause.paymentMethod = filterPaymentMethod;
+      whereClause.AND.push({
+        OR: [
+          { paymentMethod: filterPaymentMethod },
+          { paymentDetails: { some: { method: filterPaymentMethod } } }
+        ]
+      });
     }
 
-    const effectiveBranchId = whereClause.branchId;
+    const effectiveBranchId = (branchId && !isGerente && !isAdmin) ? branchId : filterBranchId;
 
     // Data Aggregation
     let totalSales = 0;
@@ -93,8 +82,6 @@ export async function GET(req: Request) {
 
     for (const sale of allSales) {
       const saleTotal = Number(sale.total);
-      // Allow negative totals for Refunds
-      // if (saleTotal <= 0) continue;
 
       totalSales += saleTotal;
       totalCount++;
@@ -105,9 +92,7 @@ export async function GET(req: Request) {
       }
 
       // --- CLEARING CALCULATION ---
-      // Determine how much of this sale belongs to OTHER branches (Debt)
       let saleDebt = 0;
-      // Only if we are viewing a specific branch context (otherwise "Global" clearing is meaningless or matrix-like)
       if (effectiveBranchId) {
         for (const item of (sale.items || [])) {
           if (item.product.branchId && item.product.branchId !== effectiveBranchId) {
@@ -119,7 +104,7 @@ export async function GET(req: Request) {
       const debtRatio = saleTotal > 0 ? saleDebt / saleTotal : 0;
 
       // --- METHOD DISTRIBUTION ---
-      // Distribute Total and Clearing Debt across methods
+      const countedMethods = new Set<string>();
       if (sale.paymentDetails && sale.paymentDetails.length > 0) {
         for (const pd of sale.paymentDetails) {
           const m = pd.method;
@@ -128,14 +113,17 @@ export async function GET(req: Request) {
 
           if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
           methodStats[m].total += amount;
-          methodStats[m].count += 1;
+          if (!countedMethods.has(m)) {
+            methodStats[m].count += 1;
+            countedMethods.add(m);
+          }
           methodStats[m].clearing += clearingPart;
         }
       } else {
         // Fallback single method
         const m = sale.paymentMethod;
         const amount = saleTotal;
-        const clearingPart = amount * debtRatio; // == saleDebt
+        const clearingPart = amount * debtRatio;
 
         if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
         methodStats[m].total += amount;
@@ -241,12 +229,16 @@ export async function GET(req: Request) {
     const methodStats: Record<string, { total: number, count: number }> = {};
     if (shift?.sales) {
       for (const sale of shift.sales) {
+        const countedMethods = new Set<string>();
         if (sale.paymentDetails && sale.paymentDetails.length > 0) {
           for (const pd of sale.paymentDetails) {
             const m = pd.method;
             if (!methodStats[m]) methodStats[m] = { total: 0, count: 0 };
             methodStats[m].total += Number(pd.amount);
-            methodStats[m].count += 1;
+            if (!countedMethods.has(m)) {
+              methodStats[m].count += 1;
+              countedMethods.add(m);
+            }
           }
         } else {
           const m = sale.paymentMethod;
