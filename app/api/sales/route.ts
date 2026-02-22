@@ -38,57 +38,60 @@ export async function GET(req: Request) {
     targetBranchId = sessionBranchId;
   }
 
-  const where: any = shiftId
-    ? { shiftId }
-    : (targetBranchId ? { branchId: targetBranchId } : {});
+  const where: any = { AND: [] };
+  if (shiftId) where.AND.push({ shiftId });
+  else if (targetBranchId) where.AND.push({ branchId: targetBranchId });
 
   // If requesting specific user
   const queryUserId = searchParams.get("userId");
-  if (queryUserId) where.userId = queryUserId;
+  if (queryUserId) where.AND.push({ userId: queryUserId });
 
   // If Cajero (and not supervisor/admin), force userId? 
-  // Code previously forced userId: session.user.id if !isSupervisor. 
-  // Let's restore that logic for Cajeros.
   const isCajero = !isSupervisor && !isGlobalAdmin;
   if (isCajero) {
-    where.userId = session.user.id;
+    where.AND.push({ userId: session.user.id });
   }
 
   if (startDate || endDate) {
-    where.createdAt = {};
-    if (startDate) where.createdAt.gte = getZonedStartOfDay(startDate);
-    if (startDate) where.createdAt.gte = getZonedStartOfDay(startDate);
-    if (endDate) where.createdAt.lte = getZonedEndOfDay(endDate);
+    const dateRange: any = {};
+    if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
+    if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
+    where.AND.push({ createdAt: dateRange });
   }
 
   // Search by Ticket Number
   const ticketNumber = searchParams.get("ticketNumber");
   if (ticketNumber) {
-    where.number = { contains: ticketNumber, mode: 'insensitive' };
+    where.AND.push({ number: { contains: ticketNumber, mode: 'insensitive' } });
   }
 
   // Search by Payment Method
   const paymentMethod = searchParams.get("paymentMethod");
   if (paymentMethod) {
-    where.paymentMethod = paymentMethod;
+    where.AND.push({
+      OR: [
+        { paymentMethod: paymentMethod },
+        { paymentDetails: { some: { method: paymentMethod } } }
+      ]
+    });
   }
 
   // Branch Name Search
   const branchName = searchParams.get("branchName");
   if (branchName) {
-    where.branch = { name: { contains: branchName, mode: 'insensitive' } };
+    where.AND.push({ branch: { name: { contains: branchName, mode: 'insensitive' } } });
   }
 
   // Seller Name Search
   const sellerName = searchParams.get("sellerName");
   if (sellerName) {
-    where.user = { name: { contains: sellerName, mode: 'insensitive' } };
+    where.AND.push({ user: { name: { contains: sellerName, mode: 'insensitive' } } });
   }
 
   // Global Search (Ticket, Seller or Amount)
   const search = searchParams.get("search");
   if (search) {
-    where.OR = [
+    const searchConditions: any[] = [
       { number: { contains: search, mode: 'insensitive' } },
       { user: { name: { contains: search, mode: 'insensitive' } } },
       { notes: { contains: search, mode: 'insensitive' } }
@@ -96,8 +99,9 @@ export async function GET(req: Request) {
     // Check if search is a valid number for total comparison
     const searchNum = parseFloat(search);
     if (!isNaN(searchNum)) {
-      where.OR.push({ total: searchNum });
+      searchConditions.push({ total: searchNum });
     }
+    where.AND.push({ OR: searchConditions });
   }
 
   // Get Total Count for Pagination

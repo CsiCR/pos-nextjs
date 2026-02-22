@@ -231,10 +231,10 @@ export default function DashboardPage() {
       {isSupervisorOrHigher ? (
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-            <Link href={`/historial?view=items&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
+            <Link href={`/historial?view=sales&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={DollarSign} label="Ventas Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} ventas`} color="blue" />
             </Link>
-            <Link href={`/historial?view=items&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
+            <Link href={`/historial?view=sales&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
               <StatCard icon={TrendingUp} label="Ventas Totales" value={`$${(data?.totalSales || 0).toLocaleString()}`} sub={`${data?.totalCount || 0} ventas`} color="green" />
             </Link>
             <Link href="/productos" className="block">
@@ -254,7 +254,7 @@ export default function DashboardPage() {
                   {(data?.salesByMethod || []).map((m: any) => (
                     <Link
                       key={m.paymentMethod}
-                      href={`/historial?view=items&paymentMethod=${m.paymentMethod}&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`}
+                      href={`/historial?view=sales&paymentMethod=${m.paymentMethod}&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`}
                       className="bg-gray-50 p-4 rounded-xl border border-gray-100 hover:border-blue-300 hover:shadow-md transition block"
                     >
                       <p className="text-sm text-gray-500 font-medium mb-1">{m.paymentMethod}</p>
