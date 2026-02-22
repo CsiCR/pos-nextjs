@@ -23,7 +23,7 @@ export default function HistorialPage() {
     const [items, setItems] = useState<any[]>([]); // For Items Mode
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
-    const [pagination, setPagination] = useState({ currentPage: 1, pages: 1, total: 0 });
+    const [pagination, setPagination] = useState({ currentPage: 1, pages: 1, total: 0, totalAmount: 0 });
 
     const userRole = (session?.user as any)?.role;
     const isAdmin = userRole === "ADMIN";
@@ -106,7 +106,12 @@ export default function HistorialPage() {
             const res = await fetch(url);
             const data = await res.json();
             setSales(data.sales || []);
-            setPagination(prev => ({ ...prev, pages: data.pagination?.pages || 1, total: data.pagination?.total || 0 }));
+            setPagination(prev => ({
+                ...prev,
+                pages: data.pagination?.pages || 1,
+                total: data.pagination?.total || 0,
+                totalAmount: data.pagination?.totalAmount || 0
+            }));
         } else {
             params.append("page", pagination.currentPage.toString());
             params.append("pageSize", "100");
@@ -114,7 +119,12 @@ export default function HistorialPage() {
             const res = await fetch(url);
             const data = await res.json();
             setItems(data.items || []);
-            setPagination(prev => ({ ...prev, pages: data.pagination?.pages || 1, total: data.pagination?.total || 0 }));
+            setPagination(prev => ({
+                ...prev,
+                pages: data.pagination?.pages || 1,
+                total: data.pagination?.total || 0,
+                totalAmount: data.pagination?.totalAmount || 0
+            }));
         }
         setLoading(false);
     };
@@ -629,12 +639,21 @@ export default function HistorialPage() {
                 {/* Pagination Footer - Always visible if viewed */}
                 {viewMode && (
                     <div className="p-4 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500 font-medium mt-auto">
-                        <div>
-                            Mostrando <span className="text-gray-900 font-bold">
-                                {viewMode === "sales" ? sales.length : items.length}
-                            </span> de <span className="text-gray-900 font-bold">
-                                {pagination.total}
-                            </span> {viewMode === "sales" ? "comprobantes" : "ítems"}
+                        <div className="flex items-center gap-4">
+                            <div>
+                                Mostrando <span className="text-gray-900 font-bold">
+                                    {viewMode === "sales" ? sales.length : items.length}
+                                </span> de <span className="text-gray-900 font-bold">
+                                    {pagination.total}
+                                </span> {viewMode === "sales" ? "comprobantes" : "ítems"}
+                            </div>
+                            <div className="h-4 w-px bg-gray-300" />
+                            <div className="bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                                <span className="text-blue-600 uppercase tracking-tighter mr-1">Total:</span>
+                                <span className="text-blue-900 font-black text-sm">
+                                    {formatPrice(pagination.totalAmount)}
+                                </span>
+                            </div>
                         </div>
                         <div className="flex items-center gap-2">
                             <button

@@ -104,8 +104,11 @@ export async function GET(req: Request) {
     where.AND.push({ OR: searchConditions });
   }
 
-  // Get Total Count for Pagination
-  const totalSales = await prisma.sale.count({ where });
+  // Get Total Count and Sum for Pagination/Summary
+  const [totalSalesCount, totalSum] = await Promise.all([
+    prisma.sale.count({ where }),
+    prisma.sale.aggregate({ where, _sum: { total: true } })
+  ]);
 
   const sales = await (prisma as any).sale.findMany({
     where,
@@ -123,10 +126,11 @@ export async function GET(req: Request) {
   return NextResponse.json({
     sales,
     pagination: {
-      total: totalSales,
-      pages: Math.ceil(totalSales / pageSize),
+      total: totalSalesCount,
+      pages: Math.ceil(totalSalesCount / pageSize),
       currentPage: page,
-      pageSize
+      pageSize,
+      totalAmount: totalSum._sum?.total || 0
     }
   });
 }
