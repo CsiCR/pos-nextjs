@@ -2,26 +2,31 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
-    console.log('--- Estructura Raw de la Tabla Product ---');
+  try {
+    const result = await prisma.$queryRaw`
+      SELECT column_name, data_type, udt_name, is_nullable
+      FROM information_schema.columns
+      WHERE table_name = 'CustomerTransaction'
+    `;
+    console.log('--- COLUMNS ---');
+    result.forEach(row => {
+      console.log(`${row.column_name}: ${row.data_type} (${row.udt_name}) ${row.is_nullable}`);
+    });
 
-    const columns = await prisma.$queryRaw`
-    SELECT column_name, data_type 
-    FROM information_schema.columns 
-    WHERE table_name = 'Product';
-  `;
-
-    console.table(columns);
-
-    console.log('\n--- Buscando campos con valores sospechosos ---');
-    // Buscar cualquier columna que tenga "stock" o "quantity" en su nombre y ver sus valores
-    // Pero ya listamos las columnas arriba.
-
-    const sample = await prisma.$queryRaw`SELECT * FROM "Product" LIMIT 5`;
-    console.log('\nSample data (JSON):');
-    console.log(JSON.stringify(sample, (key, value) =>
-        typeof value === 'bigint' ? value.toString() : value, 2));
+    const enums = await prisma.$queryRaw`
+      SELECT t.typname as enum_name, e.enumlabel as enum_value
+      FROM pg_type t 
+      JOIN pg_enum e ON t.oid = e.enumtypid
+    `;
+    console.log('\n--- ENUMS ---');
+    enums.forEach(row => {
+      console.log(`${row.enum_name}: ${row.enum_value}`);
+    });
+  } catch (e) {
+    console.error('Error:', e);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
-main()
-    .catch(console.error)
-    .finally(() => prisma.$disconnect());
+main();

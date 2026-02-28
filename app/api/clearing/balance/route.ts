@@ -56,7 +56,8 @@ export async function GET(req: Request) {
                 }
             },
             include: {
-                items: { include: { product: { include: { branch: true } } } }
+                items: { include: { product: { include: { branch: true } } } },
+                paymentDetails: true
             }
         });
 
@@ -89,10 +90,18 @@ export async function GET(req: Request) {
                 debtsByBranch[creditorId].amount += debtAmount;
 
                 // Allocate payments
-                // Since PaymentDetails are removed, we treat the entire debt part as belonging to the primary PaymentMethod
-                const method = sale.paymentMethod; // EFECTIVO, etc.
-                const allocated = debtAmount;
-                debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
+                // If Mixed
+                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
+                    sale.paymentDetails.forEach(pd => {
+                        const method = pd.method;
+                        const allocated = Number(pd.amount) * ratio;
+                        debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
+                    });
+                } else {
+                    const method = sale.paymentMethod;
+                    const allocated = debtAmount;
+                    debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
+                }
             });
         });
 
@@ -109,7 +118,8 @@ export async function GET(req: Request) {
             },
             include: {
                 items: { include: { product: true } },
-                branch: true // The Debtor Branch info
+                branch: true, // The Debtor Branch info
+                paymentDetails: true
             }
         });
 
@@ -136,9 +146,17 @@ export async function GET(req: Request) {
 
                 const ratio = myShareInSale / saleTotal;
 
-                const method = sale.paymentMethod;
-                const allocated = myShareInSale;
-                receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
+                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
+                    sale.paymentDetails.forEach(pd => {
+                        const method = pd.method;
+                        const allocated = Number(pd.amount) * ratio;
+                        receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
+                    });
+                } else {
+                    const method = sale.paymentMethod;
+                    const allocated = myShareInSale;
+                    receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
+                }
             }
         });
 

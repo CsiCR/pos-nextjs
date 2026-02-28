@@ -1,4 +1,3 @@
-export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
@@ -8,16 +7,23 @@ export async function GET() {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-  const shift = await prisma.shift.findFirst({
-    where: { userId: session.user.id, closedAt: null },
-    include: {
-      branch: true,
-      sales: {
-        include: {
-          items: { include: { product: true } }
+  const userId = session.user.id;
+
+  try {
+    const shift = await prisma.shift.findFirst({
+      where: { userId, closedAt: null },
+      include: {
+        branch: true,
+        sales: {
+          include: {
+            paymentDetails: true
+          }
         }
       }
-    }
-  });
-  return NextResponse.json(shift);
+    });
+
+    return NextResponse.json(shift);
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Error" }, { status: 500 });
+  }
 }

@@ -28,7 +28,7 @@ export default function ConfigPage() {
     const [resetModal, setResetModal] = useState(false);
     const [resetConfirmText, setResetConfirmText] = useState("");
     const [resetLoading, setResetLoading] = useState(false);
-    const [settings, setSettings] = useState({ useDecimals: true, isClearingEnabled: false });
+    const [settings, setSettings] = useState({ useDecimals: true, isClearingEnabled: false, enableCustomerAccounts: false });
 
     const [branches, setBranches] = useState<any[]>([]);
     const [branchLoading, setBranchLoading] = useState(true);
@@ -252,6 +252,17 @@ export default function ConfigPage() {
                                     await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...settings, isClearingEnabled: v }) });
                                 }} disabled={!canEditGlobal} />
                                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
+                            </label>
+                        </div>
+
+                        <div className="flex items-center justify-between p-4 bg-blue-50 rounded-xl border border-blue-100">
+                            <div><p className="font-bold text-blue-900">Cuentas Corrientes</p><p className="text-xs text-blue-700">Habilitar crédito a clientes.</p></div>
+                            <label className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" checked={settings.enableCustomerAccounts} onChange={async (e) => {
+                                    const v = e.target.checked; setSettings({ ...settings, enableCustomerAccounts: v });
+                                    await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...settings, enableCustomerAccounts: v }) });
+                                }} disabled={!canEditGlobal} />
+                                <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                             </label>
                         </div>
 

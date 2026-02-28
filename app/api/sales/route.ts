@@ -12,12 +12,11 @@ export async function GET(req: Request) {
 
   const { searchParams } = new URL(req.url);
   const shiftId = searchParams.get("shiftId");
-  const queryBranchId = searchParams.get("branchId"); // [NEW] Read from URL
+  const queryBranchId = searchParams.get("branchId");
   const sessionBranchId = (session.user as any).branchId;
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
 
-  // Pagination
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "100");
   const skip = (page - 1) * pageSize;
@@ -26,31 +25,19 @@ export async function GET(req: Request) {
   const isGlobalAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "GERENTE";
 
   let targetBranchId = undefined;
-
-  if (isSupervisor) {
-    // Supervisor: Forced to session branch
-    targetBranchId = sessionBranchId;
-  } else if (isGlobalAdmin) {
-    // Admin: Use URL param if exists, otherwise All
-    targetBranchId = queryBranchId || undefined;
-  } else {
-    // Cajero: Forced to session branch (usually same as supervisor logic)
-    targetBranchId = sessionBranchId;
-  }
+  if (isSupervisor) targetBranchId = sessionBranchId;
+  else if (isGlobalAdmin) targetBranchId = queryBranchId || undefined;
+  else targetBranchId = sessionBranchId;
 
   const where: any = { AND: [] };
   if (shiftId) where.AND.push({ shiftId });
   else if (targetBranchId) where.AND.push({ branchId: targetBranchId });
 
-  // If requesting specific user
   const queryUserId = searchParams.get("userId");
   if (queryUserId) where.AND.push({ userId: queryUserId });
 
-  // If Cajero (and not supervisor/admin), force userId? 
   const isCajero = !isSupervisor && !isGlobalAdmin;
-  if (isCajero) {
-    where.AND.push({ userId: session.user.id });
-  }
+  if (isCajero) where.AND.push({ userId: session.user.id });
 
   if (startDate || endDate) {
     const dateRange: any = {};
@@ -59,75 +46,31 @@ export async function GET(req: Request) {
     where.AND.push({ createdAt: dateRange });
   }
 
-  // Search by Ticket Number
-  const ticketNumber = searchParams.get("ticketNumber");
-  if (ticketNumber) {
-    where.AND.push({ number: { contains: ticketNumber, mode: 'insensitive' } });
-  }
-
-  // Search by Payment Method
-  const paymentMethod = searchParams.get("paymentMethod");
-  if (paymentMethod) {
-    where.AND.push({ paymentMethod: paymentMethod });
-  }
-
-  // Branch Name Search
-  const branchName = searchParams.get("branchName");
-  if (branchName) {
-    where.AND.push({ branch: { name: { contains: branchName, mode: 'insensitive' } } });
-  }
-
-  // Seller Name Search
-  const sellerName = searchParams.get("sellerName");
-  if (sellerName) {
-    where.AND.push({ user: { name: { contains: sellerName, mode: 'insensitive' } } });
-  }
-
-  // Global Search (Ticket, Seller or Amount)
   const search = searchParams.get("search");
   if (search) {
-    const searchConditions: any[] = [
-      { number: { contains: search, mode: 'insensitive' } },
-      { user: { name: { contains: search, mode: 'insensitive' } } },
-      { notes: { contains: search, mode: 'insensitive' } }
-    ];
-    // Check if search is a valid number for total comparison
-    const searchNum = parseFloat(search);
-    if (!isNaN(searchNum)) {
-      searchConditions.push({ total: searchNum });
-    }
-    where.AND.push({ OR: searchConditions });
+    where.AND.push({
+      OR: [
+        { number: { contains: search, mode: 'insensitive' } },
+        { user: { name: { contains: search, mode: 'insensitive' } } },
+        { customer: { name: { contains: search, mode: 'insensitive' } } },
+        { notes: { contains: search, mode: 'insensitive' } }
+      ]
+    });
   }
 
-  // Get Total Count and Sum for Pagination/Summary
   const [totalSalesCount, totalSum] = await Promise.all([
     prisma.sale.count({ where }),
     prisma.sale.aggregate({ where, _sum: { total: true } })
   ]);
 
-  let totalAmount = Number(totalSum._sum?.total || 0);
-
-  // If filtering by payment method
-  if (paymentMethod) {
-    const paymentMethodEnum = paymentMethod as any;
-    const fallbackSum = await prisma.sale.aggregate({
-      where: {
-        AND: [
-          where,
-          { paymentMethod: paymentMethodEnum }
-        ]
-      },
-      _sum: { total: true }
-    });
-    totalAmount = Number(fallbackSum._sum?.total || 0);
-  }
-
-  const sales = await (prisma as any).sale.findMany({
+  const sales = await prisma.sale.findMany({
     where,
     include: {
       items: { include: { product: true, unit: true } },
       user: { select: { name: true } },
-      branch: { select: { name: true } }
+      branch: { select: { name: true } },
+      customer: { select: { name: true, document: true } },
+      paymentDetails: true
     },
     orderBy: { createdAt: "desc" },
     skip,
@@ -141,7 +84,7 @@ export async function GET(req: Request) {
       pages: Math.ceil(totalSalesCount / pageSize),
       currentPage: page,
       pageSize,
-      totalAmount
+      totalAmount: Number(totalSum._sum?.total || 0)
     }
   });
 }
@@ -159,15 +102,7 @@ export async function POST(req: Request) {
     if (!shift) return NextResponse.json({ error: "No hay turno abierto" }, { status: 400 });
 
     const branchId = shift.branchId || (session.user as any).branchId;
-
-    if (!branchId) {
-      console.error("❌ Error: Usuario sin sucursal asignada", { userId });
-      return NextResponse.json({ error: "El turno no tiene una sucursal asignada. Contacte al administrador." }, { status: 400 });
-    }
-
-    // Fetch System Settings for Rounding
-    const settings = await prisma.systemSetting.findUnique({ where: { key: "global" } });
-    const decimals = settings?.useDecimals ? 2 : 0;
+    if (!branchId) return NextResponse.json({ error: "Usuario sin sucursal asignada" }, { status: 400 });
 
     const body = await req.json();
     const {
@@ -177,117 +112,107 @@ export async function POST(req: Request) {
       discount = 0,
       priceListId,
       adjustment = 0,
-      notes
+      notes,
+      customerId,
+      paymentDetails = []
     } = body;
 
     if (!items?.length) return NextResponse.json({ error: "Carrito vacío" }, { status: 400 });
 
-    // Pre-fetch products to minimize work inside the transaction
-    const productIds = items.map((i: any) => i.productId);
-    const products = await (prisma as any).product.findMany({
-      where: { id: { in: productIds } },
-      include: { baseUnit: true }
-    });
-
-    const sale = await (prisma as any).$transaction(async (tx: any) => {
-      // Initialize with Prisma.Decimal to ensure precision
+    const sale = await prisma.$transaction(async (tx) => {
       let total = new Prisma.Decimal(0);
       const saleItems = [];
 
       for (const item of items) {
-        const product = products.find((p: any) => p.id === item.productId);
-        if (!product) {
-          console.error("❌ Producto no encontrado:", item.productId);
-          throw new Error(`Producto no encontrado: ${item.productId}`);
-        }
-
-        // Ensure everything is a Decimal before math
-        // item.price is number from JSON, product.basePrice is Decimal from DB
-        const itemPrice = item.price
-          ? new Prisma.Decimal(item.price)
-          : new Prisma.Decimal(product.basePrice || 0);
+        const product = await tx.product.findUnique({ where: { id: item.productId } });
+        if (!product) throw new Error(`Producto no encontrado: ${item.productId}`);
 
         const quantity = new Prisma.Decimal(item.quantity);
-        const discount = new Prisma.Decimal(item.discount || 0);
-
-        // precise calculation: (price * qty) - discount
-        // Round to configured decimals for currency consistency
-        let itemSubtotal = itemPrice.times(quantity).minus(discount);
-
-        // Manual Rounding using Number logic (Prisma Decimal lacks flexible round)
-        // Convert to number, round, back to Decimal. Safe for currency scale.
-        const numericSubtotal = itemSubtotal.toNumber();
-        const factor = Math.pow(10, decimals);
-        const roundedSubtotal = Math.round((numericSubtotal + Number.EPSILON) * factor) / factor;
-
-        itemSubtotal = new Prisma.Decimal(roundedSubtotal);
+        const itemPrice = new Prisma.Decimal(item.price || product.basePrice);
+        const itemDiscount = new Prisma.Decimal(item.discount || 0);
+        const itemSubtotal = itemPrice.times(quantity).minus(itemDiscount);
 
         total = total.plus(itemSubtotal);
 
         saleItems.push({
-          product: { connect: { id: item.productId } },
-          quantity: quantity,
+          productId: item.productId,
+          quantity,
           price: itemPrice,
-          discount: discount,
+          discount: itemDiscount,
           subtotal: itemSubtotal,
-          ...((item.unitId || (product as any).baseUnitId) ? { unit: { connect: { id: item.unitId || (product as any).baseUnitId } } } : {})
+          unitId: item.unitId || product.baseUnitId
         });
-
-        const targetBranchId = item.originBranchId || (product as any).branchId || branchId;
 
         await tx.stock.upsert({
-          where: { productId_branchId: { productId: item.productId, branchId: targetBranchId } },
-          update: { quantity: { decrement: quantity } }, // Prisma handles Decimal decrement
-          create: { productId: item.productId, branchId: targetBranchId, quantity: quantity.negated() }
+          where: { productId_branchId: { productId: item.productId, branchId: branchId } },
+          update: { quantity: { decrement: quantity } },
+          create: { productId: item.productId, branchId: branchId, quantity: quantity.negated() }
         });
       }
 
-      const reqDiscount = new Prisma.Decimal(discount || 0);
-      const reqAdjustment = new Prisma.Decimal(adjustment || 0);
-      const finalTotal = total.minus(reqDiscount);
-
-      let change = null;
-      if (cashReceived) {
-        const received = new Prisma.Decimal(cashReceived);
-        change = received.minus(finalTotal).minus(reqAdjustment);
-      }
+      const finalTotal = total.minus(new Prisma.Decimal(discount));
+      const reqAdjustment = new Prisma.Decimal(adjustment);
 
       const saleData: any = {
-        user: { connect: { id: userId } },
-        branch: { connect: { id: branchId } },
-        shift: { connect: { id: shift.id } },
+        userId,
+        branchId,
+        shiftId: shift.id,
+        priceListId,
         total: finalTotal,
-        discount: reqDiscount,
-        paymentMethod: paymentMethod as any,
+        discount: new Prisma.Decimal(discount),
+        paymentMethod,
         cashReceived: (paymentMethod === "EFECTIVO" || paymentMethod === "MIXTO") ? (cashReceived || 0) : null,
-        change: change,
         adjustment: reqAdjustment,
-        notes: notes || null,
-        items: { create: saleItems }
+        notes,
+        items: { create: saleItems },
+        customerId
       };
 
-      if (priceListId) {
-        saleData.priceList = { connect: { id: priceListId } };
+      // 1. Handle Payment Details (Mixed)
+      if (paymentMethod === "MIXTO" && paymentDetails.length > 0) {
+        saleData.paymentDetails = {
+          create: paymentDetails.map((pd: any) => ({
+            method: pd.method,
+            amount: new Prisma.Decimal(pd.amount)
+          }))
+        };
       }
 
-      return await tx.sale.create({
+      const createdSale = await tx.sale.create({
         data: saleData,
-        include: { items: { include: { product: true, unit: true } } }
+        include: { items: true, paymentDetails: true }
       });
-    }, {
-      maxWait: 5000,
-      timeout: 15000
+
+      // 2. Handle Account Receivable (CUENTA_CORRIENTE)
+      if (paymentMethod === "CUENTA_CORRIENTE" || (paymentMethod === "MIXTO" && paymentDetails.some((pd: any) => pd.method === "CUENTA_CORRIENTE"))) {
+        if (!customerId) throw new Error("Cliente requerido para venta en cuenta corriente");
+
+        const debtAmount = paymentMethod === "CUENTA_CORRIENTE"
+          ? finalTotal
+          : new Prisma.Decimal(paymentDetails.find((pd: any) => pd.method === "CUENTA_CORRIENTE").amount);
+
+        await tx.customer.update({
+          where: { id: customerId },
+          data: { balance: { increment: debtAmount } }
+        });
+
+        await tx.customerTransaction.create({
+          data: {
+            customerId,
+            saleId: createdSale.id,
+            type: "SALE",
+            amount: debtAmount,
+            description: `Venta #${createdSale.number}`
+          }
+        });
+      }
+
+      return createdSale;
     });
 
-    console.log("✅ Venta procesada exitosamente:", (sale as any)?.id);
     return NextResponse.json(sale);
   } catch (error: any) {
     console.error("❌ Error en POST /api/sales:", error);
-    // Enviar mas detalle del error Prisma
-    const detail = JSON.parse(JSON.stringify(error, Object.getOwnPropertyNames(error)));
-    return NextResponse.json(
-      { error: error.message || "Error interno del servidor", detail },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message || "Error interno del servidor" }, { status: 500 });
   }
 }
