@@ -68,12 +68,7 @@ export async function GET(req: Request) {
   // Search by Payment Method
   const paymentMethod = searchParams.get("paymentMethod");
   if (paymentMethod) {
-    where.AND.push({
-      OR: [
-        { paymentMethod: paymentMethod },
-        { paymentDetails: { some: { method: paymentMethod } } }
-      ]
-    });
+    where.AND.push({ paymentMethod: paymentMethod });
   }
 
   // Branch Name Search
@@ -112,29 +107,19 @@ export async function GET(req: Request) {
 
   let totalAmount = Number(totalSum._sum?.total || 0);
 
-  // If filtering by payment method, we need the sum of specific parts (Mixed Payments support)
+  // If filtering by payment method
   if (paymentMethod) {
     const paymentMethodEnum = paymentMethod as any;
-    const [detailsSum, fallbackSum] = await Promise.all([
-      prisma.paymentDetail.aggregate({
-        where: {
-          method: paymentMethodEnum,
-          sale: where
-        },
-        _sum: { amount: true }
-      }),
-      prisma.sale.aggregate({
-        where: {
-          AND: [
-            where,
-            { paymentMethod: paymentMethodEnum },
-            { paymentDetails: { none: {} } }
-          ]
-        },
-        _sum: { total: true }
-      })
-    ]);
-    totalAmount = Number(detailsSum._sum?.amount || 0) + Number(fallbackSum._sum?.total || 0);
+    const fallbackSum = await prisma.sale.aggregate({
+      where: {
+        AND: [
+          where,
+          { paymentMethod: paymentMethodEnum }
+        ]
+      },
+      _sum: { total: true }
+    });
+    totalAmount = Number(fallbackSum._sum?.total || 0);
   }
 
   const sales = await (prisma as any).sale.findMany({
@@ -142,8 +127,7 @@ export async function GET(req: Request) {
     include: {
       items: { include: { product: true, unit: true } },
       user: { select: { name: true } },
-      branch: { select: { name: true } },
-      paymentDetails: true
+      branch: { select: { name: true } }
     },
     orderBy: { createdAt: "desc" },
     skip,
@@ -190,7 +174,6 @@ export async function POST(req: Request) {
       items,
       paymentMethod,
       cashReceived,
-      paymentDetails,
       discount = 0,
       priceListId,
       adjustment = 0,
@@ -264,14 +247,8 @@ export async function POST(req: Request) {
       const finalTotal = total.minus(reqDiscount);
 
       let change = null;
-      if (paymentMethod === "MIXTO" && paymentDetails && paymentDetails.length > 0) {
-        // Calculate total tendered from all details
-        const totalTendered = paymentDetails.reduce((sum: any, pd: any) => sum + Number(pd.amount), 0);
-        const tenderedDec = new Prisma.Decimal(totalTendered);
-        change = tenderedDec.minus(finalTotal).minus(reqAdjustment);
-      } else if (cashReceived) {
+      if (cashReceived) {
         const received = new Prisma.Decimal(cashReceived);
-        // change = received - finalTotal - adjustment
         change = received.minus(finalTotal).minus(reqAdjustment);
       }
 
@@ -293,19 +270,9 @@ export async function POST(req: Request) {
         saleData.priceList = { connect: { id: priceListId } };
       }
 
-      if (paymentDetails && paymentDetails.length > 0) {
-        saleData.paymentDetails = {
-          create: paymentDetails.map((pd: any) => ({
-            method: pd.method as any,
-            amount: new Prisma.Decimal(pd.amount),
-            transactionId: pd.transactionId || null
-          }))
-        };
-      }
-
       return await tx.sale.create({
         data: saleData,
-        include: { items: { include: { product: true, unit: true } }, paymentDetails: true }
+        include: { items: { include: { product: true, unit: true } } }
       });
     }, {
       maxWait: 5000,

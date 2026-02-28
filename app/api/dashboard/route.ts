@@ -62,26 +62,21 @@ export async function GET(req: Request) {
       step = "query-agg-today";
       const aggToday = await prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } });
 
-      step = "query-methods-fallback";
-      // We use findMany because if the DB enum is missing values (like CUENTA_CORRIENTE), 
-      // groupBy might crash depending on the connector/prisma version. findMany is safer.
-      const methodSalesSample = await prisma.sale.findMany({
+      step = "query-methods-groupBy";
+      // Safe now with legacy schema.prisma
+      const methodGroups = await prisma.sale.groupBy({
+        by: ['paymentMethod'],
         where: whereClause,
-        select: { total: true, paymentMethod: true },
-        orderBy: { createdAt: 'desc' },
-        take: 500
+        _sum: { total: true },
+        _count: { id: true }
       });
 
-      const methodStats: Record<string, { total: number, count: number, clearing: number }> = {};
-      for (const s of methodSalesSample) {
-        const m = s.paymentMethod;
-        if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
-        methodStats[m].total += Number(s.total);
-        methodStats[m].count += 1;
-      }
-
-      const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
-        paymentMethod: k, total: v.total, count: v.count, clearing: v.clearing, net: v.total - v.clearing
+      const salesByMethod = methodGroups.map(g => ({
+        paymentMethod: g.paymentMethod,
+        total: Number(g._sum.total || 0),
+        count: g._count.id,
+        clearing: 0,
+        net: Number(g._sum.total || 0)
       }));
 
       step = "query-products";
@@ -95,10 +90,7 @@ export async function GET(req: Request) {
       let missingCount = 0;
       const stockProducts = await (prisma as any).product.findMany({
         where: { active: true, ...(effectiveBranchId ? { OR: [{ branchId: effectiveBranchId }, { branchId: null }, { stocks: { some: { branchId: effectiveBranchId } } }] } : {}) },
-        select: {
-          minStock: true,
-          stocks: { select: { quantity: true, branchId: true } }
-        },
+        select: { minStock: true, stocks: { select: { quantity: true, branchId: true } } },
         take: 1000
       });
 
@@ -115,7 +107,7 @@ export async function GET(req: Request) {
       }
 
       const elapsed = Date.now() - start;
-      console.log(`[Dashboard v8] OK in ${elapsed}ms`);
+      console.log(`[Dashboard v9] OK in ${elapsed}ms`);
 
       return NextResponse.json({
         totalSales: Number(aggFull._sum.total || 0),
@@ -137,7 +129,7 @@ export async function GET(req: Request) {
       });
     }
   } catch (error: any) {
-    console.error(`[Dashboard v8] Error at ${step}:`, error);
+    console.error(`[Dashboard v9] Error at ${step}:`, error);
     return NextResponse.json({
       error: `Error en paso [${step}]: ${error.message}`,
       step,

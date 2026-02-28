@@ -38,12 +38,14 @@ export async function PUT(req: Request) {
             where: { key: "global" },
             update: {
                 useDecimals: body.useDecimals,
-                isClearingEnabled: body.isClearingEnabled
+                isClearingEnabled: body.isClearingEnabled,
+                enableCustomerAccounts: body.enableCustomerAccounts
             },
             create: {
                 key: "global",
                 useDecimals: body.useDecimals,
-                isClearingEnabled: body.isClearingEnabled ?? false
+                isClearingEnabled: body.isClearingEnabled ?? false,
+                enableCustomerAccounts: body.enableCustomerAccounts ?? false
             }
         });
         return NextResponse.json(settings);

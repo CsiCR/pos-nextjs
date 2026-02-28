@@ -14,8 +14,7 @@ export async function GET() {
       branch: true,
       sales: {
         include: {
-          items: { include: { product: true } },
-          paymentDetails: true
+          items: { include: { product: true } }
         }
       }
     }

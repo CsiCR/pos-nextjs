@@ -24,7 +24,10 @@ export function Navbar() {
         { href: "/logistica", label: "Logística", icon: Truck },
         { href: "/clearing", label: "Clearing", icon: DollarSign }
       ] : []),
-      { href: "/configuracion", label: "Configuración", icon: Settings }, // Updated label and icon
+      ...(settings.enableCustomerAccounts ? [
+        { href: "/clientes", label: "Clientes", icon: Users }
+      ] : []),
+      { href: "/configuracion", label: "Configuración", icon: Settings },
     ] : []),
     { href: "/turnos", label: "Turnos", icon: Clock },
   ];

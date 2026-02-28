@@ -12,7 +12,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
   const shift = await prisma.shift.findUnique({
     where: { id: params.id },
     include: {
-      sales: { include: { paymentDetails: true } }
+      sales: true
     }
   });
 
@@ -27,9 +27,11 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     if (s.paymentMethod === "EFECTIVO") {
       // Must include adjustment (extra cash kept or small loss)
       cashAmount = s.total.plus(s.adjustment || 0);
-    } else if (s.paymentMethod === "MIXTO" && s.paymentDetails?.length > 0) {
-      const cashDetail = s.paymentDetails.find((pd: any) => pd.method === "EFECTIVO");
-      if (cashDetail) cashAmount = cashDetail.amount;
+    } else if (s.paymentMethod === "MIXTO") {
+      // For MIXTO without details, we consider the whole amount as non-cash (safe default)
+      // or we could look at total if we assume it was paid.
+      // But in legacy schema, MIXTO was probably not used or handled differently.
+      cashAmount = new Prisma.Decimal(0);
     }
 
     return sum.plus(cashAmount);

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, Scale, Tag, X, Printer, MessageSquare, ScanBarcode, MapPin } from "lucide-react";
+import { Search, Plus, Minus, Trash2, CreditCard, Banknote, ArrowRightLeft, ShoppingCart, AlertCircle, CheckCircle, CheckCircle2, Scale, Tag, X, Printer, MessageSquare, ScanBarcode, MapPin } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Ticket } from "@/components/Ticket";
 import { formatPrice, roundCurrency } from "@/lib/utils";
@@ -98,6 +98,7 @@ export default function POSPage() {
     }, 200);
     return () => clearTimeout(t);
   }, [search, globalSearch]);
+
 
   const handleScan = async (code: string) => {
     // Check for Ticket QR (SALE:{ID})
@@ -250,9 +251,8 @@ export default function POSPage() {
         unitId: i.unitId,
         originBranchId: i.originBranchId
       })),
-      paymentMethod: paymentMode === "MIXED" ? "MIXTO" : selectedMethod,
-      cashReceived: paymentMode === "MIXED" ? cashInMixed : (selectedMethod === "EFECTIVO" ? cashReceived : null),
-      paymentDetails: paymentMode === "MIXED" ? paymentDetails : [{ method: selectedMethod, amount: total }],
+      paymentMethod: selectedMethod,
+      cashReceived: selectedMethod === "EFECTIVO" ? cashReceived : null,
       discount: globalDiscount,
       adjustment,
       notes,
@@ -528,6 +528,7 @@ export default function POSPage() {
           <Tag className="w-4 h-4 text-gray-300" />
         </div>
 
+
         {/* Cart Items */}
         <div className="flex-1 overflow-auto space-y-2 pr-1 custom-scrollbar">
           {cart.length === 0 ? (
@@ -605,7 +606,7 @@ export default function POSPage() {
 
           {/* Payment Methods */}
           {!paymentMode ? (
-            <div className="grid grid-cols-2 gap-2 pt-2">
+            <div className="grid grid-cols-1 gap-2 pt-2">
               <button
                 onClick={() => {
                   setPaymentMode("SINGLE");
@@ -617,33 +618,24 @@ export default function POSPage() {
               >
                 <Banknote className="w-5 h-5" /> Cobrar
               </button>
-              <button
-                onClick={() => {
-                  setPaymentMode("MIXED");
-                  setPaymentDetails([]);
-                }}
-                disabled={!cart.length}
-                className="btn btn-outline border-blue-200 text-blue-600 hover:bg-blue-50 flex items-center justify-center gap-2"
-              >
-                <ArrowRightLeft className="w-5 h-5" /> Mixto
-              </button>
             </div>
           ) : paymentMode === "SINGLE" ? (
             <div className="space-y-4">
-              <div className="flex gap-1">
-                {["EFECTIVO", "DEBITO", "CREDITO", "TRANSFERENCIA", "QR"].map(m => (
+              <div className="flex gap-1 flex-wrap">
+                {["EFECTIVO", "DEBITO", "CREDITO", "TARJETA", "TRANSFERENCIA", "QR"].map(m => (
                   <button
                     key={m}
                     onClick={() => {
                       setSelectedMethod(m);
                       setCashReceived(m === "EFECTIVO" ? total : 0);
                     }}
-                    className={`flex-1 py-2 text-[10px] font-bold rounded-lg border transition ${selectedMethod === m ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-white"}`}
+                    className={`flex-1 min-w-[30%] py-2 text-[10px] font-bold rounded-lg border transition ${selectedMethod === m ? "bg-blue-600 border-blue-600 text-white" : "bg-gray-50 border-gray-200 text-gray-500 hover:bg-white"}`}
                   >
-                    {m}
+                    {m.replace("_", " ")}
                   </button>
                 ))}
               </div>
+
 
               {selectedMethod === "EFECTIVO" ? (
                 <div className="bg-gray-50 p-4 rounded-xl space-y-3 border">

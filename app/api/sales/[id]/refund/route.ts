@@ -222,12 +222,6 @@ export async function POST(
                     notes: `Devolución de venta #${originalSale.number}`,
                     items: {
                         create: newSaleItems
-                    },
-                    paymentDetails: {
-                        create: [{
-                            method: originalSale.paymentMethod,
-                            amount: totalRefundAmount
-                        }]
                     }
                 }
             });

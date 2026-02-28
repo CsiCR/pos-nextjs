@@ -255,6 +255,7 @@ export default function ConfigPage() {
                             </label>
                         </div>
 
+
                         <Link href="/listas-precios" className="btn btn-outline w-full gap-2"><List className="w-4 h-4" /> Gestionar Listas de Precios</Link>
                     </div>
 
