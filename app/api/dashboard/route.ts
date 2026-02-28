@@ -184,7 +184,7 @@ export async function GET(req: Request) {
           id: true,
           minStock: true,
           stocks: {
-            select: { quantity: true, minStock: true, branchId: true }
+            select: { quantity: true, branchId: true }
           }
         }
       });
@@ -193,21 +193,18 @@ export async function GET(req: Request) {
       let missingCount = 0;
 
       for (const p of stockProducts) {
+        // Fallback to Product.minStock since Stock.minStock is not yet in production
+        const min = Number((p as any).minStock || 0);
+
         if (effectiveBranchId) {
-          // Branch specific: currentQuantity < currentMinStock
           const branchStock = (p as any).stocks?.find((s: any) => s.branchId === effectiveBranchId);
           const qty = branchStock ? Number(branchStock.quantity) : 0;
-          const min = branchStock ? Number(branchStock.minStock || 0) : Number((p as any).minStock || 0);
-
           if (qty <= 0) missingCount++;
           else if (qty < min) lowStockCount++;
         } else {
-          // Global: Sum(qty) < Sum(min)
           const totalQty = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
-          const totalMin = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.minStock || 0), 0) || Number((p as any).minStock || 0);
-
           if (totalQty <= 0) missingCount++;
-          else if (totalQty < totalMin) lowStockCount++;
+          else if (totalQty < min) lowStockCount++;
         }
       }
 
