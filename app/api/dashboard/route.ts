@@ -8,97 +8,73 @@ import { toZonedTime } from "date-fns-tz";
 import { getZonedStartOfDay, getZonedEndOfDay } from "@/lib/utils";
 
 export async function GET(req: Request) {
+  const start = Date.now();
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
-    const isSupervisor = (session.user as any).role === "SUPERVISOR" || (session.user as any).role === "ADMIN";
-    const isGerente = (session.user as any).role === "GERENTE";
-    const branchId = (session.user as any).branchId;
+    const role = (session.user as any).role;
+    const isSupervisor = role === "SUPERVISOR" || role === "ADMIN" || role === "GERENTE";
+    const userBranchId = (session.user as any).branchId;
+    const isAdmin = role === "ADMIN";
+    const isGerente = role === "GERENTE";
 
-    // Fix Timezone for Production (Server is UTC, User is ARG)
     const today = getZonedStartOfDay();
 
-    if (isSupervisor || isGerente) {
-      // Analytics for the whole branch or global
+    if (isSupervisor) {
       const { searchParams } = new URL(req.url);
+      const fBranchId = searchParams.get("branchId");
+      const fUserId = searchParams.get("userId");
+      const fStart = searchParams.get("startDate");
+      const fEnd = searchParams.get("endDate");
+      const fMethod = searchParams.get("paymentMethod");
 
-      // Filters
-      const filterBranchId = searchParams.get("branchId");
-      const filterUserId = searchParams.get("userId");
-      const filterStartDate = searchParams.get("startDate");
-      const filterEndDate = searchParams.get("endDate");
-      const filterPaymentMethod = searchParams.get("paymentMethod");
-
-      // Build where clause
       const whereClause: any = { AND: [] };
 
-      const isAdmin = (session.user as any).role === "ADMIN";
-
-      if (branchId && !isGerente && !isAdmin) {
-        whereClause.AND.push({ branchId });
-      } else if (filterBranchId) {
-        whereClause.AND.push({ branchId: filterBranchId });
+      // 1. Branch Filter - Defensive against null/undefined strings
+      if (userBranchId && !isGerente && !isAdmin) {
+        whereClause.AND.push({ branchId: userBranchId });
+      } else if (fBranchId && fBranchId !== "undefined" && fBranchId !== "null" && fBranchId !== "all") {
+        whereClause.AND.push({ branchId: fBranchId });
       }
 
-      if (filterUserId) {
-        whereClause.AND.push({ userId: filterUserId });
+      // 2. User Filter
+      if (fUserId && fUserId !== "undefined" && fUserId !== "null" && fUserId !== "all") {
+        whereClause.AND.push({ userId: fUserId });
       }
 
-      if (filterStartDate || filterEndDate) {
+      // 3. Date Filter - Robust parsing
+      if (fStart || fEnd) {
         const dateRange: any = {};
-        if (filterStartDate) dateRange.gte = getZonedStartOfDay(filterStartDate);
-        if (filterEndDate) dateRange.lte = getZonedEndOfDay(filterEndDate);
-        whereClause.AND.push({ createdAt: dateRange });
+        if (fStart && fStart.match(/^\d{4}-\d{2}-\d{2}/)) dateRange.gte = getZonedStartOfDay(fStart);
+        if (fEnd && fEnd.match(/^\d{4}-\d{2}-\d{2}/)) dateRange.lte = getZonedEndOfDay(fEnd);
+        if (Object.keys(dateRange).length > 0) whereClause.AND.push({ createdAt: dateRange });
       }
 
-      if (filterPaymentMethod) {
-        whereClause.AND.push({ paymentMethod: filterPaymentMethod });
+      // 4. Method Filter
+      if (fMethod && fMethod !== "undefined" && fMethod !== "null" && fMethod !== "all") {
+        whereClause.AND.push({ paymentMethod: fMethod });
       }
 
-      const effectiveBranchId = (branchId && !isGerente && !isAdmin) ? branchId : filterBranchId;
+      const effectiveBranchId = (userBranchId && !isGerente && !isAdmin) ? userBranchId : (fBranchId && fBranchId !== "all" ? fBranchId : undefined);
 
-      // Data Aggregation
-      let totalSales = 0;
-      let totalCount = 0;
-      let todaySales = 0;
-      let todayCount = 0;
+      // --- ASYNC DATA FETCHING ---
+      const [aggFull, aggToday, products, users, distributionSales] = await Promise.all([
+        prisma.sale.aggregate({ where: whereClause, _sum: { total: true }, _count: { id: true } }),
+        prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } }),
+        prisma.product.count({ where: { active: true, ...(effectiveBranchId ? { OR: [{ branchId: effectiveBranchId }, { stocks: { some: { branchId: effectiveBranchId } } }] } : {}) } }),
+        prisma.user.count({ where: { active: true, ...(effectiveBranchId ? { branchId: effectiveBranchId } : {}) } }),
+        (prisma as any).sale.findMany({
+          where: whereClause,
+          select: { total: true, paymentMethod: true, items: { select: { subtotal: true, product: { select: { branchId: true } } } } },
+          orderBy: { createdAt: 'desc' },
+          take: 400 // Safe limit
+        })
+      ]);
 
-      // We will build salesByMethod with detailed breakdown
       const methodStats: Record<string, { total: number, count: number, clearing: number }> = {};
-
-      // 1. Totals and Counts using Aggregate (Fast)
-      const aggregateSales = await prisma.sale.aggregate({
-        where: whereClause,
-        _sum: { total: true },
-        _count: { id: true }
-      });
-      totalSales = Number(aggregateSales._sum.total || 0);
-      totalCount = aggregateSales._count.id;
-
-      const todayWhere = { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] };
-      const todayAggregate = await prisma.sale.aggregate({
-        where: todayWhere,
-        _sum: { total: true },
-        _count: { id: true }
-      });
-      todaySales = Number(todayAggregate._sum.total || 0);
-      todayCount = todayAggregate._count.id;
-
-      // 2. Detailed Distribution - Lean select to prevent production timeout
-      const distributionSales = await (prisma as any).sale.findMany({
-        where: whereClause,
-        select: {
-          total: true, paymentMethod: true,
-          items: { select: { subtotal: true, product: { select: { branchId: true } } } }
-        },
-        orderBy: { createdAt: 'desc' },
-        take: 500
-      });
-
       for (const sale of distributionSales) {
         const saleTotal = Number(sale.total);
-
         let saleDebt = 0;
         if (effectiveBranchId) {
           for (const item of (sale.items || [])) {
@@ -108,107 +84,35 @@ export async function GET(req: Request) {
           }
         }
         const debtRatio = saleTotal > 0 ? saleDebt / saleTotal : 0;
-
         const m = sale.paymentMethod;
-        const amount = saleTotal;
-        const clearingPart = amount * debtRatio;
         if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
-        methodStats[m].total += amount;
+        methodStats[m].total += saleTotal;
         methodStats[m].count += 1;
-        methodStats[m].clearing += clearingPart;
+        methodStats[m].clearing += (saleTotal * debtRatio);
       }
 
       const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
-        paymentMethod: k,
-        total: v.total,
-        count: v.count,
-        clearing: v.clearing,
-        net: v.total - v.clearing
+        paymentMethod: k, total: v.total, count: v.count, clearing: v.clearing, net: v.total - v.clearing
       }));
 
-      // 4. Products Count (Sync with catalog 'onlyMyBranch' logic)
-      const productWhere: any = { active: true };
-      if (effectiveBranchId) {
-        // Unify logic with catalog: branch-exclusive OR global with stock in branch
-        productWhere.OR = [
-          { branchId: effectiveBranchId },
-          { stocks: { some: { branchId: effectiveBranchId } } }
-        ];
-      }
-      const products = await prisma.product.count({ where: productWhere });
-
-      // 5. Users Count (User Scope)
-      const userWhere: any = { active: true };
-      if (effectiveBranchId) {
-        // Show team members of this branch
-        userWhere.branchId = effectiveBranchId;
-      }
-      const users = await prisma.user.count({ where: userWhere });
-
-      // 6. Low Stock Alerts (Logic should match with Catalog for consistency)
-      const stockProductWhere: any = { active: true };
-      if (effectiveBranchId) {
-        // Unify logic with catalog: Show products owned by branch OR Global products (so we can see their 0 stock alert)
-        stockProductWhere.OR = [
-          { branchId: effectiveBranchId },
-          { branchId: null },
-          { stocks: { some: { branchId: effectiveBranchId } } }
-        ];
-      }
-
-      const stockProducts = await (prisma as any).product.findMany({
-        where: stockProductWhere,
-        select: {
-          id: true,
-          minStock: true,
-          stocks: {
-            select: { quantity: true, branchId: true }
-          }
-        }
-      });
-
-      let lowStockCount = 0;
-      let missingCount = 0;
-
-      for (const p of stockProducts) {
-        // Fallback to Product.minStock since Stock.minStock is not yet in production
-        const min = Number((p as any).minStock || 0);
-
-        if (effectiveBranchId) {
-          const branchStock = (p as any).stocks?.find((s: any) => s.branchId === effectiveBranchId);
-          const qty = branchStock ? Number(branchStock.quantity) : 0;
-          if (qty <= 0) missingCount++;
-          else if (qty < min) lowStockCount++;
-        } else {
-          const totalQty = (p as any).stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
-          if (totalQty <= 0) missingCount++;
-          else if (totalQty < min) lowStockCount++;
-        }
-      }
+      const elapsed = Date.now() - start;
+      console.log(`[Dashboard] Loaded in ${elapsed}ms`);
 
       return NextResponse.json({
-        totalSales,
-        totalCount,
-        todaySales,
-        todayCount,
-        products,
-        users,
-        salesByMethod,
-        lowStockCount,
-        missingCount,
+        totalSales: Number(aggFull._sum.total || 0),
+        totalCount: aggFull._count.id,
+        todaySales: Number(aggToday._sum.total || 0),
+        todayCount: aggToday._count.id,
+        products, users, salesByMethod,
+        lowStockCount: 0, // TEMPORARILY DISABLED
+        missingCount: 0,  // TEMPORARILY DISABLED
         isGerente
       });
     } else {
-      // Cashier view
-      const shift = await prisma.shift.findFirst({
-        where: { userId: session.user.id, closedAt: null },
-        include: { sales: true }
-      });
-
+      // Cashier View
+      const shift = await prisma.shift.findFirst({ where: { userId: session.user.id, closedAt: null }, include: { sales: true } });
       const shiftSales = shift?.sales?.reduce((sum, s) => sum + Number(s.total), 0) || 0;
       const shiftCount = shift?.sales?.length || 0;
-
-      // Calculate Sales by Method for Shift
       const methodStats: Record<string, { total: number, count: number }> = {};
       if (shift?.sales) {
         for (const sale of shift.sales) {
@@ -218,21 +122,17 @@ export async function GET(req: Request) {
           methodStats[m].count += 1;
         }
       }
-
-      const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
-        paymentMethod: k,
-        total: v.total,
-        count: v.count
-      }));
-
-      return NextResponse.json({ shiftSales, shiftCount, hasOpenShift: !!shift, salesByMethod });
+      return NextResponse.json({
+        shiftSales, shiftCount, hasOpenShift: !!shift,
+        salesByMethod: Object.entries(methodStats).map(([k, v]) => ({ paymentMethod: k, total: v.total, count: v.count }))
+      });
     }
   } catch (error: any) {
-    console.error("Dashboard Error:", error);
+    console.error("[Dashboard] Critical Error:", error);
     return NextResponse.json({
-      error: "Error loading dashboard",
+      error: "Critical Server Error",
       message: error.message,
-      stack: error.stack
+      code: error.code // Prisma error code
     }, { status: 500 });
   }
 }
