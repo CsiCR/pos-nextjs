@@ -61,10 +61,7 @@ export async function GET(req: Request) {
 
     if (userId) saleWhere.userId = userId;
     if (paymentMethod) {
-        saleWhere.OR = [
-            { paymentMethod: paymentMethod },
-            { paymentDetails: { some: { method: paymentMethod } } }
-        ];
+        saleWhere.paymentMethod = paymentMethod;
     }
     if (ticketNumber) saleWhere.number = String(ticketNumber).includes("#") ? { contains: ticketNumber.replace("#", ""), mode: "insensitive" } : { equals: parseInt(ticketNumber) || 0 };
 

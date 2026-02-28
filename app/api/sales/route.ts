@@ -36,6 +36,11 @@ export async function GET(req: Request) {
   const queryUserId = searchParams.get("userId");
   if (queryUserId) where.AND.push({ userId: queryUserId });
 
+  const paymentMethod = searchParams.get("paymentMethod");
+  if (paymentMethod) {
+    where.AND.push({ paymentMethod: paymentMethod as string });
+  }
+
   const isCajero = !isSupervisor && !isGlobalAdmin;
   if (isCajero) where.AND.push({ userId: session.user.id });
 
