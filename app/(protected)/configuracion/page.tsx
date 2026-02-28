@@ -23,7 +23,7 @@ export default function ConfigPage() {
 
     const [categories, setCategories] = useState<any[]>([]);
     const [categoryModal, setCategoryModal] = useState(false);
-    const [categoryForm, setCategoryForm] = useState<any>({ name: "" });
+    const [categoryForm, setCategoryForm] = useState<any>({ name: "", defaultMinStock: 0 });
 
     const [resetModal, setResetModal] = useState(false);
     const [resetConfirmText, setResetConfirmText] = useState("");
@@ -213,7 +213,7 @@ export default function ConfigPage() {
                     <div className="card h-fit">
                         <div className="flex justify-between mb-4">
                             <h2 className="font-bold flex items-center gap-2"><Tag className="w-5 h-5 text-blue-600" /> Categorías</h2>
-                            {canEditGlobal && <button onClick={() => { setCategoryForm({ name: "" }); setCategoryModal(true); }} className="btn btn-sm btn-outline">Añadir</button>}
+                            {canEditGlobal && <button onClick={() => { setCategoryForm({ name: "", defaultMinStock: 0 }); setCategoryModal(true); }} className="btn btn-sm btn-outline">Añadir</button>}
                         </div>
                         <div className="space-y-2">
                             {categories.map(c => (
@@ -338,9 +338,15 @@ export default function ConfigPage() {
             {categoryModal && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-                        <h2 className="text-xl font-bold mb-6">Categoría</h2>
                         <form onSubmit={handleCategorySubmit} className="space-y-4">
-                            <input type="text" required value={categoryForm.name} onChange={e => setCategoryForm({ ...categoryForm, name: e.target.value })} className="input" placeholder="Nombre" />
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 mb-1 block">Nombre</label>
+                                <input type="text" required value={categoryForm.name} onChange={e => setCategoryForm({ ...categoryForm, name: e.target.value })} className="input" placeholder="Nombre de categoría" />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 mb-1 block">Stock Mínimo Predeterminado (para nuevos productos)</label>
+                                <input type="number" step="0.001" value={categoryForm.defaultMinStock} onChange={e => setCategoryForm({ ...categoryForm, defaultMinStock: e.target.value })} className="input" placeholder="0" />
+                            </div>
                             <div className="grid grid-cols-2 gap-3 pt-4"><button type="button" onClick={() => setCategoryModal(false)} className="btn btn-secondary">Cancelar</button><button type="submit" className="btn btn-primary">Guardar</button></div>
                         </form>
                     </div>

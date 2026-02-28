@@ -799,227 +799,253 @@ function ProductosContent() {
       {(modal?.type === "new" || modal?.type === "edit") && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-8 w-full max-w-xl shadow-2xl animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
-            <h2 className="text-2xl font-black text-gray-900 mb-6 flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-blue-600" />
-              </div>
-              {modal.type === "new" ? "Nuevo Producto" : "Editar Producto"}
-            </h2>
-
-            {/* [NEW] Active/Inactive Toggle */}
-            <div className="flex items-center justify-between bg-gray-50 p-4 rounded-3xl mb-4 border border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full animate-pulse ${form.active ? 'bg-green-500' : 'bg-red-500'}`} />
-                <div>
-                  <p className="text-xs font-black text-gray-900 uppercase tracking-tighter">Estado del Producto</p>
-                  <p className="text-[10px] text-gray-500 font-bold uppercase">{form.active ? 'Activo (Visible en ventas)' : 'Inactivo (Oculto en ventas)'}</p>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-black text-gray-900 flex items-center gap-3">
+                <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                  <Package className="w-6 h-6 text-blue-600" />
                 </div>
+                {modal.type === "new" ? "Nuevo Producto" : "Editar Producto"}
+              </h2>
+              <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100">
+                <div className={`w-2 h-2 rounded-full ${form.active ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`} />
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-tighter">{form.active ? 'Activo' : 'Inactivo'}</span>
+                <button
+                  onClick={() => setForm({ ...form, active: !form.active })}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${form.active ? 'bg-green-600' : 'bg-gray-300'}`}
+                >
+                  <span className={`${form.active ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm`} />
+                </button>
               </div>
-              <button
-                onClick={() => setForm({ ...form, active: !form.active })}
-                className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none ring-4 ${form.active ? 'bg-green-600 ring-green-100' : 'bg-gray-300 ring-gray-100'}`}
-              >
-                <span
-                  className={`${form.active ? 'translate-x-7' : 'translate-x-1'} inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-md`}
-                />
-              </button>
             </div>
 
             <div className="space-y-6 flex-1 overflow-auto pr-2 custom-scrollbar">
               <div>
-                <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Nombre del Producto</label>
+                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Nombre del Producto</label>
                 <input
                   ref={nameInputRef}
                   type="text"
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  className="input input-lg font-bold"
+                  className="input input-lg font-bold bg-gray-50/30"
                   placeholder="Ej: Coca Cola 2.25L"
                   onFocus={e => e.target.select()}
                 />
               </div>
 
-              {/* [NEW] Featured Local Price for the current branch context */}
-              {priceLists.find(l => l.branchId === userBranchId) && (
-                (() => {
-                  const userList = priceLists.find(l => l.branchId === userBranchId);
-                  return (
-                    <div className="bg-blue-600 p-5 rounded-3xl mb-6 shadow-xl shadow-blue-100 ring-4 ring-blue-50 border border-blue-500 animate-in fade-in slide-in-from-top-4 duration-500">
-                      <label className="text-[10px] font-black text-blue-100 uppercase tracking-widest mb-2 block flex items-center gap-2">
-                        <MapPin className="w-4 h-4" /> Precio de Venta en {userList.name} (TU SUCURSAL)
-                      </label>
+              {/* [NEW] MI SUCURSAL Section - HIGH PRIORITY GRID */}
+              {userBranchId && (
+                <div className="bg-blue-50/50 border border-blue-100 p-5 rounded-3xl shadow-sm">
+                  <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                    <MapPin className="w-4 h-4" /> Datos en sucursal: {branches.find(b => b.id === userBranchId)?.name || 'Local'}
+                  </label>
+                  <div className="grid grid-cols-4 gap-4">
+                    <div>
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Precio Local</label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-blue-200 text-2xl">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-blue-400 text-xs">$</span>
                         <input
                           type="number"
-                          value={form.prices[userList.id] || ""}
+                          value={form.prices[priceLists.find(l => l.branchId === userBranchId)?.id || ""] || ""}
                           onChange={e => {
-                            const val = e.target.value;
-                            const newPrices = { ...form.prices, [userList.id]: val };
-                            // [NEW] Auto-sync basePrice if empty and creating new product
-                            const newForm = { ...form, prices: newPrices };
-                            if (modal.type === "new" && (!form.basePrice || form.basePrice === "")) {
-                              newForm.basePrice = val;
+                            const listId = priceLists.find(l => l.branchId === userBranchId)?.id;
+                            if (listId) {
+                              const val = e.target.value;
+                              const newPrices = { ...form.prices, [listId]: val };
+                              const newForm = { ...form, prices: newPrices };
+                              if (modal.type === "new" && (!form.basePrice || form.basePrice === "")) {
+                                newForm.basePrice = val;
+                              }
+                              setForm(newForm);
                             }
-                            setForm(newForm);
                           }}
-                          className="w-full bg-blue-700/50 border-none rounded-2xl h-16 text-right px-6 text-3xl font-black text-white focus:ring-4 focus:ring-blue-400 transition-all placeholder:text-blue-400"
-                          placeholder="Monto..."
+                          className="input font-black text-right pl-6 text-blue-700 bg-white border-blue-200 focus:ring-blue-100"
+                          placeholder="0"
                           onFocus={e => e.target.select()}
                         />
                       </div>
-                      <p className="text-[10px] text-blue-100 font-bold mt-3 uppercase tracking-tight opacity-80 flex items-center gap-1">
-                        <CheckCircle2 className="w-3 h-3" /> Solo afecta a las ventas de tu sucursal
-                      </p>
                     </div>
-                  );
-                })()
+                    <div>
+                      <label className="text-[9px] font-black text-orange-400 uppercase tracking-tighter mb-1 block">Sugerido Global</label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">$</span>
+                        <input
+                          type="number"
+                          value={form.basePrice}
+                          onChange={e => setForm({ ...form, basePrice: e.target.value })}
+                          className={`input font-black text-right pl-6 bg-gray-50/50 border-orange-100 text-gray-500 ${!canDelete ? 'cursor-not-allowed' : 'hover:border-orange-300'}`}
+                          onFocus={e => e.target.select()}
+                          disabled={!canDelete && modal.type !== "new"}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Actual</label>
+                      <input
+                        type="number"
+                        value={form.branchQuantities[userBranchId] === 0 ? "0" : (form.branchQuantities[userBranchId] || "")}
+                        onChange={e => setForm({
+                          ...form,
+                          branchQuantities: { ...form.branchQuantities, [userBranchId]: e.target.value }
+                        })}
+                        className="input font-bold text-right bg-white border-gray-200"
+                        placeholder="0"
+                        onFocus={e => e.target.select()}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Mín.</label>
+                      <input
+                        type="number"
+                        value={form.branchMinStocks[userBranchId] === 0 ? "0" : (form.branchMinStocks[userBranchId] || "")}
+                        onChange={e => setForm({
+                          ...form,
+                          branchMinStocks: { ...form.branchMinStocks, [userBranchId]: e.target.value }
+                        })}
+                        className="input font-bold text-right bg-white border-orange-200 text-orange-600"
+                        placeholder="0"
+                        onFocus={e => e.target.select()}
+                      />
+                    </div>
+                  </div>
+                </div>
               )}
 
-              <div className="grid grid-cols-3 gap-6">
+              {/* [REORGANIZED] Metadata Grid: Category, Unit, EAN */}
+              <div className="grid grid-cols-3 gap-4">
                 <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block flex items-center gap-1">
-                    {isSupervisor ? "Precio de Venta (Sugerido Global)" : "Precio de Venta (Base)"}
-                    {isSupervisor && <div className="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse" title="Este precio afecta a todas las sucursales" />}
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-gray-400">$</span>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Categoría</label>
+                  <select
+                    value={form.categoryId}
+                    onChange={e => {
+                      const newCatId = e.target.value;
+                      const category = categories?.find(c => c.id === newCatId);
+                      const newForm = { ...form, categoryId: newCatId };
+                      if (category && userBranchId && (Number(form.branchMinStocks[userBranchId]) === 0 || !form.branchMinStocks[userBranchId])) {
+                        newForm.branchMinStocks = { ...form.branchMinStocks, [userBranchId]: category.defaultMinStock || 0 };
+                      }
+                      setForm(newForm);
+                    }}
+                    className="input appearance-none font-medium h-11 text-xs"
+                  >
+                    <option value="">Sin categoría</option>
+                    {(categories ?? []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Unidad</label>
+                  <select value={form.baseUnitId} onChange={e => setForm({ ...form, baseUnitId: e.target.value })} className="input appearance-none font-medium h-11 text-xs">
+                    <option value="">Unidad...</option>
+                    {units.map(u => <option key={u.id} value={u.id}>{u.name} ({u.symbol})</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Código EAN</label>
+                  <div className="flex gap-1">
                     <input
-                      type="number"
-                      value={form.basePrice}
-                      onChange={e => setForm({ ...form, basePrice: e.target.value })}
-                      className={`input input-lg pl-8 font-black text-right ${(isSupervisor && modal.type !== "new") ? 'text-gray-400 bg-gray-50 border-gray-200 cursor-not-allowed opacity-60' : 'text-blue-600'}`}
-                      onFocus={e => e.target.select()}
-                      disabled={isSupervisor && modal.type !== "new"} // [MODIFIED] Enabled during creation for supervisors
+                      type="text"
+                      value={form.ean}
+                      onChange={e => setForm({ ...form, ean: e.target.value })}
+                      className="input font-mono h-11 text-[10px] flex-1 px-2"
+                      placeholder="EAN..."
                     />
-                  </div>
-                  {isSupervisor && (
-                    <p className="text-[9px] text-orange-500 font-bold mt-1 uppercase tracking-tight leading-tight">
-                      {modal.type === "new" ? "Ingresa el precio sugerido para todas las sucursales." : "Este es el precio base de referencia para el sistema."}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Stock Mínimo</label>
-                  <input
-                    type="number"
-                    value={form.minStock}
-                    onChange={e => setForm({ ...form, minStock: e.target.value })}
-                    className="input input-lg font-bold text-orange-600 text-right"
-                    placeholder="Sin mínimo"
-                    onFocus={e => e.target.select()}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Stock Inicial</label>
-                  <input
-                    type="number"
-                    value={form.stock}
-                    onChange={e => setForm({ ...form, stock: e.target.value })}
-                    className="input input-lg font-bold text-right"
-                    onFocus={e => e.target.select()}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-6">
-                <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Unidad Base</label>
-                  <div className="relative">
-                    <Scale className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <select value={form.baseUnitId} onChange={e => setForm({ ...form, baseUnitId: e.target.value })} className="input pl-10 appearance-none font-medium">
-                      <option value="">Seleccionar unidad...</option>
-                      {units.map(u => <option key={u.id} value={u.id}>{u.name} ({u.symbol})</option>)}
-                    </select>
-                  </div>
-                </div>
-                <div>
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Categoría</label>
-                  <div className="relative">
-                    <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                    <select value={form.categoryId} onChange={e => setForm({ ...form, categoryId: e.target.value })} className="input pl-10 appearance-none font-medium">
-                      <option value="">Sin categoría</option>
-                      {(categories ?? []).map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                    </select>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const code = `INT${Date.now().toString().slice(-8)}${Math.floor(Math.random() * 100)}`;
+                        setForm({ ...form, ean: code });
+                      }}
+                      className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-xl transition"
+                      title="Generar"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div className="flex items-end gap-2">
-                <div className="flex-1">
-                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest mb-2 block">Código EAN / Barras</label>
-                  <input
-                    type="text"
-                    value={form.ean}
-                    onChange={e => setForm({ ...form, ean: e.target.value })}
-                    className="input font-mono"
-                    placeholder="Opcional. Se genera uno interno si está vacío."
-                  />
-                </div>
+              {/* [NEW] GLOBAL DATA SECTION - Conditional */}
+              <div className="pt-4 border-t mt-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    const code = `INT${Date.now().toString().slice(-8)}${Math.floor(Math.random() * 100)}`;
-                    setForm({ ...form, ean: code });
+                  onClick={(e) => {
+                    const nextEl = (e.currentTarget.nextElementSibling as HTMLElement);
+                    if (nextEl) nextEl.classList.toggle('hidden');
                   }}
-                  className="p-3 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl transition"
-                  title="Generar código interno"
+                  className="flex items-center justify-between w-full text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-colors"
                 >
-                  Generar
+                  Información Global y Admin
+                  <ChevronRight className="w-3 h-3" />
                 </button>
-                {form.ean && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const printWindow = window.open('', '_blank');
-                      if (printWindow) {
-                        printWindow.document.write(`
-                            <html>
-                              <head>
-                                <title>Imprimir Etiqueta</title>
-                                <style>
-                                  body { font-family: sans-serif; display: flex; flex-direction: column; items: center; justify-content: center; height: 100vh; margin: 0; }
-                                  .label { border: 1px solid #eee; padding: 20px; text-align: center; width: 200px; }
-                                  .name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
-                                  .price { font-size: 18px; font-weight: 900; margin-bottom: 10px; }
-                                  .code { font-family: 'Libre Barcode 128', cursive; font-size: 40px; margin: 10px 0; }
-                                  .code-text { font-family: monospace; font-size: 10px; letter-spacing: 2px; }
-                                  @media print { body { height: auto; } .label { border: none; } }
-                                </style>
-                                <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128&display=swap" rel="stylesheet">
-                              </head>
-                              <body>
-                                <div class="label">
-                                  <div class="name">${form.name || 'Producto'}</div>
-                                  <div class="price">$${form.basePrice || '0'}</div>
-                                  <div class="code">${form.ean}</div>
-                                  <div class="code-text">${form.ean}</div>
-                                </div>
-                                <script>setTimeout(() => { window.print(); window.close(); }, 500);</script>
-                              </body>
-                            </html>
-                          `);
-                        printWindow.document.close();
-                      }
-                    }}
-                    className="p-3 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-xl transition"
-                    title="Imprimir etiqueta"
-                  >
-                    Imprimir
-                  </button>
-                )}
+                <div className="hidden mt-4 space-y-4 animate-in fade-in slide-in-from-top-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    {canDelete && (
+                      <div>
+                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Total (Suma Sucursales)</label>
+                        <div className="input input-sm font-black text-right bg-gray-100/50 border-gray-200 text-gray-500 flex items-center justify-end px-3">
+                          {Number(Object.values(form.branchQuantities || {}).reduce((acc: number, val: any) => acc + Number(val || 0), 0))}
+                        </div>
+                        <p className="text-[8px] text-gray-400 mt-1 italic uppercase tracking-tighter">Calculado automáticamente</p>
+                      </div>
+                    )}
+                  </div>
+                  {form.ean && (
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl border border-gray-100">
+                      <div>
+                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Código Actual</p>
+                        <p className="text-xs font-mono font-bold text-gray-900">{form.ean}</p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const printWindow = window.open('', '_blank');
+                          if (printWindow) {
+                            printWindow.document.write(`
+                                <html>
+                                  <head>
+                                    <title>Imprimir Etiqueta</title>
+                                    <style>
+                                      body { font-family: sans-serif; display: flex; flex-direction: column; items: center; justify-content: center; height: 100vh; margin: 0; }
+                                      .label { border: 1px solid #eee; padding: 20px; text-align: center; width: 200px; }
+                                      .name { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+                                      .price { font-size: 18px; font-weight: 900; margin-bottom: 10px; }
+                                      .code { font-family: 'Libre Barcode 128', cursive; font-size: 40px; margin: 10px 0; }
+                                      .code-text { font-family: monospace; font-size: 10px; letter-spacing: 2px; }
+                                      @media print { body { height: auto; } .label { border: none; } }
+                                    </style>
+                                    <link href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128&display=swap" rel="stylesheet">
+                                  </head>
+                                  <body>
+                                    <div class="label">
+                                      <div class="name">${form.name || 'Producto'}</div>
+                                      <div class="price">$${form.basePrice || '0'}</div>
+                                      <div class="code">${form.ean}</div>
+                                      <div class="code-text">${form.ean}</div>
+                                    </div>
+                                    <script>setTimeout(() => { window.print(); window.close(); }, 500);</script>
+                                  </body>
+                                </html>
+                              `);
+                            printWindow.document.close();
+                          }
+                        }}
+                        className="btn btn-sm bg-white border-gray-200 text-gray-600 flex items-center gap-2"
+                      >
+                        <Printer className="w-4 h-4" /> Imprimir
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {priceLists.length > 0 && (
                 <div className="pt-6 border-t mt-4">
                   <label className="text-xs font-black text-blue-600 uppercase tracking-widest mb-4 block">Precios por Lista</label>
                   <div className="space-y-4">
-                    {priceLists.map(list => (
-                      <div key={list.id} className={`flex items-center gap-4 p-3 rounded-2xl border transition-all ${list.branchId === userBranchId ? 'bg-blue-50/50 border-blue-200 shadow-sm ring-2 ring-blue-100' : 'bg-gray-50/50 border-gray-100 hover:border-blue-200'}`}>
+                    {priceLists.filter(list => list.branchId !== userBranchId).map(list => (
+                      <div key={list.id} className="flex items-center gap-4 p-3 rounded-2xl border bg-gray-50/50 border-gray-100 hover:border-blue-200 transition-all">
                         <div className="flex-1">
-                          <label className="text-xs font-black text-gray-600 uppercase tracking-wider flex items-center gap-2">
+                          <label className="text-[10px] font-black text-gray-600 uppercase tracking-wider block">
                             {list.name}
-                            {list.branchId === userBranchId && <span className="bg-blue-600 text-white text-[8px] px-1.5 py-0.5 rounded-full">TU SUCURSAL</span>}
                           </label>
                           {list.percentage !== 0 && (
                             <button
@@ -1031,16 +1057,14 @@ function ProductosContent() {
                                   prices: { ...form.prices, [list.id]: Math.round(calc) }
                                 });
                               }}
-                              className="text-[10px] font-bold text-blue-500 hover:text-blue-700 underline flex items-center gap-1"
-                              title="Calcular automáticamente"
+                              className="text-[9px] font-bold text-blue-500 hover:text-blue-700 underline"
                             >
                               Sugerido: {list.percentage > 0 ? "+" : ""}{list.percentage}% (${Math.round(form.basePrice * (1 + (list.percentage / 100)))})
                             </button>
                           )}
                         </div>
-                        <div className="flex items-center gap-3">
-                          <div className="relative w-24">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Actual</label>
+                        <div className="flex items-center gap-2">
+                          <div className="w-20">
                             <input
                               type="number"
                               value={form.branchQuantities[list.branchId || ""] === 0 ? "0" : (form.branchQuantities[list.branchId || ""] || "")}
@@ -1048,43 +1072,33 @@ function ProductosContent() {
                                 ...form,
                                 branchQuantities: { ...form.branchQuantities, [list.branchId || ""]: e.target.value }
                               })}
-                              className="input input-sm font-bold text-right bg-blue-50/50 border-blue-100 text-blue-700 focus:ring-4 focus:ring-blue-50"
-                              placeholder="0"
+                              className="input input-sm font-bold text-right bg-white text-[10px]"
+                              placeholder="Stock"
                               onFocus={e => e.target.select()}
                             />
                           </div>
-                          <div className="relative w-24">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Mín.</label>
-                            <input
-                              type="number"
-                              value={form.branchMinStocks[list.branchId || ""] === 0 ? "0" : (form.branchMinStocks[list.branchId || ""] || "")}
-                              onChange={e => setForm({
-                                ...form,
-                                branchMinStocks: { ...form.branchMinStocks, [list.branchId || ""]: e.target.value }
-                              })}
-                              className="input input-sm font-bold text-right bg-white border-orange-200 text-orange-600 focus:ring-4 focus:ring-orange-50"
-                              placeholder="0"
-                              onFocus={e => e.target.select()}
-                            />
-                          </div>
-                          <div className="relative w-32">
-                            <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Precio</label>
-                            <span className="absolute left-3 bottom-2.5 text-gray-400 font-bold text-xs">$</span>
-                            <input
-                              type="number"
-                              value={form.prices[list.id] || ""}
-                              onChange={e => setForm({
-                                ...form,
-                                prices: { ...form.prices, [list.id]: e.target.value }
-                              })}
-                              className={`input input-sm pl-7 font-black text-right ${list.branchId === userBranchId ? 'bg-white border-blue-400 text-blue-700 focus:ring-4 focus:ring-blue-50' : 'focus:bg-white'}`}
-                              placeholder="Manual"
-                              onFocus={e => e.target.select()}
-                            />
+                          <div className="w-24">
+                            <div className="relative">
+                              <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-[10px]">$</span>
+                              <input
+                                type="number"
+                                value={form.prices[list.id] || ""}
+                                onChange={e => setForm({
+                                  ...form,
+                                  prices: { ...form.prices, [list.id]: e.target.value }
+                                })}
+                                className="input input-sm pl-4 font-black text-right bg-white text-[10px]"
+                                placeholder="Precio"
+                                onFocus={e => e.target.select()}
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
                     ))}
+                    {priceLists.filter(list => list.branchId !== userBranchId).length === 0 && (
+                      <p className="text-[10px] text-gray-400 italic text-center py-2">No hay otras sucursales configuradas.</p>
+                    )}
                   </div>
                 </div>
               )}

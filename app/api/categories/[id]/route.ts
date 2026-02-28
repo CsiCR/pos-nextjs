@@ -12,12 +12,15 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
             return NextResponse.json({ error: "No autorizado" }, { status: 403 });
         }
 
-        const { name } = await req.json();
+        const { name, defaultMinStock } = await req.json();
         if (!name) return NextResponse.json({ error: "Nombre requerido" }, { status: 400 });
 
         const category = await prisma.category.update({
             where: { id: params.id },
-            data: { name }
+            data: {
+                name,
+                defaultMinStock: defaultMinStock ? parseFloat(defaultMinStock) : 0
+            }
         });
 
         return NextResponse.json(category);
