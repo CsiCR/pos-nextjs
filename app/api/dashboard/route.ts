@@ -71,27 +71,40 @@ export async function GET(req: Request) {
     // We will build salesByMethod with detailed breakdown
     const methodStats: Record<string, { total: number, count: number, clearing: number }> = {};
 
-    // Fetch Sales with Items for Clearing Calculation
-    const allSales = await (prisma as any).sale.findMany({
+    // 1. Totals and Counts using Aggregate (Fast)
+    const aggregateSales = await prisma.sale.aggregate({
+      where: whereClause,
+      _sum: { total: true },
+      _count: { id: true }
+    });
+    totalSales = Number(aggregateSales._sum.total || 0);
+    totalCount = aggregateSales._count.id;
+
+    const todayWhere = { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] };
+    const todayAggregate = await prisma.sale.aggregate({
+      where: todayWhere,
+      _sum: { total: true },
+      _count: { id: true }
+    });
+    todaySales = Number(todayAggregate._sum.total || 0);
+    todayCount = todayAggregate._count.id;
+
+    // 2. Detailed Distribution - Only for RECENT/LIMITED sales to avoid production hang
+    // Note: If user wants full history detail, this needs a much more efficient approach (DB views or background jobs)
+    const distributionSales = await (prisma as any).sale.findMany({
       where: whereClause,
       include: {
         paymentDetails: true,
-        items: { include: { product: true } } // Needed to check ownership
-      }
+        items: { include: { product: true } }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: 1000 // Limit to avoid hang
     });
 
-    for (const sale of allSales) {
+    for (const sale of distributionSales) {
       const saleTotal = Number(sale.total);
 
-      totalSales += saleTotal;
-      totalCount++;
-
-      if (new Date(sale.createdAt) >= today) {
-        todaySales += saleTotal;
-        todayCount++;
-      }
-
-      // --- CLEARING CALCULATION ---
+      // Clearing and Method logic remains similar but on LIMITED data
       let saleDebt = 0;
       if (effectiveBranchId) {
         for (const item of (sale.items || [])) {
@@ -100,10 +113,8 @@ export async function GET(req: Request) {
           }
         }
       }
-
       const debtRatio = saleTotal > 0 ? saleDebt / saleTotal : 0;
 
-      // --- METHOD DISTRIBUTION ---
       const countedMethods = new Set<string>();
       if (sale.paymentDetails && sale.paymentDetails.length > 0) {
         for (const pd of sale.paymentDetails) {
@@ -114,17 +125,14 @@ export async function GET(req: Request) {
           if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
           methodStats[m].total += amount;
           if (!countedMethods.has(m)) {
-            methodStats[m].count += 1;
-            countedMethods.add(m);
+            methodStats[m].count += 1; countedMethods.add(m);
           }
           methodStats[m].clearing += clearingPart;
         }
       } else {
-        // Fallback single method
         const m = sale.paymentMethod;
         const amount = saleTotal;
         const clearingPart = amount * debtRatio;
-
         if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
         methodStats[m].total += amount;
         methodStats[m].count += 1;
@@ -134,10 +142,10 @@ export async function GET(req: Request) {
 
     const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
       paymentMethod: k,
-      total: v.total, // Total collected
+      total: v.total,
       count: v.count,
-      clearing: v.clearing, // Amount owned by others
-      net: v.total - v.clearing // Amount owned by this branch
+      clearing: v.clearing,
+      net: v.total - v.clearing
     }));
 
     // 4. Products Count (Sync with catalog 'onlyMyBranch' logic)
