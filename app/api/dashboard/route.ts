@@ -89,16 +89,16 @@ export async function GET(req: Request) {
     todaySales = Number(todayAggregate._sum.total || 0);
     todayCount = todayAggregate._count.id;
 
-    // 2. Detailed Distribution - Only for RECENT/LIMITED sales to avoid production hang
-    // Note: If user wants full history detail, this needs a much more efficient approach (DB views or background jobs)
+    // 2. Detailed Distribution - Lean select to prevent production timeout
     const distributionSales = await (prisma as any).sale.findMany({
       where: whereClause,
-      include: {
-        paymentDetails: true,
-        items: { include: { product: true } }
+      select: {
+        total: true, paymentMethod: true,
+        paymentDetails: { select: { method: true, amount: true } },
+        items: { select: { subtotal: true, product: { select: { branchId: true } } } }
       },
       orderBy: { createdAt: 'desc' },
-      take: 1000 // Limit to avoid hang
+      take: 500
     });
 
     for (const sale of distributionSales) {
@@ -184,7 +184,7 @@ export async function GET(req: Request) {
         id: true,
         minStock: true,
         stocks: {
-          include: { branch: true }
+          select: { quantity: true, minStock: true }
         }
       }
     });
