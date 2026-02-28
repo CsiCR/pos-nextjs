@@ -53,12 +53,7 @@ export async function GET(req: Request) {
       }
 
       if (filterPaymentMethod) {
-        whereClause.AND.push({
-          OR: [
-            { paymentMethod: filterPaymentMethod },
-            { paymentDetails: { some: { method: filterPaymentMethod } } }
-          ]
-        });
+        whereClause.AND.push({ paymentMethod: filterPaymentMethod });
       }
 
       const effectiveBranchId = (branchId && !isGerente && !isAdmin) ? branchId : filterBranchId;
@@ -95,7 +90,6 @@ export async function GET(req: Request) {
         where: whereClause,
         select: {
           total: true, paymentMethod: true,
-          paymentDetails: { select: { method: true, amount: true } },
           items: { select: { subtotal: true, product: { select: { branchId: true } } } }
         },
         orderBy: { createdAt: 'desc' },
@@ -115,29 +109,13 @@ export async function GET(req: Request) {
         }
         const debtRatio = saleTotal > 0 ? saleDebt / saleTotal : 0;
 
-        const countedMethods = new Set<string>();
-        if (sale.paymentDetails && sale.paymentDetails.length > 0) {
-          for (const pd of sale.paymentDetails) {
-            const m = pd.method;
-            const amount = Number(pd.amount);
-            const clearingPart = amount * debtRatio;
-
-            if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
-            methodStats[m].total += amount;
-            if (!countedMethods.has(m)) {
-              methodStats[m].count += 1; countedMethods.add(m);
-            }
-            methodStats[m].clearing += clearingPart;
-          }
-        } else {
-          const m = sale.paymentMethod;
-          const amount = saleTotal;
-          const clearingPart = amount * debtRatio;
-          if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
-          methodStats[m].total += amount;
-          methodStats[m].count += 1;
-          methodStats[m].clearing += clearingPart;
-        }
+        const m = sale.paymentMethod;
+        const amount = saleTotal;
+        const clearingPart = amount * debtRatio;
+        if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
+        methodStats[m].total += amount;
+        methodStats[m].count += 1;
+        methodStats[m].clearing += clearingPart;
       }
 
       const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
@@ -224,7 +202,7 @@ export async function GET(req: Request) {
       // Cashier view
       const shift = await prisma.shift.findFirst({
         where: { userId: session.user.id, closedAt: null },
-        include: { sales: { include: { paymentDetails: true } } }
+        include: { sales: true }
       });
 
       const shiftSales = shift?.sales?.reduce((sum, s) => sum + Number(s.total), 0) || 0;
@@ -234,23 +212,10 @@ export async function GET(req: Request) {
       const methodStats: Record<string, { total: number, count: number }> = {};
       if (shift?.sales) {
         for (const sale of shift.sales) {
-          const countedMethods = new Set<string>();
-          if (sale.paymentDetails && sale.paymentDetails.length > 0) {
-            for (const pd of sale.paymentDetails) {
-              const m = pd.method;
-              if (!methodStats[m]) methodStats[m] = { total: 0, count: 0 };
-              methodStats[m].total += Number(pd.amount);
-              if (!countedMethods.has(m)) {
-                methodStats[m].count += 1;
-                countedMethods.add(m);
-              }
-            }
-          } else {
-            const m = sale.paymentMethod;
-            if (!methodStats[m]) methodStats[m] = { total: 0, count: 0 };
-            methodStats[m].total += Number(sale.total);
-            methodStats[m].count += 1;
-          }
+          const m = sale.paymentMethod;
+          if (!methodStats[m]) methodStats[m] = { total: 0, count: 0 };
+          methodStats[m].total += Number(sale.total);
+          methodStats[m].count += 1;
         }
       }
 
