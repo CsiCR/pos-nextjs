@@ -62,41 +62,22 @@ export async function GET(req: Request) {
       step = "query-agg-today";
       const aggToday = await prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } });
 
-      step = "query-methods";
-      const methodGroups = await prisma.sale.groupBy({
-        by: ['paymentMethod'],
+      step = "query-methods-fallback";
+      // We use findMany because if the DB enum is missing values (like CUENTA_CORRIENTE), 
+      // groupBy might crash depending on the connector/prisma version. findMany is safer.
+      const methodSalesSample = await prisma.sale.findMany({
         where: whereClause,
-        _sum: { total: true },
-        _count: { id: true }
-      });
-
-      step = "query-distribution-clearing";
-      const distributionSales = await (prisma as any).sale.findMany({
-        where: whereClause,
-        select: { total: true, paymentMethod: true, items: { select: { subtotal: true, product: { select: { branchId: true } } } } },
+        select: { total: true, paymentMethod: true },
         orderBy: { createdAt: 'desc' },
-        take: 200
+        take: 500
       });
 
       const methodStats: Record<string, { total: number, count: number, clearing: number }> = {};
-      for (const g of methodGroups) {
-        methodStats[g.paymentMethod] = { total: Number(g._sum.total || 0), count: g._count.id, clearing: 0 };
-      }
-
-      for (const sale of distributionSales) {
-        const saleTotal = Number(sale.total);
-        let saleDebt = 0;
-        if (effectiveBranchId) {
-          for (const item of (sale.items || [])) {
-            if (item.product?.branchId && item.product.branchId !== effectiveBranchId) {
-              saleDebt += Number(item.subtotal || 0);
-            }
-          }
-        }
-        const m = sale.paymentMethod;
-        if (methodStats[m] && saleTotal > 0) {
-          methodStats[m].clearing += (saleDebt);
-        }
+      for (const s of methodSalesSample) {
+        const m = s.paymentMethod;
+        if (!methodStats[m]) methodStats[m] = { total: 0, count: 0, clearing: 0 };
+        methodStats[m].total += Number(s.total);
+        methodStats[m].count += 1;
       }
 
       const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
@@ -134,7 +115,7 @@ export async function GET(req: Request) {
       }
 
       const elapsed = Date.now() - start;
-      console.log(`[Dashboard v7] OK in ${elapsed}ms`);
+      console.log(`[Dashboard v8] OK in ${elapsed}ms`);
 
       return NextResponse.json({
         totalSales: Number(aggFull._sum.total || 0),
@@ -156,7 +137,7 @@ export async function GET(req: Request) {
       });
     }
   } catch (error: any) {
-    console.error(`[Dashboard v6] Error at ${step}:`, error);
+    console.error(`[Dashboard v8] Error at ${step}:`, error);
     return NextResponse.json({
       error: `Error en paso [${step}]: ${error.message}`,
       step,
