@@ -62,17 +62,79 @@ export async function GET(req: Request) {
       step = "query-agg-today";
       const aggToday = await prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } });
 
+      step = "query-methods";
+      const methodGroups = await prisma.sale.groupBy({
+        by: ['paymentMethod'],
+        where: whereClause,
+        _sum: { total: true },
+        _count: { id: true }
+      });
+
+      step = "query-distribution-clearing";
+      const distributionSales = await (prisma as any).sale.findMany({
+        where: whereClause,
+        select: { total: true, paymentMethod: true, items: { select: { subtotal: true, product: { select: { branchId: true } } } } },
+        orderBy: { createdAt: 'desc' },
+        take: 200
+      });
+
+      const methodStats: Record<string, { total: number, count: number, clearing: number }> = {};
+      for (const g of methodGroups) {
+        methodStats[g.paymentMethod] = { total: Number(g._sum.total || 0), count: g._count.id, clearing: 0 };
+      }
+
+      for (const sale of distributionSales) {
+        const saleTotal = Number(sale.total);
+        let saleDebt = 0;
+        if (effectiveBranchId) {
+          for (const item of (sale.items || [])) {
+            if (item.product?.branchId && item.product.branchId !== effectiveBranchId) {
+              saleDebt += Number(item.subtotal || 0);
+            }
+          }
+        }
+        const m = sale.paymentMethod;
+        if (methodStats[m] && saleTotal > 0) {
+          methodStats[m].clearing += (saleDebt);
+        }
+      }
+
+      const salesByMethod = Object.entries(methodStats).map(([k, v]) => ({
+        paymentMethod: k, total: v.total, count: v.count, clearing: v.clearing, net: v.total - v.clearing
+      }));
+
       step = "query-products";
       const products = await prisma.product.count({ where: { active: true, ...(effectiveBranchId ? { OR: [{ branchId: effectiveBranchId }, { stocks: { some: { branchId: effectiveBranchId } } }] } : {}) } });
 
       step = "query-users";
       const users = await prisma.user.count({ where: { active: true, ...(effectiveBranchId ? { branchId: effectiveBranchId } : {}) } });
 
-      // step = "query-distribution";
-      const salesByMethod: any[] = [];
+      step = "query-stock-alerts";
+      let lowStockCount = 0;
+      let missingCount = 0;
+      const stockProducts = await (prisma as any).product.findMany({
+        where: { active: true, ...(effectiveBranchId ? { OR: [{ branchId: effectiveBranchId }, { branchId: null }, { stocks: { some: { branchId: effectiveBranchId } } }] } : {}) },
+        select: {
+          minStock: true,
+          stocks: { select: { quantity: true, branchId: true } }
+        },
+        take: 1000
+      });
+
+      for (const p of stockProducts) {
+        const min = Number(p.minStock || 0);
+        if (effectiveBranchId) {
+          const branchStock = p.stocks?.find((s: any) => s.branchId === effectiveBranchId);
+          const qty = branchStock ? Number(branchStock.quantity) : 0;
+          if (qty <= 0) missingCount++; else if (qty < min) lowStockCount++;
+        } else {
+          const totalQty = p.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
+          if (totalQty <= 0) missingCount++; else if (totalQty < min) lowStockCount++;
+        }
+      }
 
       const elapsed = Date.now() - start;
-      console.log(`[Dashboard v6] OK in ${elapsed}ms`);
+      console.log(`[Dashboard v7] OK in ${elapsed}ms`);
 
       return NextResponse.json({
         totalSales: Number(aggFull._sum.total || 0),
@@ -80,8 +142,7 @@ export async function GET(req: Request) {
         todaySales: Number(aggToday._sum.total || 0),
         todayCount: aggToday._count.id,
         products, users, salesByMethod,
-        lowStockCount: 0,
-        missingCount: 0,
+        lowStockCount, missingCount,
         isGerente
       });
     } else {
