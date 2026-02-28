@@ -28,7 +28,7 @@ export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
     const role = (session?.user as any)?.role;
 
-    if (role !== "ADMIN") {
+    if (role !== "ADMIN" && role !== "GERENTE") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
