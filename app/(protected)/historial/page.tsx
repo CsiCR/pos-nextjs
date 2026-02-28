@@ -243,27 +243,14 @@ export default function HistorialPage() {
             // Columnas: nro de comprobante, descuento, metodo de pago, importe
             const headers = ["Comprobante", "Fecha", "Vendedor", "Descuento", "Metodo de Pago", "Importe"];
 
-            const csvData = exportSales.flatMap((sale: any) => {
-                if (sale.paymentMethod === "MIXTO" && sale.paymentDetails?.length > 0) {
-                    return sale.paymentDetails.map((pd: any, index: number) => [
-                        `#${sale.number || sale.id.slice(-6).toUpperCase()}`,
-                        formatDateTime(sale.createdAt),
-                        sale.user?.name || "N/A",
-                        index === 0 ? sale.discount.toString() : "0",
-                        pd.method,
-                        pd.amount.toString()
-                    ]);
-                } else {
-                    return [[
-                        `#${sale.number || sale.id.slice(-6).toUpperCase()}`,
-                        formatDateTime(sale.createdAt),
-                        sale.user?.name || "N/A",
-                        sale.discount.toString(),
-                        sale.paymentMethod,
-                        sale.total.toString()
-                    ]];
-                }
-            });
+            const csvData = exportSales.map((sale: any) => [
+                `#${sale.number || sale.id.slice(-6).toUpperCase()}`,
+                formatDateTime(sale.createdAt),
+                sale.user?.name || "N/A",
+                sale.discount.toString(),
+                sale.paymentMethod,
+                sale.total.toString()
+            ]);
 
             const csvContent = [headers, ...csvData]
                 .map(row => row.map((cell: any) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
@@ -579,30 +566,12 @@ export default function HistorialPage() {
                                             </td>
                                             <td className={`px-6 py-3 text-right font-black ${item.sale?.type === 'REFUND' ? 'text-red-600' : 'text-blue-600'}`}>
                                                 {(() => {
-                                                    const saleTotal = Number(item.sale?.total) || 1; // Avoid div 0
                                                     let displayAmount = item.price * item.quantity;
-
-                                                    // Filter Logic Adjustment
-                                                    const filterMethod = searchParams.get("paymentMethod");
-                                                    if (filterMethod && item.sale?.paymentDetails?.length > 0) {
-                                                        // Calculate Proportional Amount
-                                                        // Find amount paid by this method
-                                                        const methodPayment = item.sale.paymentDetails.find((pd: any) => pd.method === filterMethod);
-                                                        if (methodPayment) {
-                                                            const methodAmount = Number(methodPayment.amount);
-                                                            const ratio = methodAmount / saleTotal;
-                                                            // Apply ratio to this item's total
-                                                            displayAmount = displayAmount * ratio;
-                                                        }
-                                                    }
 
                                                     return (
                                                         <>
                                                             {item.sale?.type === 'REFUND' && "-"}
                                                             {formatPrice(roundCurrency(displayAmount), settings.useDecimals)}
-                                                            {filterMethod && item.sale?.paymentDetails?.length > 0 && Math.abs(displayAmount - (item.price * item.quantity)) > 1 && (
-                                                                <span className="block text-[10px] text-gray-400 font-normal">(Parcial)</span>
-                                                            )}
                                                         </>
                                                     );
                                                 })()}

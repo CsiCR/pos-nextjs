@@ -56,8 +56,7 @@ export async function GET(req: Request) {
                 }
             },
             include: {
-                items: { include: { product: { include: { branch: true } } } },
-                paymentDetails: true
+                items: { include: { product: { include: { branch: true } } } }
             }
         });
 
@@ -90,22 +89,10 @@ export async function GET(req: Request) {
                 debtsByBranch[creditorId].amount += debtAmount;
 
                 // Allocate payments
-                // If Mixed
-                // If we have payment details (Mixed or Single with details stored)
-                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
-                    sale.paymentDetails.forEach(pd => {
-                        const method = pd.method;
-                        const allocated = Number(pd.amount) * ratio;
-                        debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
-                    });
-                } else {
-                    // Single method
-                    const method = sale.paymentMethod; // EFECTIVO, etc.
-                    // If simple cash sale, use saleTotal (or cashReceived? usually saleTotal matches)
-                    // We allocate the DEBT AMOUNT directly to this method, effectively ratio * total = debtAmount
-                    const allocated = debtAmount;
-                    debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
-                }
+                // Since PaymentDetails are removed, we treat the entire debt part as belonging to the primary PaymentMethod
+                const method = sale.paymentMethod; // EFECTIVO, etc.
+                const allocated = debtAmount;
+                debtsByBranch[creditorId].payments[method] = (debtsByBranch[creditorId].payments[method] || 0) + allocated;
             });
         });
 
@@ -122,8 +109,7 @@ export async function GET(req: Request) {
             },
             include: {
                 items: { include: { product: true } },
-                branch: true, // The Debtor Branch info
-                paymentDetails: true
+                branch: true // The Debtor Branch info
             }
         });
 
@@ -150,17 +136,9 @@ export async function GET(req: Request) {
 
                 const ratio = myShareInSale / saleTotal;
 
-                if (sale.paymentDetails && sale.paymentDetails.length > 0) {
-                    sale.paymentDetails.forEach(pd => {
-                        const method = pd.method;
-                        const allocated = Number(pd.amount) * ratio;
-                        receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
-                    });
-                } else {
-                    const method = sale.paymentMethod;
-                    const allocated = myShareInSale;
-                    receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
-                }
+                const method = sale.paymentMethod;
+                const allocated = myShareInSale;
+                receivablesByBranch[debtorId].payments[method] = (receivablesByBranch[debtorId].payments[method] || 0) + allocated;
             }
         });
 

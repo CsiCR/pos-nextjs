@@ -51,7 +51,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
                 const saleIds = sales.map(s => s.id);
 
                 if (saleIds.length > 0) {
-                    await tx.paymentDetail.deleteMany({ where: { saleId: { in: saleIds } } });
+                    await tx.saleItem.deleteMany({ where: { saleId: { in: saleIds } } });
                     await tx.saleItem.deleteMany({ where: { saleId: { in: saleIds } } });
                     await tx.sale.deleteMany({ where: { branchId: id } });
                 }

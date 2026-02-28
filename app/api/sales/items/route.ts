@@ -112,8 +112,7 @@ export async function GET(req: Request) {
                     user: { select: { name: true } },
                     branch: { select: { name: true } },
                     type: true,
-                    total: true,
-                    paymentDetails: true
+                    total: true
                 }
             }
         },

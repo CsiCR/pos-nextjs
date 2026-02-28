@@ -96,19 +96,11 @@ export default function TurnosPage() {
   const shiftTotal = currentShift?.sales?.reduce((s: number, sale: any) => s + Number(sale?.total ?? 0), 0) || 0;
   const cashSales = currentShift?.sales?.reduce((sum: number, s: any) => {
     if (s?.paymentMethod === "EFECTIVO") return sum + Number(s?.total ?? 0) + Number(s?.adjustment ?? 0);
-    if (s?.paymentMethod === "MIXTO" && s?.paymentDetails) {
-      const cashPart = s.paymentDetails.find((pd: any) => pd.method === "EFECTIVO");
-      return sum + Number(cashPart?.amount ?? 0);
-    }
     return sum;
   }, 0) || 0;
 
   const qrSales = currentShift?.sales?.reduce((sum: number, s: any) => {
     if (s?.paymentMethod === "QR") return sum + Number(s?.total ?? 0);
-    if (s?.paymentMethod === "MIXTO" && s?.paymentDetails) {
-      const qrPart = s.paymentDetails.find((pd: any) => pd.method === "QR");
-      return sum + Number(qrPart?.amount ?? 0);
-    }
     return sum;
   }, 0) || 0;
 

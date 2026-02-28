@@ -23,7 +23,6 @@ export async function POST(req: Request) {
 
         await (prisma as any).$transaction(async (tx: any) => {
             // 1. Delete transactional data
-            await tx.paymentDetail.deleteMany({});
             await tx.saleItem.deleteMany({});
             await tx.settlement.deleteMany({});
             await tx.sale.deleteMany({});
