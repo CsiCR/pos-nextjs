@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
@@ -28,7 +29,7 @@ export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
     const role = (session?.user as any)?.role;
 
-    if (role !== "ADMIN" && role !== "GERENTE") {
+    if (role !== "ADMIN") {
         return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
