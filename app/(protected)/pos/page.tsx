@@ -311,65 +311,67 @@ export default function POSPage() {
       <div className="lg:col-span-2 flex flex-col min-h-0">
         <div className="bg-white p-4 rounded-xl border border-gray-100 mb-4 shadow-sm">
           {/* Customer Selection */}
-          <div className="mb-4 relative">
-            <div className="flex items-center gap-2 mb-2">
-              <User className="w-4 h-4 text-blue-500" />
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente / Cuenta Corriente</span>
-            </div>
-            <div className="flex gap-2">
-              {selectedCustomer ? (
-                <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2 flex items-center justify-between animate-in fade-in slide-in-from-top-1">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
-                      {selectedCustomer.name[0]}
+          {settings.enableCustomerAccounts && (
+            <div className="mb-4 relative">
+              <div className="flex items-center gap-2 mb-2">
+                <User className="w-4 h-4 text-blue-500" />
+                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Cliente / Cuenta Corriente</span>
+              </div>
+              <div className="flex gap-2">
+                {selectedCustomer ? (
+                  <div className="flex-1 bg-blue-50 border border-blue-100 rounded-xl px-4 py-2 flex items-center justify-between animate-in fade-in slide-in-from-top-1">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold">
+                        {selectedCustomer.name[0]}
+                      </div>
+                      <div>
+                        <p className="text-sm font-black text-blue-900">{selectedCustomer.name}</p>
+                        <p className="text-[10px] text-blue-400 font-bold">Saldo: {formatPrice(selectedCustomer.balance, settings.useDecimals)}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-black text-blue-900">{selectedCustomer.name}</p>
-                      <p className="text-[10px] text-blue-400 font-bold">Saldo: {formatPrice(selectedCustomer.balance, settings.useDecimals)}</p>
-                    </div>
+                    <button onClick={() => setSelectedCustomer(null)} className="p-1 hover:bg-blue-100 rounded-full text-blue-600 transition">
+                      <X className="w-5 h-5" />
+                    </button>
                   </div>
-                  <button onClick={() => setSelectedCustomer(null)} className="p-1 hover:bg-blue-100 rounded-full text-blue-600 transition">
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              ) : (
-                <div className="relative flex-1">
-                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Buscar cliente por nombre o documento..."
-                    value={customerSearch}
-                    onChange={e => { setCustomerSearch(e.target.value); setShowCustomerSearch(true); }}
-                    className="input pl-10 h-11 text-sm border-gray-200 bg-gray-50/50"
-                  />
-                  {showCustomerSearch && customerResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
-                      {customerResults.map(c => (
-                        <button
-                          key={c.id}
-                          onClick={() => { setSelectedCustomer(c); setCustomerSearch(""); setShowCustomerSearch(false); }}
-                          className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b last:border-0 transition"
-                        >
-                          <div className="text-left">
-                            <p className="font-bold text-gray-800 text-sm">{c.name}</p>
-                            <p className="text-[10px] text-gray-400">{c.document || "Sin documento"}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className={`text-xs font-black ${Number(c.balance) > 0 ? "text-red-500" : "text-green-500"}`}>
-                              {formatPrice(c.balance, settings.useDecimals)}
-                            </p>
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-              <button onClick={() => router.push("/clientes")} className="btn bg-gray-50 border-gray-200 hover:bg-white text-gray-500 p-3 rounded-xl" title="Gestionar Clientes">
-                <Plus className="w-5 h-5" />
-              </button>
+                ) : (
+                  <div className="relative flex-1">
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Buscar cliente por nombre o documento..."
+                      value={customerSearch}
+                      onChange={e => { setCustomerSearch(e.target.value); setShowCustomerSearch(true); }}
+                      className="input pl-10 h-11 text-sm border-gray-200 bg-gray-50/50"
+                    />
+                    {showCustomerSearch && customerResults.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 mt-1 bg-white border rounded-xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
+                        {customerResults.map(c => (
+                          <button
+                            key={c.id}
+                            onClick={() => { setSelectedCustomer(c); setCustomerSearch(""); setShowCustomerSearch(false); }}
+                            className="w-full px-4 py-3 flex items-center justify-between hover:bg-gray-50 border-b last:border-0 transition"
+                          >
+                            <div className="text-left">
+                              <p className="font-bold text-gray-800 text-sm">{c.name}</p>
+                              <p className="text-[10px] text-gray-400">{c.document || "Sin documento"}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className={`text-xs font-black ${Number(c.balance) > 0 ? "text-red-500" : "text-green-500"}`}>
+                                {formatPrice(c.balance, settings.useDecimals)}
+                              </p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+                <button onClick={() => router.push("/clientes")} className="btn bg-gray-50 border-gray-200 hover:bg-white text-gray-500 p-3 rounded-xl" title="Gestionar Clientes">
+                  <Plus className="w-5 h-5" />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="flex flex-col md:flex-row gap-2 mb-4">
             <div className="relative group flex-1">
