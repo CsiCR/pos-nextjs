@@ -76,7 +76,7 @@ export function TransferModal({ onClose, products, branches, userBranchId, onSuc
     return (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[60] p-4 scale-in-center">
             <div className="bg-white rounded-3xl p-8 w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh]">
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-4">
                     <h2 className="text-2xl font-black text-gray-900 flex items-center gap-3">
                         <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
                             <ArrowRightLeft className="w-6 h-6 text-orange-600" />
@@ -86,6 +86,13 @@ export function TransferModal({ onClose, products, branches, userBranchId, onSuc
                     <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-all text-gray-400">
                         <X className="w-6 h-6" />
                     </button>
+                </div>
+
+                <div className="mb-6 flex items-center gap-2 text-sm">
+                    <span className="font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-lg">ORIGEN</span>
+                    <span className="font-black text-orange-600 tracking-tight">
+                        {branches.find(b => b.id === userBranchId)?.name || 'Tu Sucursal'}
+                    </span>
                 </div>
 
                 <div className="space-y-6 flex-1 overflow-auto pr-2 custom-scrollbar">

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import { Printer, X, MessageSquare, RefreshCcw } from "lucide-react";
 import { RefundModal } from "@/components/RefundModal";

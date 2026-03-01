@@ -20,7 +20,24 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
         if (!customer) return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
 
-        return NextResponse.json(customer);
+        // Fetch sales with branches for these transactions manually
+        const saleIds = customer.transactions.map((tx: any) => tx.saleId).filter(Boolean);
+        const sales = await prisma.sale.findMany({
+            where: { id: { in: saleIds } },
+            include: { branch: true }
+        });
+
+        const salesMap = new Map();
+        sales.forEach((s: any) => salesMap.set(s.id, s));
+
+        const enrichedTransactions = customer.transactions.map((tx: any) => {
+            if (tx.saleId && salesMap.has(tx.saleId)) {
+                return { ...tx, sale: salesMap.get(tx.saleId) };
+            }
+            return tx;
+        });
+
+        return NextResponse.json({ ...customer, transactions: enrichedTransactions });
     } catch (error) {
         console.error("Error fetching customer:", error);
         return NextResponse.json({ error: "Error al obtener detalle del cliente" }, { status: 500 });

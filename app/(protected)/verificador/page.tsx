@@ -154,18 +154,45 @@ export default function VerificadorPage() {
                     <p className="text-lg sm:text-xl font-black text-white leading-none">
                       {formatPrice(product.displayPrice || product.basePrice, settings.useDecimals)}
                     </p>
+                    {isShowingGlobal && <p className="text-[8px] text-blue-200 mt-1 uppercase font-bold tracking-wider">Precio Reference</p>}
                   </div>
 
-                  <div className={`p-1.5 rounded-xl border text-center ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : 'bg-gray-50 border-gray-100'}`}>
-                    <div className="flex items-center justify-center gap-1">
-                      <p className={`font-black text-xs sm:text-sm ${stockColor}`}>
-                        {qty} <span className="text-[8px] uppercase opacity-70 font-bold">{product.baseUnit?.symbol || 'un'}</span>
+                  {isShowingGlobal && product.stocks && product.stocks.length > 0 ? (
+                    <div className="mt-2 space-y-1 border-t border-gray-100 pt-2">
+                      <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">Por Sucursal:</p>
+                      {product.stocks.map((s: any) => {
+                        const branchPrice = product.prices?.find((pr: any) => pr.priceList?.branchId === s.branchId)?.price;
+                        const finalPrice = branchPrice ? Number(branchPrice) : product.basePrice;
+                        const sQty = Number(s.quantity);
+                        const sMin = Number(s.minStock || product.minStock || 0);
+
+                        let sColor = "text-green-600";
+                        if (sQty <= 0) sColor = "text-red-500";
+                        else if (sQty < sMin) sColor = "text-orange-500";
+
+                        return (
+                          <div key={s.branchId} className="flex justify-between items-center bg-gray-50 px-2 py-1.5 rounded-lg border border-gray-100">
+                            <span className="text-[9px] font-bold text-gray-600 truncate max-w-[80px] sm:max-w-[100px] uppercase">{s.branch?.name || "General"}</span>
+                            <div className="text-right flex items-center gap-2">
+                              <span className={`text-[9px] font-black ${sColor}`}>{sQty} <span className="text-[7px]">{product.baseUnit?.symbol || 'un'}</span></span>
+                              <span className="text-[10px] font-black text-blue-600 bg-white px-1.5 py-0.5 rounded border border-blue-100 shadow-sm">{formatPrice(finalPrice, settings.useDecimals)}</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className={`p-1.5 rounded-xl border text-center ${isCritical ? 'bg-red-50 border-red-100' : isLowStock ? 'bg-orange-50 border-orange-100' : 'bg-gray-50 border-gray-100'}`}>
+                      <div className="flex items-center justify-center gap-1">
+                        <p className={`font-black text-xs sm:text-sm ${stockColor}`}>
+                          {qty} <span className="text-[8px] uppercase opacity-70 font-bold">{product.baseUnit?.symbol || 'un'}</span>
+                        </p>
+                      </div>
+                      <p className="text-[7px] sm:text-[8px] font-black text-gray-400 uppercase tracking-tighter leading-none">
+                        Tu Sucursal
                       </p>
                     </div>
-                    <p className="text-[7px] sm:text-[8px] font-black text-gray-400 uppercase tracking-tighter leading-none">
-                      {isShowingGlobal ? 'Global' : 'Sucursal'}
-                    </p>
-                  </div>
+                  )}
                 </div>
               </div>
             );

@@ -16,6 +16,7 @@ export async function GET(req: Request) {
   const sessionBranchId = (session.user as any).branchId;
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
+  const specificId = searchParams.get("id");
 
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "100");
@@ -30,7 +31,8 @@ export async function GET(req: Request) {
   else targetBranchId = sessionBranchId;
 
   const where: any = { AND: [] };
-  if (shiftId) where.AND.push({ shiftId });
+  if (specificId) where.AND.push({ id: specificId });
+  else if (shiftId) where.AND.push({ shiftId });
   else if (targetBranchId) where.AND.push({ branchId: targetBranchId });
 
   const queryUserId = searchParams.get("userId");
@@ -42,9 +44,9 @@ export async function GET(req: Request) {
   }
 
   const isCajero = !isSupervisor && !isGlobalAdmin;
-  if (isCajero) where.AND.push({ userId: session.user.id });
+  if (isCajero && !specificId) where.AND.push({ userId: session.user.id });
 
-  if (startDate || endDate) {
+  if ((startDate || endDate) && !specificId) {
     const dateRange: any = {};
     if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
     if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
@@ -52,14 +54,20 @@ export async function GET(req: Request) {
   }
 
   const search = searchParams.get("search");
-  if (search) {
+  if (search && !specificId) {
+    const searchConditions: any[] = [
+      { user: { name: { contains: search, mode: 'insensitive' } } },
+      { customer: { name: { contains: search, mode: 'insensitive' } } },
+      { notes: { contains: search, mode: 'insensitive' } }
+    ];
+
+    // Only add numeric search if the input is a number
+    if (/^\d+$/.test(search)) {
+      searchConditions.push({ number: parseInt(search) });
+    }
+
     where.AND.push({
-      OR: [
-        { number: { contains: search, mode: 'insensitive' } },
-        { user: { name: { contains: search, mode: 'insensitive' } } },
-        { customer: { name: { contains: search, mode: 'insensitive' } } },
-        { notes: { contains: search, mode: 'insensitive' } }
-      ]
+      OR: searchConditions
     });
   }
 
@@ -126,7 +134,10 @@ export async function POST(req: Request) {
 
     const sale = await prisma.$transaction(async (tx) => {
       let total = new Prisma.Decimal(0);
+      const settings = await tx.systemSetting.findFirst();
+
       const saleItems = [];
+      const settlementsToCreate: any[] = [];
 
       for (const item of items) {
         const product = await tx.product.findUnique({ where: { id: item.productId } });
@@ -148,11 +159,23 @@ export async function POST(req: Request) {
           unitId: item.unitId || product.baseUnitId
         });
 
+        const effectiveBranchId = item.originBranchId || branchId;
+
         await tx.stock.upsert({
-          where: { productId_branchId: { productId: item.productId, branchId: branchId } },
+          where: { productId_branchId: { productId: item.productId, branchId: effectiveBranchId } },
           update: { quantity: { decrement: quantity } },
-          create: { productId: item.productId, branchId: branchId, quantity: quantity.negated() }
+          create: { productId: item.productId, branchId: effectiveBranchId, quantity: quantity.negated() }
         });
+
+        if (settings?.isClearingEnabled && item.originBranchId && item.originBranchId !== branchId) {
+          settlementsToCreate.push({
+            amount: itemSubtotal,
+            sourceBranchId: branchId,      // Sucursal que cobra (deudora en el clearing)
+            targetBranchId: item.originBranchId, // Sucursal dueña del stock (acreedora)
+            createdById: userId,
+            notes: `Venta inter-sucursal: ${quantity.toString()}x ${product.name}`
+          });
+        }
       }
 
       const finalTotal = total.minus(new Prisma.Decimal(discount));
@@ -187,6 +210,15 @@ export async function POST(req: Request) {
         data: saleData,
         include: { items: true, paymentDetails: true }
       });
+
+      if (settlementsToCreate.length > 0) {
+        await tx.settlement.createMany({
+          data: settlementsToCreate.map(s => ({
+            ...s,
+            notes: `${s.notes} (Venta #${createdSale.number})`
+          }))
+        });
+      }
 
       // 2. Handle Account Receivable (CUENTA_CORRIENTE)
       if (paymentMethod === "CUENTA_CORRIENTE" || (paymentMethod === "MIXTO" && paymentDetails.some((pd: any) => pd.method === "CUENTA_CORRIENTE"))) {

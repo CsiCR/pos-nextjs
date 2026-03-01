@@ -49,11 +49,12 @@ export default function HistorialPage() {
     });
     // Allow empty end date (open range)
     const [endDate, setEndDate] = useState(searchParams.get("endDate") || "");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(searchParams.get("search") || "");
+    const [saleIdFromUrl, setSaleIdFromUrl] = useState(searchParams.get("saleId") || "");
     const [selectedSale, setSelectedSale] = useState<any>(null);
 
     const [columnFilters, setColumnFilters] = useState({
-        ticket: "",
+        ticket: searchParams.get("search") || "",
         product: "",
         branch: searchParams.get("branchName") || "",
         seller: ""
@@ -98,33 +99,48 @@ export default function HistorialPage() {
         const paymentMethod = searchParams.get("paymentMethod");
         if (paymentMethod) params.append("paymentMethod", paymentMethod);
 
-        let url = "";
-        if (viewMode === "sales") {
-            params.append("page", pagination.currentPage.toString());
-            params.append("pageSize", "100");
-            url = `/api/sales?${params.toString()}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            setSales(data.sales || []);
-            setPagination(prev => ({
-                ...prev,
-                pages: data.pagination?.pages || 1,
-                total: data.pagination?.total || 0,
-                totalAmount: data.pagination?.totalAmount || 0
-            }));
-        } else {
-            params.append("page", pagination.currentPage.toString());
-            params.append("pageSize", "100");
-            url = `/api/sales/items?${params.toString()}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            setItems(data.items || []);
-            setPagination(prev => ({
-                ...prev,
-                pages: data.pagination?.pages || 1,
-                total: data.pagination?.total || 0,
-                totalAmount: data.pagination?.totalAmount || 0
-            }));
+        if (saleIdFromUrl) params.append("id", saleIdFromUrl);
+
+        try {
+            let url = "";
+            if (viewMode === "sales") {
+                params.append("page", pagination.currentPage.toString());
+                params.append("pageSize", "100");
+                url = `/api/sales?${params.toString()}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("API Error");
+                const data = await res.json();
+                setSales(data.sales || []);
+                setPagination(prev => ({
+                    ...prev,
+                    pages: data.pagination?.pages || 1,
+                    total: data.pagination?.total || 0,
+                    totalAmount: data.pagination?.totalAmount || 0
+                }));
+
+                // Auto-select if searching for specific saleId and found
+                if (saleIdFromUrl && data.sales?.length === 1) {
+                    setSelectedSale(data.sales[0]);
+                }
+            } else {
+                params.append("page", pagination.currentPage.toString());
+                params.append("pageSize", "100");
+                url = `/api/sales/items?${params.toString()}`;
+                const res = await fetch(url);
+                if (!res.ok) throw new Error("API Error");
+                const data = await res.json();
+                setItems(data.items || []);
+                setPagination(prev => ({
+                    ...prev,
+                    pages: data.pagination?.pages || 1,
+                    total: data.pagination?.total || 0,
+                    totalAmount: data.pagination?.totalAmount || 0
+                }));
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            if (viewMode === "sales") setSales([]);
+            else setItems([]);
         }
         setLoading(false);
     };

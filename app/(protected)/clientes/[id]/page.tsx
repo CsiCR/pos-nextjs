@@ -107,19 +107,46 @@ export default function CustomerDetailPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter ${tx.type === "SALE" ? "bg-red-50 text-red-600" :
-                                                tx.type === "PAYMENT" ? "bg-green-50 text-green-600" :
-                                                    "bg-gray-100 text-gray-600"
+                                            tx.type === "PAYMENT" ? "bg-green-50 text-green-600" :
+                                                "bg-gray-100 text-gray-600"
                                             }`}>
                                             {tx.type === "SALE" ? "Venta" : tx.type === "PAYMENT" ? "Abono" : "Ajuste"}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-700">
-                                        {tx.description}
-                                        {tx.saleId && (
-                                            <Link href={`/historial?search=${tx.saleId}`} className="ml-2 text-blue-500 hover:underline">
-                                                (Ver Venta)
-                                            </Link>
-                                        )}
+                                        <div className="flex flex-col gap-1">
+                                            <span className="font-bold flex items-center gap-2">
+                                                {tx.saleId && tx.sale ? (
+                                                    <>
+                                                        Venta #
+                                                        <Link
+                                                            href={`/historial?saleId=${tx.saleId}`}
+                                                            className="text-blue-600 hover:underline hover:text-blue-800 transition-colors"
+                                                        >
+                                                            {tx.sale.number}
+                                                        </Link>
+                                                        {tx.description.toLowerCase().includes("ajuste") ? " (Ajuste)" :
+                                                            tx.description.toLowerCase().includes("pago") ? " (Pago)" : ""}
+                                                    </>
+                                                ) : tx.description.includes("#") ? (
+                                                    <>
+                                                        {tx.description.split("#")[0]}#
+                                                        <Link
+                                                            href={`/historial?saleId=${tx.saleId}`}
+                                                            className="text-blue-600 hover:underline hover:text-blue-800 transition-colors"
+                                                        >
+                                                            {tx.description.split("#")[1]?.split(" ")[0]}
+                                                        </Link>
+                                                        {tx.description.split("#")[1]?.split(" ").slice(1).join(" ")}
+                                                    </>
+                                                ) : tx.description}
+                                            </span>
+                                            {tx.sale && tx.sale.branch && (
+                                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                                    📍 Sucursal: {tx.sale.branch.name}
+                                                </span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-right font-black text-gray-900">
                                         <div className="flex items-center justify-end gap-2">

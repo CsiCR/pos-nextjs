@@ -26,15 +26,19 @@ export async function GET(req: Request) {
       select: { branchId: true }
     });
 
+    const effectiveBranchId = activeShift?.branchId || branchId;
+
     // Context branch for PRICES and STOCK FILTERING
     const isRestrictedRole = userRole === "SUPERVISOR" || userRole === "CAJERO";
     const explicitBranchId = searchParams.get("branchId");
 
     // For Managers/Admins, we default to GLOBAL (null) even if they have a shift, 
-    // unless they explicitly provide a branchId in the URL.
+    // unless they explicitly provide a branchId in the URL, or toggle `onlyMyBranch`
     let contextBranchId = explicitBranchId || null;
-    if (!explicitBranchId && isRestrictedRole) {
-      contextBranchId = activeShift?.branchId || branchId || null;
+    if (!explicitBranchId) {
+      if (isRestrictedRole || onlyMyBranch) {
+        contextBranchId = effectiveBranchId || null;
+      }
     }
 
     // If allStocks=true (Global Search), we don't force the branch filter for stock calculation/visibility
@@ -101,12 +105,13 @@ export async function GET(req: Request) {
     }
 
     // Ownership & Visibility Logic
-    if (onlyMyBranch && branchId) {
+
+    if (onlyMyBranch && effectiveBranchId) {
       // Strictly products that have a stock record in THIS branch OR belong to it
       andConditions.push({
         OR: [
-          { branchId: branchId },
-          { stocks: { some: { branchId: branchId } } }
+          { branchId: effectiveBranchId },
+          { stocks: { some: { branchId: effectiveBranchId } } }
         ]
       });
     } else if (userRole === "SUPERVISOR" || (userRole === "CAJERO" && !allStocks)) {

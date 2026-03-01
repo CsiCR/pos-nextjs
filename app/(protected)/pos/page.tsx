@@ -59,6 +59,11 @@ export default function POSPage() {
   const [customerResults, setCustomerResults] = useState<any[]>([]);
   const [showCustomerSearch, setShowCustomerSearch] = useState(false);
 
+  // New Customer Modal State
+  const [showNewCustomerModal, setShowNewCustomerModal] = useState(false);
+  const [newCustomer, setNewCustomer] = useState({ name: "", document: "", email: "", phone: "", address: "" });
+  const [savingCustomer, setSavingCustomer] = useState(false);
+
   const [showTicket, setShowTicket] = useState<any>(null);
   const [showMobileCart, setShowMobileCart] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -104,7 +109,7 @@ export default function POSPage() {
       return;
     }
     const t = setTimeout(() => {
-      fetch(`/api/products?search=${search}${globalSearch ? '&allStocks=true' : ''}`)
+      fetch(`/api/products?search=${search}${globalSearch ? '&allStocks=true' : '&onlyMyBranch=true'}`)
         .then(r => r.json())
         .then(data => {
           const fetchedProducts = Array.isArray(data) ? data : (data.products || []);
@@ -366,7 +371,7 @@ export default function POSPage() {
                     )}
                   </div>
                 )}
-                <button onClick={() => router.push("/clientes")} className="btn bg-gray-50 border-gray-200 hover:bg-white text-gray-500 p-3 rounded-xl" title="Gestionar Clientes">
+                <button onClick={() => setShowNewCustomerModal(true)} className="btn bg-gray-50 border-gray-200 hover:bg-white text-gray-500 p-3 rounded-xl" title="Nuevo Cliente">
                   <Plus className="w-5 h-5" />
                 </button>
               </div>
@@ -412,7 +417,29 @@ export default function POSPage() {
               <p className="font-semibold text-gray-800 line-clamp-2 min-h-[2.5rem] text-sm">{p.name}</p>
               <div className="flex justify-between items-end mt-auto">
                 <p className="text-xl font-black text-blue-600">{formatPrice(p.displayPrice || p.basePrice, settings.useDecimals)}</p>
-                <span className="text-[10px] text-gray-400">{p.baseUnit?.symbol}</span>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-[10px] text-gray-400">{p.baseUnit?.symbol}</span>
+                  {globalSearch && p.stocks && p.stocks.length > 0 && (
+                    <div className="flex flex-col items-end gap-1 mt-1">
+                      {p.stocks.map((s: any) => (
+                        <div
+                          key={s.branchId}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(p, undefined, { id: s.branchId, name: s.branch?.name || "Global" });
+                          }}
+                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded cursor-pointer transition truncate max-w-[120px] ${Number(s.quantity) <= 0
+                            ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                            : 'bg-blue-50 text-blue-700 hover:bg-blue-100'
+                            }`}
+                          title="Click para agregar desde esta sucursal"
+                        >
+                          {s.branch?.name || "Global"}: {Number(s.quantity)}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </button>
           ))}
@@ -428,7 +455,15 @@ export default function POSPage() {
         <div className="flex-1 overflow-auto p-4 space-y-2">
           {cart.map(item => (
             <div key={`${item.productId}-${item.originBranchId}`} className="bg-gray-50 rounded-xl p-3 border border-gray-100 transition shadow-sm">
-              <div className="flex justify-between items-start mb-2"><p className="font-bold text-gray-900 truncate text-xs">{item.name}</p><button onClick={() => removeItem(item.productId)} className="text-gray-300 hover:text-red-500"><X className="w-4 h-4" /></button></div>
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <p className="font-bold text-gray-900 truncate text-xs">{item.name}</p>
+                  {item.originBranchId && item.originBranchId !== activeBranch?.id && (
+                    <p className="text-[9px] font-bold text-orange-600 mt-0.5 bg-orange-50 inline-block px-1 rounded">Desde: {item.originBranchName || "Otra sucursal"}</p>
+                  )}
+                </div>
+                <button onClick={() => removeItem(item.productId)} className="text-gray-300 hover:text-red-500"><X className="w-4 h-4" /></button>
+              </div>
               <div className="flex items-center justify-between">
                 <div className="flex items-center bg-white rounded-lg border p-0.5"><button onClick={() => updateQty(item.productId, -1)} className="w-7 h-7 flex items-center justify-center text-gray-500"><Minus className="w-3 h-3" /></button><span className="w-10 text-center font-bold text-xs">{item.quantity}</span><button onClick={() => updateQty(item.productId, 1)} className="w-7 h-7 flex items-center justify-center text-gray-500"><Plus className="w-3 h-3" /></button></div>
                 <p className="font-black text-sm text-gray-900">{formatPrice(item.price * item.quantity, settings.useDecimals)}</p>
@@ -482,6 +517,94 @@ export default function POSPage() {
         </div>
       </div>
       {showTicket && <Ticket sale={showTicket} onClose={() => setShowTicket(null)} />}
+
+      {/* New Customer Modal */}
+      {showNewCustomerModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[100]">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-4 border-b bg-gray-50 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
+                <User className="w-5 h-5 text-blue-600" /> Nuevo Cliente
+              </h2>
+              <button onClick={() => setShowNewCustomerModal(false)} className="text-gray-400 hover:text-gray-600">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto space-y-4">
+              <div>
+                <label className="text-xs font-bold text-gray-500 mb-1 block">Nombre Completo *</label>
+                <input
+                  type="text"
+                  autoFocus
+                  required
+                  value={newCustomer.name}
+                  onChange={e => setNewCustomer({ ...newCustomer, name: e.target.value })}
+                  className="input bg-gray-50 border-gray-200 w-full font-bold text-lg h-12"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 mb-1 block">Documento / CUIT</label>
+                  <input type="text" value={newCustomer.document} onChange={e => setNewCustomer({ ...newCustomer, document: e.target.value })} className="input w-full bg-gray-50 border-gray-200" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 mb-1 block">Teléfono</label>
+                  <input type="text" value={newCustomer.phone} onChange={e => setNewCustomer({ ...newCustomer, phone: e.target.value })} className="input w-full bg-gray-50 border-gray-200" />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-500 mb-1 block">Email</label>
+                <input type="email" value={newCustomer.email} onChange={e => setNewCustomer({ ...newCustomer, email: e.target.value })} className="input w-full bg-gray-50 border-gray-200" />
+              </div>
+              <div>
+                <label className="text-xs font-bold text-gray-500 mb-1 block">Dirección</label>
+                <input type="text" value={newCustomer.address} onChange={e => setNewCustomer({ ...newCustomer, address: e.target.value })} className="input w-full bg-gray-50 border-gray-200" />
+              </div>
+            </div>
+
+            <div className="p-4 border-t bg-gray-50 flex justify-end gap-3">
+              <button
+                onClick={() => setShowNewCustomerModal(false)}
+                className="btn btn-outline"
+                disabled={savingCustomer}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={async () => {
+                  if (!newCustomer.name.trim()) return toast.error("El nombre es obligatorio");
+                  setSavingCustomer(true);
+                  try {
+                    const res = await fetch("/api/customers", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify(newCustomer)
+                    });
+                    if (res.ok) {
+                      const created = await res.json();
+                      setSelectedCustomer(created);
+                      setShowNewCustomerModal(false);
+                      setNewCustomer({ name: "", document: "", email: "", phone: "", address: "" });
+                      toast.success("Cliente creado");
+                    } else {
+                      const err = await res.json();
+                      toast.error(err.error || "Error al crear cliente");
+                    }
+                  } catch (e) {
+                    toast.error("Error de conexión");
+                  }
+                  setSavingCustomer(false);
+                }}
+                disabled={savingCustomer || !newCustomer.name.trim()}
+                className="btn btn-primary font-bold"
+              >
+                {savingCustomer ? "Guardando..." : "Guardar Cliente"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
