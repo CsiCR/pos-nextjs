@@ -11,7 +11,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     const body = await req.json();
     const { declaredAmount, discrepancyReason, discrepancyNote } = body;
 
-    // Fetch shift with all its sales and payment details
+    // Fetch shift with all its sales, payment details and customer payments
     const shift = await prisma.shift.findUnique({
       where: { id: params.id },
       include: {
@@ -19,7 +19,12 @@ export async function POST(req: Request, { params }: { params: { id: string } })
           include: {
             paymentDetails: true
           }
-        }
+        },
+        customerTransactions: {
+          include: {
+            paymentDetails: true
+          }
+        } // Traer los abonos realizados durante el turno
       }
     });
 
@@ -28,7 +33,8 @@ export async function POST(req: Request, { params }: { params: { id: string } })
     }
 
     // Calculate expected amount based on cash movements
-    // Shift initial cash + EFECTIVO sales (Single or Mixed parts)
+    // 1. Shift initial cash
+    // 2. EFECTIVO sales (Single or Mixed parts)
     const cashSales = shift.sales.reduce((sum, s) => {
       if (s.paymentMethod === "EFECTIVO") return sum + Number(s.total) + Number(s.adjustment);
       if (s.paymentMethod === "MIXTO") {
@@ -38,7 +44,15 @@ export async function POST(req: Request, { params }: { params: { id: string } })
       return sum;
     }, 0);
 
-    const expectedAmount = Number(shift.initialCash) + cashSales;
+    // 3. Customer Payments (Abonos) - ONLY EFECTIVO from details
+    const customerCashPayments = (shift as any).customerTransactions?.reduce((total: number, tx: any) => {
+      const cashInTx = (tx.paymentDetails || [])
+        .filter((pd: any) => pd.method === "EFECTIVO")
+        .reduce((sum: number, pd: any) => sum + Number(pd.amount), 0);
+      return total + cashInTx;
+    }, 0) || 0;
+
+    const expectedAmount = Number(shift.initialCash) + cashSales + customerCashPayments;
     const discrepancy = Number(declaredAmount) - expectedAmount;
 
     const closedShift = await prisma.shift.update({

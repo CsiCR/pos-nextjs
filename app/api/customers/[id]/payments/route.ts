@@ -9,7 +9,7 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
     try {
         const body = await req.json();
-        const { amount, description } = body;
+        const { amount, description, method, paymentDetails } = body;
 
         if (!amount || parseFloat(amount) <= 0) {
             return NextResponse.json({ error: "El monto debe ser mayor a 0" }, { status: 400 });
@@ -17,15 +17,46 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
         const paymentAmount = parseFloat(amount);
 
+        // Find current user's active shift - REQUIRED
+        const activeShift = await prisma.shift.findFirst({
+            where: {
+                userId: session.user.id,
+                closedAt: null
+            }
+        });
+
+        if (!activeShift) {
+            return NextResponse.json({ error: "No hay un turno abierto. Debes abrir caja para recibir pagos." }, { status: 400 });
+        }
+
+        // Prepare payment details for the database
+        let detailsToCreate: any[] = [];
+        if (method === "MIXTO" && Array.isArray(paymentDetails)) {
+            detailsToCreate = paymentDetails.map((pd: any) => ({
+                method: pd.method,
+                amount: parseFloat(pd.amount)
+            }));
+        } else {
+            detailsToCreate = [{
+                method: method || "EFECTIVO",
+                amount: paymentAmount
+            }];
+        }
+
         // Perform transaction
         const result = await prisma.$transaction(async (tx) => {
-            // 1. Create transaction record
-            const transaction = await tx.customerTransaction.create({
+            // 1. Create transaction record (vinculado al shiftId)
+            const transaction = await (tx.customerTransaction as any).create({
                 data: {
                     customerId: params.id,
                     type: "PAYMENT",
+                    method: method || "EFECTIVO",
                     amount: paymentAmount,
-                    description: description || "Abono a cuenta corriente",
+                    description: description || `Abono (${method || 'EFECTIVO'})`,
+                    shiftId: activeShift.id,
+                    paymentDetails: {
+                        create: detailsToCreate
+                    }
                 },
             });
 
@@ -52,10 +83,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
     try {
-        const payments = await prisma.customerTransaction.findMany({
+        const payments = await (prisma.customerTransaction as any).findMany({
             where: {
                 customerId: params.id,
                 type: "PAYMENT",
+            },
+            include: {
+                paymentDetails: true
             },
             orderBy: { createdAt: "desc" },
         });

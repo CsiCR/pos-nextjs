@@ -64,6 +64,14 @@ export default function POSPage() {
   const [newCustomer, setNewCustomer] = useState({ name: "", document: "", email: "", phone: "", address: "" });
   const [savingCustomer, setSavingCustomer] = useState(false);
 
+  // Customer Payment Modal State
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState("");
+  const [paymentDescription, setPaymentDescription] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("EFECTIVO");
+  const [customerPaymentDetails, setCustomerPaymentDetails] = useState<{ method: string, amount: string }[]>([]);
+  const [isSavingPayment, setIsSavingPayment] = useState(false);
+
   const [showTicket, setShowTicket] = useState<any>(null);
   const [showMobileCart, setShowMobileCart] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
@@ -217,8 +225,8 @@ export default function POSPage() {
     setCart(prev => prev.map(item => {
       let newPrice = item.basePrice;
       if (listId) {
-        const lp = item.prices.find((p: any) => p.priceListId === listId);
-        if (lp) newPrice = lp.price;
+        const listPrice = item.prices.find((p: any) => p.priceListId === listId);
+        if (listPrice) newPrice = listPrice.price;
       }
       return { ...item, price: newPrice };
     }));
@@ -277,6 +285,48 @@ export default function POSPage() {
     }
   };
 
+  const handleCustomerPayment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!paymentAmount || parseFloat(paymentAmount) <= 0) {
+      return toast.error("El monto debe ser mayor a 0");
+    }
+
+    setIsSavingPayment(true);
+    try {
+      const res = await fetch(`/api/customers/${selectedCustomer.id}/payments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: paymentAmount,
+          method: paymentMethod,
+          paymentDetails: paymentMethod === "MIXTO" ? customerPaymentDetails : undefined,
+          description: paymentDescription || `Abono (${paymentMethod}) desde POS`
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Error al registrar el pago");
+      }
+
+      toast.success("Pago registrado exitosamente");
+      setShowPaymentModal(false);
+      setPaymentAmount("");
+      setPaymentDescription("");
+      setCustomerPaymentDetails([]);
+      setPaymentMethod("EFECTIVO");
+
+      // Update selected customer balance locally
+      const updatedBalance = Number(selectedCustomer.balance) - Number(paymentAmount);
+      setSelectedCustomer({ ...selectedCustomer, balance: updatedBalance });
+
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setIsSavingPayment(false);
+    }
+  };
+
   if (hasShift === null) return <div className="text-center py-20">Cargando...</div>;
   if (!hasShift) {
     return (
@@ -331,7 +381,19 @@ export default function POSPage() {
                       </div>
                       <div>
                         <p className="text-sm font-black text-blue-900">{selectedCustomer.name}</p>
-                        <p className="text-[10px] text-blue-400 font-bold">Saldo: {formatPrice(selectedCustomer.balance, settings.useDecimals)}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[10px] text-blue-400 font-bold">Saldo: {formatPrice(selectedCustomer.balance, settings.useDecimals)}</p>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setShowPaymentModal(true);
+                              setPaymentAmount(selectedCustomer.balance.toString());
+                            }}
+                            className="text-[9px] bg-green-100 text-green-700 px-1.5 py-0.5 rounded font-black hover:bg-green-200 transition"
+                          >
+                            REGISTRAR PAGO
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <button onClick={() => setSelectedCustomer(null)} className="p-1 hover:bg-blue-100 rounded-full text-blue-600 transition">
@@ -602,6 +664,158 @@ export default function POSPage() {
                 {savingCustomer ? "Guardando..." : "Guardar Cliente"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Customer Payment Modal */}
+      {showPaymentModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-[110]">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+            <form onSubmit={handleCustomerPayment}>
+              <div className="p-6 border-b bg-gray-50 flex justify-between items-center">
+                <h2 className="text-xl font-black text-gray-800 flex items-center gap-2">
+                  <Banknote className="w-6 h-6 text-green-600" /> Registrar Pago
+                </h2>
+                <button type="button" onClick={() => setShowPaymentModal(false)} className="text-gray-400 hover:text-gray-600">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4">
+                <div className="bg-blue-50 p-3 rounded-2xl border border-blue-100 mb-2">
+                  <p className="text-[10px] font-black text-blue-400 uppercase">Cliente:</p>
+                  <p className="text-sm font-black text-blue-900">{selectedCustomer?.name}</p>
+                  <p className="text-xs font-bold text-blue-700">Deuda actual: {formatPrice(selectedCustomer?.balance, settings.useDecimals)}</p>
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">Medio de Pago</label>
+                  <div className="grid grid-cols-3 gap-1 mb-2">
+                    {["EFECTIVO", "DEBITO", "CREDITO", "QR", "TRANSFERENCIA", "MIXTO"].map(m => (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setPaymentMethod(m);
+                          if (m === "MIXTO" && customerPaymentDetails.length === 0) {
+                            setCustomerPaymentDetails([{ method: "EFECTIVO", amount: paymentAmount }]);
+                          }
+                        }}
+                        className={`py-2 px-1 rounded-lg text-[9px] font-black transition-all border ${paymentMethod === m
+                          ? "bg-blue-600 border-blue-600 text-white"
+                          : "bg-gray-50 border-gray-100 text-gray-500 hover:border-gray-200"}`}
+                      >
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {paymentMethod === "MIXTO" ? (
+                  <div className="bg-blue-50/50 p-3 rounded-2xl border border-blue-100 space-y-2">
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest">Desglose Mixto</span>
+                      <button
+                        type="button"
+                        onClick={() => setCustomerPaymentDetails([...customerPaymentDetails, { method: "EFECTIVO", amount: "0" }])}
+                        className="text-[10px] bg-blue-600 text-white px-2 py-1 rounded-lg font-black hover:bg-blue-700 transition"
+                      >
+                        + AGREGAR
+                      </button>
+                    </div>
+                    {customerPaymentDetails.map((pd, idx) => (
+                      <div key={idx} className="flex gap-2 items-center">
+                        <select
+                          value={pd.method}
+                          onChange={e => {
+                            const newDetails = [...customerPaymentDetails];
+                            newDetails[idx].method = e.target.value;
+                            setCustomerPaymentDetails(newDetails);
+                          }}
+                          className="select select-xs bg-white border-gray-200 font-bold text-[10px] rounded-lg flex-1"
+                        >
+                          {["EFECTIVO", "DEBITO", "CREDITO", "QR", "TRANSFERENCIA"].map(m => (
+                            <option key={m} value={m}>{m}</option>
+                          ))}
+                        </select>
+                        <input
+                          type="number"
+                          value={pd.amount}
+                          onChange={e => {
+                            const newDetails = [...customerPaymentDetails];
+                            newDetails[idx].amount = e.target.value;
+                            setCustomerPaymentDetails(newDetails);
+                          }}
+                          className="input input-xs bg-white border-gray-200 font-black text-[10px] text-right w-20 rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setCustomerPaymentDetails(customerPaymentDetails.filter((_, i) => i !== idx))}
+                          className="p-1 text-red-400 hover:text-red-600 rounded-lg"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="pt-2 border-t border-blue-100 flex justify-between items-center px-1">
+                      <span className="text-[10px] font-black text-blue-500 uppercase">Total Desglose</span>
+                      <span className={`text-[10px] font-black ${Math.abs(customerPaymentDetails.reduce((sum, d) => sum + parseFloat(d.amount || "0"), 0) - parseFloat(paymentAmount || "0")) < 0.01
+                        ? "text-green-600" : "text-red-500"
+                        }`}>
+                        ${customerPaymentDetails.reduce((sum, d) => sum + parseFloat(d.amount || "0"), 0).toLocaleString()}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">Monto a abonar *</label>
+                    <div className="relative">
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-2xl font-black text-gray-300">$</span>
+                      <input
+                        type="number"
+                        step="0.01"
+                        required
+                        autoFocus
+                        value={paymentAmount}
+                        onChange={e => setPaymentAmount(e.target.value)}
+                        className="input pl-10 h-16 text-3xl font-black text-green-600 focus:ring-green-50 text-right pr-4"
+                        placeholder="0.00"
+                        onFocus={e => e.target.select()}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-[10px] font-black text-gray-400 uppercase mb-1 block">Descripción / Nota</label>
+                  <textarea
+                    value={paymentDescription}
+                    onChange={e => setPaymentDescription(e.target.value)}
+                    className="textarea w-full bg-gray-50 border-gray-200 font-medium text-xs shadow-inner"
+                    placeholder="Ej: comentarios"
+                    rows={2}
+                  />
+                </div>
+              </div>
+
+              <div className="p-6 bg-gray-50 border-t flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPaymentModal(false)}
+                  className="btn btn-secondary flex-1"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSavingPayment || !paymentAmount}
+                  className="btn btn-success flex-1 font-black"
+                >
+                  {isSavingPayment ? "Procesando..." : "Confirmar Pago"}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

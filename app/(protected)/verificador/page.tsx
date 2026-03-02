@@ -170,12 +170,25 @@ export default function VerificadorPage() {
                         if (sQty <= 0) sColor = "text-red-500";
                         else if (sQty < sMin) sColor = "text-orange-500";
 
+                        const referencePrice = Number(product.displayPrice || product.basePrice);
+
                         return (
                           <div key={s.branchId} className="flex justify-between items-center bg-gray-50 px-2 py-1.5 rounded-lg border border-gray-100">
                             <span className="text-[9px] font-bold text-gray-600 truncate max-w-[80px] sm:max-w-[100px] uppercase">{s.branch?.name || "General"}</span>
                             <div className="text-right flex items-center gap-2">
                               <span className={`text-[9px] font-black ${sColor}`}>{sQty} <span className="text-[7px]">{product.baseUnit?.symbol || 'un'}</span></span>
-                              <span className="text-[10px] font-black text-blue-600 bg-white px-1.5 py-0.5 rounded border border-blue-100 shadow-sm">{formatPrice(finalPrice, settings.useDecimals)}</span>
+                              {(() => {
+                                const priceNum = Number(finalPrice);
+                                let priceClasses = "text-blue-600 border-blue-100";
+                                if (priceNum > referencePrice) priceClasses = "text-green-600 border-green-100";
+                                else if (priceNum < referencePrice) priceClasses = "text-red-600 border-red-100";
+
+                                return (
+                                  <span className={`text-[10px] font-black bg-white px-1.5 py-0.5 rounded border shadow-sm ${priceClasses}`}>
+                                    {formatPrice(finalPrice, settings.useDecimals)}
+                                  </span>
+                                );
+                              })()}
                             </div>
                           </div>
                         );

@@ -17,16 +17,16 @@ export async function POST(
 
         const { id: originalSaleId } = params;
         const userId = session.user.id;
-        // We use the session branch for the REFUND operation (where the stock returns),
-        // but typically it should match the original sale branch OR be the current branch context.
-        // For now, let's assume refunds happen in the branch where the user is logged in
-        // (physically receiving the item).
-        let branchId = (session.user as any).branchId;
-
-        if (!branchId) {
-            const user = await prisma.user.findUnique({ where: { id: userId }, select: { branchId: true } });
-            branchId = user?.branchId;
+        // 4. Check for Open Shift (Moving up to get the correct branchId)
+        const shift = await prisma.shift.findFirst({
+            where: { userId, closedAt: null }
+        });
+        if (!shift) {
+            return NextResponse.json({ error: "No hay turno abierto para procesar la devolución" }, { status: 400 });
         }
+
+        // Use the branch from the shift (same as in /api/sales POST)
+        const branchId = shift.branchId || (session.user as any).branchId;
 
         if (!branchId) {
             return NextResponse.json({ error: "Usuario sin sucursal asignada" }, { status: 400 });
@@ -105,13 +105,7 @@ export async function POST(
             }
         }
 
-        // 4. Check for Open Shift
-        const shift = await prisma.shift.findFirst({
-            where: { userId, closedAt: null }
-        });
-        if (!shift) {
-            return NextResponse.json({ error: "No hay turno abierto para procesar la devolución" }, { status: 400 });
-        }
+        // Shift was already checked and fetched above
 
         // 5. Process Transaction
         const refundSale = await prisma.$transaction(async (tx) => {

@@ -90,8 +90,21 @@ export async function GET(req: Request) {
     take: pageSize
   });
 
+  let payments: any[] = [];
+  if (shiftId) {
+    payments = await (prisma.customerTransaction as any).findMany({
+      where: { shiftId, type: "PAYMENT" },
+      include: {
+        customer: { select: { name: true } },
+        paymentDetails: true
+      },
+      orderBy: { createdAt: "desc" }
+    });
+  }
+
   return NextResponse.json({
     sales,
+    payments,
     pagination: {
       total: totalSalesCount,
       pages: Math.ceil(totalSalesCount / pageSize),

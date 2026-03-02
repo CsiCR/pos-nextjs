@@ -33,7 +33,7 @@ export async function GET(req: Request) {
     const isGerente = userRole === "GERENTE";
 
     // Build constraints
-    const itemWhere: any = {};
+    const itemWhere: any = { AND: [] };
     const saleWhere: any = {};
 
     // 1. Scoping

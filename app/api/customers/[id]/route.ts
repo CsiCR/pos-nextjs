@@ -8,10 +8,13 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
     if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
 
     try {
-        const customer = await prisma.customer.findUnique({
+        const customer = await (prisma.customer as any).findUnique({
             where: { id: params.id },
             include: {
                 transactions: {
+                    include: {
+                        paymentDetails: true
+                    },
                     orderBy: { createdAt: "desc" },
                     take: 50,
                 },
@@ -21,7 +24,8 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         if (!customer) return NextResponse.json({ error: "Cliente no encontrado" }, { status: 404 });
 
         // Fetch sales with branches for these transactions manually
-        const saleIds = customer.transactions.map((tx: any) => tx.saleId).filter(Boolean);
+        const transactions = (customer as any).transactions || [];
+        const saleIds = transactions.map((tx: any) => tx.saleId).filter(Boolean);
         const sales = await prisma.sale.findMany({
             where: { id: { in: saleIds } },
             include: { branch: true }
@@ -30,7 +34,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
         const salesMap = new Map();
         sales.forEach((s: any) => salesMap.set(s.id, s));
 
-        const enrichedTransactions = customer.transactions.map((tx: any) => {
+        const enrichedTransactions = transactions.map((tx: any) => {
             if (tx.saleId && salesMap.has(tx.saleId)) {
                 return { ...tx, sale: salesMap.get(tx.saleId) };
             }

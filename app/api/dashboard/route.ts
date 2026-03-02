@@ -56,27 +56,112 @@ export async function GET(req: Request) {
 
       const effectiveBranchId = (userBranchId && !isGerente && !isAdmin) ? userBranchId : (fBranchId && fBranchId !== "all" ? fBranchId : undefined);
 
-      step = "query-agg-full";
-      const aggFull = await prisma.sale.aggregate({ where: whereClause, _sum: { total: true }, _count: { id: true } });
+      step = "query-agg-full-sales";
+      const aggFullSales = await prisma.sale.aggregate({ where: whereClause, _sum: { total: true }, _count: { id: true } });
 
-      step = "query-agg-today";
-      const aggToday = await prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } });
+      const paymentWhereClause: any = { AND: [] };
+      if (whereClause.AND) {
+        whereClause.AND.forEach((c: any) => {
+          if (c.userId) {
+            paymentWhereClause.AND.push({ shift: { userId: c.userId } });
+          }
+          if (c.createdAt) {
+            paymentWhereClause.AND.push({ createdAt: c.createdAt });
+          }
+          // Note: If branchId is needed, we can add { shift: { branchId: c.branchId } }
+          if (c.branchId) {
+            paymentWhereClause.AND.push({ shift: { branchId: c.branchId } });
+          }
+          if (c.paymentMethod) {
+            paymentWhereClause.AND.push({ method: c.paymentMethod });
+          }
+        });
+      }
+      const aggFullPayments = await prisma.customerTransaction.aggregate({
+        where: { ...paymentWhereClause, type: "PAYMENT" },
+        _sum: { amount: true }
+      });
 
-      step = "query-methods-groupBy";
-      // Safe now with legacy schema.prisma
-      const methodGroups = await prisma.sale.groupBy({
+      step = "query-agg-today-sales";
+      const aggTodaySales = await prisma.sale.aggregate({ where: { ...whereClause, AND: [...(whereClause.AND || []), { createdAt: { gte: today } }] }, _sum: { total: true }, _count: { id: true } });
+
+      step = "query-agg-today-payments";
+      const aggTodayPayments = await prisma.customerTransaction.aggregate({
+        where: { ...paymentWhereClause, type: "PAYMENT", createdAt: { gte: today } },
+        _sum: { amount: true }
+      });
+
+      step = "query-methods-groupBy-sales";
+      const methodGroupsSales = await prisma.sale.groupBy({
         by: ['paymentMethod'],
         where: whereClause,
         _sum: { total: true },
         _count: { id: true }
       });
 
-      const salesByMethod = methodGroups.map(g => ({
-        paymentMethod: g.paymentMethod,
-        total: Number(g._sum.total || 0),
-        count: g._count.id,
+      const paymentDetails = await (prisma as any).customerTransactionPaymentDetail.findMany({
+        where: {
+          customerTransaction: {
+            ...paymentWhereClause,
+            type: "PAYMENT"
+          }
+        },
+        select: {
+          method: true,
+          amount: true
+        }
+      });
+
+      const paymentMethodsMap: Record<string, { total: number, count: number }> = {};
+      paymentDetails.forEach((pd: any) => {
+        if (!paymentMethodsMap[pd.method]) paymentMethodsMap[pd.method] = { total: 0, count: 0 };
+        paymentMethodsMap[pd.method].total += Number(pd.amount);
+        // counts are tricky for details, maybe count transactions instead? 
+        // For dashboard, total is more important.
+      });
+
+      // Also handle transactions that don't have details (legacy or single method if not using details model yet)
+      // but based on our previous work, they should have details or we can fallback to the 'method' field in CustomerTransaction
+      const singleMethodPayments = await prisma.customerTransaction.findMany({
+        where: {
+          ...paymentWhereClause,
+          type: "PAYMENT",
+          method: { not: "MIXTO" }
+        } as any,
+        select: { method: true, amount: true } as any
+      });
+
+      (singleMethodPayments as any[]).forEach(p => {
+        if (!paymentMethodsMap[p.method]) paymentMethodsMap[p.method] = { total: 0, count: 0 };
+        paymentMethodsMap[p.method].total += Number(p.amount);
+        paymentMethodsMap[p.method].count += 1;
+      });
+
+      // Merge Sales and Payments
+      const finalMethods: Record<string, { total: number, count: number }> = {};
+
+      methodGroupsSales.forEach(g => {
+        if (g.paymentMethod === "MIXTO") return; // We'll handle MIXTO details separately if needed, 
+        // but current logic uses s.total. Let's stick to sales breakdown if possible.
+        finalMethods[g.paymentMethod] = {
+          total: Number(g._sum.total || 0),
+          count: g._count.id
+        };
+      });
+
+      // Add payments to finalMethods
+      Object.keys(paymentMethodsMap).forEach(m => {
+        if (!finalMethods[m]) finalMethods[m] = { total: 0, count: 0 };
+        finalMethods[m].total += paymentMethodsMap[m].total;
+        finalMethods[m].count += paymentMethodsMap[m].count;
+      });
+
+      const salesByMethod = Object.keys(finalMethods).map(m => ({
+        paymentMethod: m,
+        total: finalMethods[m].total,
+        count: finalMethods[m].count,
         clearing: 0,
-        net: Number(g._sum.total || 0)
+        net: finalMethods[m].total
       }));
 
       step = "query-products";
@@ -107,25 +192,71 @@ export async function GET(req: Request) {
       }
 
       const elapsed = Date.now() - start;
-      console.log(`[Dashboard v9] OK in ${elapsed}ms`);
+      console.log(`[Dashboard v10] OK in ${elapsed}ms`);
 
       return NextResponse.json({
-        totalSales: Number(aggFull._sum.total || 0),
-        totalCount: aggFull._count.id,
-        todaySales: Number(aggToday._sum.total || 0),
-        todayCount: aggToday._count.id,
+        totalSales: Number(aggFullSales._sum.total || 0) + Number(aggFullPayments._sum.amount || 0),
+        totalCount: aggFullSales._count.id,
+        todaySales: Number(aggTodaySales._sum.total || 0) + Number(aggTodayPayments._sum.amount || 0),
+        todayCount: aggTodaySales._count.id,
         products, users, salesByMethod,
         lowStockCount, missingCount,
         isGerente
       });
     } else {
       step = "cashier-view";
-      const shift = await prisma.shift.findFirst({ where: { userId: session.user.id, closedAt: null }, include: { sales: true } });
-      const shiftSales = shift?.sales?.reduce((sum, s) => sum + Number(s.total), 0) || 0;
-      const shiftCount = shift?.sales?.length || 0;
+      const shift = await (prisma as any).shift.findFirst({
+        where: { userId: session.user.id, closedAt: null },
+        include: {
+          sales: { include: { paymentDetails: true } },
+          customerTransactions: { include: { paymentDetails: true } }
+        }
+      });
+
+      const shiftSales = (shift?.sales?.reduce((sum: number, s: any) => sum + Number(s.total), 0) || 0) +
+        (shift?.customerTransactions?.reduce((sum: number, tx: any) => sum + Number(tx.amount), 0) || 0);
+
+      const shiftCount = (shift?.sales?.length || 0) + (shift?.customerTransactions?.length || 0);
+
+      const cashierMethods: Record<string, { total: number, count: number }> = {};
+
+      // Sales methods
+      shift?.sales.forEach((s: any) => {
+        if (s.paymentMethod === "MIXTO") {
+          s.paymentDetails.forEach((pd: any) => {
+            if (!cashierMethods[pd.method]) cashierMethods[pd.method] = { total: 0, count: 0 };
+            cashierMethods[pd.method].total += Number(pd.amount);
+          });
+        } else {
+          if (!cashierMethods[s.paymentMethod]) cashierMethods[s.paymentMethod] = { total: 0, count: 0 };
+          cashierMethods[s.paymentMethod].total += Number(s.total);
+          cashierMethods[s.paymentMethod].count += 1;
+        }
+      });
+
+      // Payment methods
+      shift?.customerTransactions.forEach((tx: any) => {
+        if (tx.method === "MIXTO") {
+          tx.paymentDetails.forEach((pd: any) => {
+            if (!cashierMethods[pd.method]) cashierMethods[pd.method] = { total: 0, count: 0 };
+            cashierMethods[pd.method].total += Number(pd.amount);
+          });
+        } else {
+          if (!cashierMethods[tx.method]) cashierMethods[tx.method] = { total: 0, count: 0 };
+          cashierMethods[tx.method].total += Number(tx.amount);
+          cashierMethods[tx.method].count += 1;
+        }
+      });
+
+      const salesByMethod = Object.keys(cashierMethods).map(m => ({
+        paymentMethod: m,
+        total: cashierMethods[m].total,
+        count: cashierMethods[m].count
+      }));
+
       return NextResponse.json({
         shiftSales, shiftCount, hasOpenShift: !!shift,
-        salesByMethod: []
+        salesByMethod
       });
     }
   } catch (error: any) {

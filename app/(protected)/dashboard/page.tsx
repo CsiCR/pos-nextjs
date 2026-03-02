@@ -232,10 +232,10 @@ export default function DashboardPage() {
         <>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             <Link href={`/historial?view=sales&startDate=${getLocalDate(new Date())}&endDate=${getLocalDate(new Date())}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
-              <StatCard icon={DollarSign} label="Ventas Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} ventas`} color="blue" />
+              <StatCard icon={DollarSign} label="Ingresos Hoy" value={`$${(data?.todaySales || 0).toLocaleString()}`} sub={`${data?.todayCount || 0} operaciones`} color="blue" />
             </Link>
             <Link href={`/historial?view=sales&startDate=${filters.startDate}&endDate=${filters.endDate}&branchId=${filters.branchId}&userId=${filters.userId}`} className="block">
-              <StatCard icon={TrendingUp} label="Ventas Totales" value={`$${(data?.totalSales || 0).toLocaleString()}`} sub={`${data?.totalCount || 0} ventas`} color="green" />
+              <StatCard icon={TrendingUp} label="Ingresos de Periodo" value={`$${(data?.totalSales || 0).toLocaleString()}`} sub={`${data?.totalCount || 0} operaciones`} color="green" />
             </Link>
             <Link href="/productos" className="block">
               <StatCard icon={Package} label="Productos Activos" value={data?.products || 0} color="purple" />
@@ -247,7 +247,7 @@ export default function DashboardPage() {
             <div className="card">
               <h2 className="font-semibold mb-4 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-blue-600" />
-                Ventas por Método de Pago
+                Ingresos por Método de Pago
               </h2>
               {data?.salesByMethod?.length > 0 ? (
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

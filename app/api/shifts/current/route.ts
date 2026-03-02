@@ -10,11 +10,16 @@ export async function GET() {
   const userId = session.user.id;
 
   try {
-    const shift = await prisma.shift.findFirst({
+    const shift = await (prisma.shift as any).findFirst({
       where: { userId, closedAt: null },
       include: {
         branch: true,
         sales: {
+          include: {
+            paymentDetails: true
+          }
+        },
+        customerTransactions: {
           include: {
             paymentDetails: true
           }

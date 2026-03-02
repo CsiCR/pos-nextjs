@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent, Filter, Download } from "lucide-react";
+import { Search, Calendar, User, Printer, Eye, ChevronLeft, ChevronRight, Hash, Clock, CreditCard, List, FileText, ArrowUpDown, Info, BadgePercent, Filter, Download, DollarSign } from "lucide-react";
 import { Ticket } from "@/components/Ticket";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
@@ -20,6 +20,7 @@ export default function HistorialPage() {
     const [viewMode, setViewMode] = useState<"sales" | "items">(viewParam === "items" ? "items" : "sales");
 
     const [sales, setSales] = useState<any[]>([]); // For Sales Mode
+    const [payments, setPayments] = useState<any[]>([]); // For Payments in Shift
     const [items, setItems] = useState<any[]>([]); // For Items Mode
     const [loading, setLoading] = useState(true);
     const [showFilters, setShowFilters] = useState(false);
@@ -111,6 +112,7 @@ export default function HistorialPage() {
                 if (!res.ok) throw new Error("API Error");
                 const data = await res.json();
                 setSales(data.sales || []);
+                setPayments(data.payments || []);
                 setPagination(prev => ({
                     ...prev,
                     pages: data.pagination?.pages || 1,
@@ -422,7 +424,7 @@ export default function HistorialPage() {
                     </div>
                 ) : viewMode === "sales" ? (
                     // SALES CARD VIEW
-                    sales.length === 0 ? (
+                    sales.length === 0 && payments.length === 0 ? (
                         <EmptyState />
                     ) : (
                         <div className="grid gap-3">
@@ -441,7 +443,7 @@ export default function HistorialPage() {
                                                 {sale.type === 'REFUND' && <span className="text-[10px] bg-red-200 text-red-700 px-2 py-0.5 rounded font-bold uppercase whitespace-nowrap">NOTA CRÉDITO</span>}
                                             </div>
                                             <div className="flex items-center gap-3 text-xs text-gray-500 mt-1 flex-wrap">
-                                                <span className="flex items-center gap-1 whitespace-nowrap"><Clock className="w-3 h-3" /> {formatTime(sale.createdAt)}</span>
+                                                <span className="flex items-center gap-1 whitespace-nowrap"><Clock className="w-3 h-3" /> {formatDateTime(sale.createdAt)}</span>
                                                 <span className="flex items-center gap-1 whitespace-nowrap truncate"><User className="w-3 h-3" /> {sale.user?.name}</span>
                                             </div>
                                         </div>
@@ -482,6 +484,50 @@ export default function HistorialPage() {
                                     </div>
                                 </div>
                             ))}
+
+                            {/* CUSTOMER PAYMENTS SECTION (Only if shiftId is present) */}
+                            {shiftIdParam && payments.length > 0 && (
+                                <div className="mt-8 space-y-4">
+                                    <div className="flex items-center gap-2 px-2">
+                                        <div className="h-px bg-blue-100 flex-1"></div>
+                                        <h3 className="text-[10px] font-black text-blue-500 uppercase tracking-widest px-4">Cobros de Cuenta Corriente ({payments.length})</h3>
+                                        <div className="h-px bg-blue-100 flex-1"></div>
+                                    </div>
+                                    {payments.map((p: any) => (
+                                        <div key={p.id} className="group rounded-2xl p-4 border border-green-100 bg-green-50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 rounded-xl bg-green-100 text-green-600 flex items-center justify-center shrink-0">
+                                                    <DollarSign className="w-6 h-6" />
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="font-black text-lg text-green-800 uppercase">Cobro de Cliente: {p.customer?.name}</span>
+                                                        <span className="text-[10px] bg-white text-green-600 border border-green-200 px-2 py-0.5 rounded font-black uppercase tracking-tighter">
+                                                            {p.method}
+                                                        </span>
+                                                        {p.paymentDetails?.length > 1 && (
+                                                            <div className="flex gap-1">
+                                                                {p.paymentDetails.map((pd: any, idx: number) => (
+                                                                    <span key={idx} className="text-[8px] bg-white/50 text-gray-500 px-1 py-0.5 rounded border border-green-100 font-bold uppercase">
+                                                                        {pd.method.slice(0, 3)}: ${Number(pd.amount).toLocaleString()}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex items-center gap-3 text-xs text-green-600/70 mt-1 font-medium">
+                                                        <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatDateTime(p.createdAt)}</span>
+                                                        <span className="flex items-center gap-1"><Info className="w-3 h-3" /> {p.description}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="text-left sm:text-right font-black text-green-700 text-xl pr-2">
+                                                ${Number(p.amount).toLocaleString()}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     )
                 ) : (

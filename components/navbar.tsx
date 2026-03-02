@@ -2,7 +2,7 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X, Tag, Settings, ArrowRightLeft, Truck, DollarSign } from "lucide-react";
+import { Store, LayoutDashboard, ShoppingCart, Package, Users, Clock, Search, LogOut, Menu, X, Tag, Settings, ArrowRightLeft, Truck, DollarSign, HelpCircle } from "lucide-react";
 import { useState } from "react";
 import { useSettings } from "@/hooks/use-settings";
 
@@ -30,6 +30,7 @@ export function Navbar() {
       { href: "/configuracion", label: "Configuración", icon: Settings },
     ] : []),
     { href: "/turnos", label: "Turnos", icon: Clock },
+    { href: "/ayuda", label: "Ayuda", icon: HelpCircle },
   ];
 
   return (

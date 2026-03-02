@@ -93,20 +93,43 @@ export default function TurnosPage() {
     fetchData();
   };
 
-  const shiftTotal = currentShift?.sales?.reduce((s: number, sale: any) => s + Number(sale?.total ?? 0), 0) || 0;
-  const cashSales = currentShift?.sales?.reduce((sum: number, s: any) => {
-    if (s?.paymentMethod === "EFECTIVO") return sum + Number(s?.total ?? 0) + Number(s?.adjustment ?? 0);
-    return sum;
-  }, 0) || 0;
+  const totals = currentShift ? (currentShift.sales || []).reduce((acc: any, s: any) => {
+    const total = Number(s.total || 0) + Number(s.adjustment || 0);
+    acc.total += total;
+    if (s.paymentMethod === "EFECTIVO") acc.cash += total;
+    else if (s.paymentMethod === "MIXTO") {
+      const cashPart = s.paymentDetails?.find((pd: any) => pd.method === "EFECTIVO");
+      acc.cash += Number(cashPart?.amount || 0);
+      const qrPart = s.paymentDetails?.find((pd: any) => pd.method === "QR");
+      acc.qr += Number(qrPart?.amount || 0);
+    } else if (s.paymentMethod === "QR") {
+      acc.qr += total;
+    }
+    acc.change += Math.max(0, Number(s.change || 0));
+    return acc;
+  }, { total: 0, cash: 0, qr: 0, change: 0 }) : { total: 0, cash: 0, qr: 0, change: 0 };
 
-  const qrSales = currentShift?.sales?.reduce((sum: number, s: any) => {
-    if (s?.paymentMethod === "QR") return sum + Number(s?.total ?? 0);
-    return sum;
-  }, 0) || 0;
+  const paymentTotals = currentShift ? (currentShift.customerTransactions || []).filter((tx: any) => tx.type === "PAYMENT").reduce((acc: any, tx: any) => {
+    const amount = Number(tx.amount || 0);
+    acc.total += amount;
 
-  const totalChange = currentShift?.sales?.reduce((sum: number, s: any) => sum + Math.max(0, Number(s?.change ?? 0)), 0) || 0;
+    if (tx.method === "MIXTO") {
+      const cashPart = tx.paymentDetails?.find((pd: any) => pd.method === "EFECTIVO");
+      acc.cash += Number(cashPart?.amount || 0);
+      const qrPart = tx.paymentDetails?.find((pd: any) => pd.method === "QR");
+      acc.qr += Number(qrPart?.amount || 0);
+    } else if (tx.method === "EFECTIVO") {
+      acc.cash += amount;
+    } else if (tx.method === "QR") {
+      acc.qr += amount;
+    }
+    return acc;
+  }, { total: 0, cash: 0, qr: 0 }) : { total: 0, cash: 0, qr: 0 };
 
-  const expectedAmount = Number(currentShift?.initialCash || 0) + cashSales - totalChange;
+  const totalIncome = totals.total + paymentTotals.total;
+  const totalCash = totals.cash + paymentTotals.cash;
+  const totalQR = totals.qr + paymentTotals.qr;
+  const expectedAmount = Number(currentShift?.initialCash || 0) + totalCash - totals.change;
 
   if (loading) return <div className="text-center py-20">Cargando...</div>;
 
@@ -142,13 +165,13 @@ export default function TurnosPage() {
             </div>
             <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-green-100">
               <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ventas del Turno</p>
-              <p className="text-xl font-black text-gray-900">{formatPrice(shiftTotal, settings.useDecimals)}</p>
+              <p className="text-xl font-black text-gray-900">{formatPrice(totalIncome, settings.useDecimals)}</p>
               <div className="flex flex-wrap justify-center gap-x-2 gap-y-1 text-[9px] mt-2 text-gray-400 font-bold uppercase">
-                <span>Efe: {formatPrice(cashSales, settings.useDecimals)}</span>
+                <span title="Incluye Ventas + Cobros">Efe: {formatPrice(totalCash, settings.useDecimals)}</span>
                 <span className="hidden xs:inline">•</span>
-                <span>QR: {formatPrice(qrSales, settings.useDecimals)}</span>
+                <span title="Incluye Ventas + Cobros">QR: {formatPrice(totalQR, settings.useDecimals)}</span>
                 <span className="hidden xs:inline">•</span>
-                <span>Otros: {formatPrice(shiftTotal - cashSales - qrSales, settings.useDecimals)}</span>
+                <span>Otros: {formatPrice(totalIncome - totalCash - totalQR, settings.useDecimals)}</span>
               </div>
             </div>
             <div className="bg-white rounded-xl p-4 text-center shadow-sm border border-green-100">
@@ -229,6 +252,18 @@ export default function TurnosPage() {
                     <p className="text-[11px] text-gray-600 font-bold">{formatDateTime(s.closedAt)}</p>
                   </div>
                   <div className="text-right">
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Efectivo (Ini / Fin)</p>
+                    <p className="text-[11px] text-gray-600 font-bold">{formatPrice(s.initialCash ?? 0, settings.useDecimals)}</p>
+                    <p className="text-[11px] text-blue-600 font-black">{formatPrice(s.declaredAmount ?? 0, settings.useDecimals)}</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-gray-100">
+                  <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Ventas</p>
+                    <p className="text-sm font-black text-gray-900">{s._count?.sales || 0}</p>
+                  </div>
+                  <div className="text-right">
                     <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Diferencia</p>
                     <p className={`text-lg font-black ${s.discrepancy && s.discrepancy !== 0 ? (s.discrepancy > 0 ? "text-green-600" : "text-red-600") : "text-gray-400"}`}>
                       {s.discrepancy ? (s.discrepancy > 0 ? `+$${s.discrepancy.toLocaleString()}` : `-$${Math.abs(s.discrepancy).toLocaleString()}`) : "$0"}
@@ -248,6 +283,8 @@ export default function TurnosPage() {
                 <th className="px-4 py-3 text-left">Sucursal</th>
                 <th className="px-4 py-3 text-left">Apertura</th>
                 <th className="px-4 py-3 text-left">Cierre</th>
+                <th className="px-4 py-3 text-right">Ef. Inicial</th>
+                <th className="px-4 py-3 text-right">Ef. Final</th>
                 <th className="px-4 py-3 text-right">Ventas</th>
                 <th className="px-4 py-3 text-right">Diferencia</th>
                 <th className="px-4 py-3 text-left">Motivo</th>
@@ -265,6 +302,8 @@ export default function TurnosPage() {
                   </td>
                   <td className="px-4 py-3">{formatDateTime(s.openedAt)}</td>
                   <td className="px-4 py-3">{formatDateTime(s.closedAt)}</td>
+                  <td className="px-4 py-3 text-right font-medium">{formatPrice(s.initialCash ?? 0, settings.useDecimals)}</td>
+                  <td className="px-4 py-3 text-right font-black text-blue-600">{formatPrice(s.declaredAmount ?? 0, settings.useDecimals)}</td>
                   <td className="px-4 py-3 text-right font-bold">{s._count?.sales || 0}</td>
                   <td className={`px-4 py-3 text-right font-medium ${s.discrepancy && s.discrepancy !== 0 ? (s.discrepancy > 0 ? "text-green-600" : "text-red-600") : ""}`}>
                     {s.discrepancy ? (s.discrepancy > 0 ? `+$${s.discrepancy.toLocaleString()}` : `-$${Math.abs(s.discrepancy).toLocaleString()}`) : "-"}
