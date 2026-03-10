@@ -171,7 +171,9 @@ export async function GET(req: Request) {
       }
 
       // 3. Price Alert Logic (Expert: Price < BasePrice)
-      p.priceAlert = p.displayPrice < Number(p.basePrice);
+      p.priceLower = p.displayPrice < Number(p.basePrice);
+      p.priceHigher = p.displayPrice > Number(p.basePrice);
+      p.priceAlert = p.priceLower; // Legacy compatibility
 
       // 4. Inventory Filtering Decision
       let includeProduct = true;
@@ -187,6 +189,9 @@ export async function GET(req: Request) {
           return Number(s.quantity) <= 0 || Number(s.quantity) < branchMin;
         });
         includeProduct = p.displayStock > 5 && hasCriticalBranch;
+      } else if (filterMode === "price_mismatch") {
+        // Price mismatch: displayed price differs from base price
+        includeProduct = Math.round(Number(p.displayPrice)) !== Math.round(Number(p.basePrice));
       } else if (filterMode === "withStock") {
         includeProduct = p.displayStock > 0;
       }
@@ -233,24 +238,39 @@ export async function POST(req: Request) {
     // Every new product is now Global (null) so everyone can see it and manage their own stock.
     const ownerBranchId = null;
 
+    // Stock Initialization:
+    // If branchStocks is provided, use it. Otherwise, fallback to the current branch from session.
+    let stocksCreate: any = undefined;
+    if (data.branchStocks && Array.isArray(data.branchStocks)) {
+      stocksCreate = {
+        create: data.branchStocks.map((s: any) => ({
+          branchId: s.branchId,
+          quantity: Number(s.quantity) || 0,
+          minStock: Number(s.minStock) || 0
+        }))
+      };
+    } else if (branchId) {
+      stocksCreate = {
+        create: {
+          branchId,
+          quantity: Number(data.stock) || 0,
+          minStock: Number(data.minStock) || 0
+        }
+      };
+    }
+
     const product = await (prisma as any).product.create({
       data: {
         code,
         ean: data.ean || null,
         name: data.name,
-        basePrice: data.basePrice || data.price || 0,
+        basePrice: Number(data.basePrice || data.price || 0),
         baseUnit: data.baseUnitId ? { connect: { id: data.baseUnitId } } : undefined,
         category: data.categoryId ? { connect: { id: data.categoryId } } : undefined,
-        minStock: data.minStock || 0,
+        minStock: Number(data.minStock || 0),
         active: data.active !== undefined ? Boolean(data.active) : true,
         branch: undefined, // No owner branch = Global
-        stocks: branchId ? { // Initialize stock entry ONLY for the creator's branch
-          create: {
-            branchId,
-            quantity: data.stock || 0,
-            minStock: data.minStock || 0
-          }
-        } : undefined,
+        stocks: stocksCreate,
         prices: data.prices && Array.isArray(data.prices) ? {
           create: data.prices.map((p: any) => ({
             priceListId: p.priceListId,

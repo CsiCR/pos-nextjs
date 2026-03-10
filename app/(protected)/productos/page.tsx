@@ -574,7 +574,8 @@ function ProductosContent() {
             <option value="all">🔍 Todos los Productos</option>
             <option value="low_stock">📉 Stock Bajo (Menor al Mínimo)</option>
             <option value="missing">❌ Faltante / Crítico (Sin Stock)</option>
-            <option value="transfer">🔄 Traspaso Sugerido (Hacia Sucursales)</option>
+            <option value="price_mismatch">⚠️ Precios Desfasados (vs Global)</option>
+            {canDelete && <option value="transfer">🔄 Traspaso Sugerido (Hacia Sucursales)</option>}
             <option value="inactive">🚫 Productos Desactivados (Papelera)</option>
           </select>
         </div>
@@ -614,8 +615,20 @@ function ProductosContent() {
                     <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-lg font-medium text-[10px] uppercase">
                       {p.category?.name || "General"}
                     </span>
-                    <div className={`font-black text-xl ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
-                      {formatPrice(p.displayPrice, settings.useDecimals)}
+                    <div className="flex items-center gap-2">
+                      {p.priceLower && (
+                        <span className="text-orange-500" title={`Precio por debajo del base ($${formatPrice(p.basePrice, settings.useDecimals)})`}>
+                          <AlertTriangle className="w-4 h-4" />
+                        </span>
+                      )}
+                      {p.priceHigher && (
+                        <span className="text-green-500" title={`Precio por encima del base ($${formatPrice(p.basePrice, settings.useDecimals)})`}>
+                          <AlertTriangle className="w-4 h-4" />
+                        </span>
+                      )}
+                      <div className={`font-black text-xl ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
+                        {formatPrice(p.displayPrice, settings.useDecimals)}
+                      </div>
                     </div>
                   </div>
 
@@ -686,8 +699,13 @@ function ProductosContent() {
                     </td>
                     <td className={`px-6 py-4 text-right font-black text-base ${Number(p.displayPrice) < 0 ? 'text-red-600 animate-pulse' : 'text-gray-900'}`}>
                       <div className="flex items-center justify-end gap-2">
-                        {p.priceAlert && (
+                        {p.priceLower && (
                           <span className="text-orange-500 hover:text-orange-600 transition-colors cursor-help" title={`Precio por debajo del base ($${formatPrice(p.basePrice, settings.useDecimals)})`}>
+                            <AlertTriangle className="w-4 h-4" />
+                          </span>
+                        )}
+                        {p.priceHigher && (
+                          <span className="text-green-500 hover:text-green-600 transition-colors cursor-help" title={`Precio por encima del base ($${formatPrice(p.basePrice, settings.useDecimals)})`}>
                             <AlertTriangle className="w-4 h-4" />
                           </span>
                         )}
@@ -838,7 +856,7 @@ function ProductosContent() {
                   <label className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
                     <MapPin className="w-4 h-4" /> Datos en sucursal: {branches.find(b => b.id === userBranchId)?.name || 'Local'}
                   </label>
-                  <div className="grid grid-cols-4 gap-4">
+                  <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Precio Local</label>
                       <div className="relative">
@@ -852,7 +870,10 @@ function ProductosContent() {
                               const val = e.target.value;
                               const newPrices = { ...form.prices, [listId]: val };
                               const newForm = { ...form, prices: newPrices };
-                              if (modal.type === "new" && (!form.basePrice || form.basePrice === "")) {
+                              
+                              // [FIX] Continuous Sync: If basePrice is same as previous price or empty, sync it
+                              const currentLocalPrice = form.prices[listId] || "";
+                              if (modal.type === "new" && (form.basePrice === "" || form.basePrice === currentLocalPrice)) {
                                 newForm.basePrice = val;
                               }
                               setForm(newForm);
@@ -864,29 +885,20 @@ function ProductosContent() {
                         />
                       </div>
                     </div>
-                    <div>
-                      <label className="text-[9px] font-black text-orange-400 uppercase tracking-tighter mb-1 block">Sugerido Global</label>
-                      <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">$</span>
-                        <input
-                          type="number"
-                          value={form.basePrice}
-                          onChange={e => setForm({ ...form, basePrice: e.target.value })}
-                          className={`input font-black text-right pl-6 bg-gray-50/50 border-orange-100 text-gray-500 ${!canDelete ? 'cursor-not-allowed' : 'hover:border-orange-300'}`}
-                          onFocus={e => e.target.select()}
-                          disabled={!canDelete && modal.type !== "new"}
-                        />
-                      </div>
-                    </div>
+                    {/* [MOVED] Sugerido Global moved to metadata grid below for global visibility */}
                     <div>
                       <label className="text-[9px] font-black text-gray-400 uppercase tracking-tighter mb-1 block">Stock Actual</label>
                       <input
                         type="number"
                         value={form.branchQuantities[userBranchId] === 0 ? "0" : (form.branchQuantities[userBranchId] || "")}
-                        onChange={e => setForm({
-                          ...form,
-                          branchQuantities: { ...form.branchQuantities, [userBranchId]: e.target.value }
-                        })}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setForm({
+                            ...form,
+                            stock: val, // Sync root stock for API POST
+                            branchQuantities: { ...form.branchQuantities, [userBranchId]: val }
+                          })
+                        }}
                         className="input font-bold text-right bg-white border-gray-200"
                         placeholder="0"
                         onFocus={e => e.target.select()}
@@ -897,10 +909,14 @@ function ProductosContent() {
                       <input
                         type="number"
                         value={form.branchMinStocks[userBranchId] === 0 ? "0" : (form.branchMinStocks[userBranchId] || "")}
-                        onChange={e => setForm({
-                          ...form,
-                          branchMinStocks: { ...form.branchMinStocks, [userBranchId]: e.target.value }
-                        })}
+                        onChange={e => {
+                          const val = e.target.value;
+                          setForm({
+                            ...form,
+                            minStock: val, // Sync root minStock for API POST
+                            branchMinStocks: { ...form.branchMinStocks, [userBranchId]: val }
+                          })
+                        }}
                         className="input font-bold text-right bg-white border-orange-200 text-orange-600"
                         placeholder="0"
                         onFocus={e => e.target.select()}
@@ -911,7 +927,21 @@ function ProductosContent() {
               )}
 
               {/* [REORGANIZED] Metadata Grid: Category, Unit, EAN */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className="grid grid-cols-4 gap-4">
+                <div>
+                  <label className="text-[10px] font-black text-orange-600 uppercase tracking-widest mb-1.5 block">Sugerido Global</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-gray-400 text-xs">$</span>
+                    <input
+                      type="number"
+                      value={form.basePrice}
+                      onChange={e => setForm({ ...form, basePrice: e.target.value })}
+                      className={`input font-black text-right pl-6 bg-orange-50/30 border-orange-100 text-orange-900 ${!canDelete ? 'cursor-not-allowed' : 'hover:border-orange-300'}`}
+                      onFocus={e => e.target.select()}
+                      disabled={!canDelete && modal.type !== "new"}
+                    />
+                  </div>
+                </div>
                 <div>
                   <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1.5 block">Categoría</label>
                   <select
@@ -921,7 +951,9 @@ function ProductosContent() {
                       const category = categories?.find(c => c.id === newCatId);
                       const newForm = { ...form, categoryId: newCatId };
                       if (category && userBranchId && (Number(form.branchMinStocks[userBranchId]) === 0 || !form.branchMinStocks[userBranchId])) {
-                        newForm.branchMinStocks = { ...form.branchMinStocks, [userBranchId]: category.defaultMinStock || 0 };
+                        const defMin = category.defaultMinStock || 0;
+                        newForm.branchMinStocks = { ...form.branchMinStocks, [userBranchId]: defMin };
+                        newForm.minStock = defMin; // Also update root
                       }
                       setForm(newForm);
                     }}
