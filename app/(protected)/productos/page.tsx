@@ -424,7 +424,7 @@ function ProductosContent() {
         }
         if (errorMsg.includes("Unauthorized")) errorMsg = "No tienes permisos para realizar esta acción.";
 
-        alert(`⚠️ Atención: ${errorMsg}${data.detail ? `\n\nDetalle técnico: ${JSON.stringify(data.detail)}` : ""}`);
+        alert(`⚠️ Atención: ${errorMsg}${data.details ? `\n\n${data.details}` : ""}${data.detail ? `\n\nDetalle técnico: ${JSON.stringify(data.detail)}` : ""}`);
       }
     } catch (error: any) {
       console.error("Error saving product:", error);

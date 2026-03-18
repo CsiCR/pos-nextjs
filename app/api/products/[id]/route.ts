@@ -44,12 +44,26 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
     console.log(`[DEBUG] PUT Product ${params.id} by ${user.name} (${user.role})`);
     console.log(`[DEBUG] Received Data:`, JSON.stringify(data, null, 2));
 
-    // Fetch current product to check ownership
+    // Fetch current product to check ownership and stock
     const currentProduct = await (prisma as any).product.findUnique({
-      where: { id: params.id }
+      where: { id: params.id },
+      include: {
+        stocks: true
+      }
     });
 
     if (!currentProduct) return NextResponse.json({ error: "Producto no encontrado" }, { status: 404 });
+
+    // Validate that we cannot deactivate if stock > 0
+    if (data.active === false) {
+      const hasStock = currentProduct.stocks?.some((s: any) => Number(s.quantity) > 0);
+      if (hasStock) {
+        return NextResponse.json({ 
+          error: "No se puede desactivar un producto con stock en existencia.",
+          details: "Asegúrate de que el stock sea 0 en todas las sucursales antes de desactivar el producto."
+        }, { status: 400 });
+      }
+    }
 
     // Permissions: Admin and Gerente can ALWAYS edit everything.
     // Supervisor can ALWAYS edit metadata (Collaborative Global data).
@@ -226,7 +240,20 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     return NextResponse.json({ error: "No tienes permiso para eliminar este producto (Es de otra sucursal)." }, { status: 403 });
   }
 
+  // Check total stock across all branches to prevent soft-delete if stock exists
+  const totalStock = await (prisma as any).stock.aggregate({
+    where: { productId: params.id },
+    _sum: { quantity: true }
+  });
+
+  if (Number(totalStock._sum.quantity || 0) > 0) {
+    return NextResponse.json({ 
+      error: "No se puede eliminar un producto con stock en existencia.",
+      details: "Asegúrate de que el stock sea 0 en todas las sucursales antes de eliminar."
+    }, { status: 400 });
+  }
+
   // Soft Delete
-  await prisma.product.update({ where: { id: params.id }, data: { active: false } });
+  await (prisma as any).product.update({ where: { id: params.id }, data: { active: false } });
   return NextResponse.json({ success: true });
 }
