@@ -11,7 +11,7 @@ export function Navbar() {
   const pathname = usePathname();
   const { settings } = useSettings();
   const [open, setOpen] = useState(false);
-  const isSupervisor = (session?.user as any)?.role === "SUPERVISOR" || (session?.user as any)?.role === "ADMIN";
+  const isSupervisor = (session?.user as any)?.role === "SUPERVISOR" || (session?.user as any)?.role === "ADMIN" || (session?.user as any)?.role === "GERENTE";
 
   const links = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
