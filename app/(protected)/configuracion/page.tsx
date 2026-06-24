@@ -193,13 +193,13 @@ export default function ConfigPage() {
                     <div className="card h-fit">
                         <div className="flex justify-between mb-4">
                             <h2 className="font-bold flex items-center gap-2"><Scale className="w-5 h-5 text-blue-600" /> Unidades</h2>
-                            {canEditGlobal && <button onClick={() => { setUnitForm({ name: "", symbol: "", isBase: true, conversionFactor: 1, baseUnitId: "", decimals: 2 }); setUnitModal(true); }} className="btn btn-sm btn-outline">Añadir</button>}
+                            {isAdmin && <button onClick={() => { setUnitForm({ name: "", symbol: "", isBase: true, conversionFactor: 1, baseUnitId: "", decimals: 2 }); setUnitModal(true); }} className="btn btn-sm btn-outline">Añadir</button>}
                         </div>
                         <div className="space-y-2">
                             {units.map(u => (
                                 <div key={u.id} className="flex justify-between p-3 bg-gray-50 rounded-xl border">
                                     <span>{u.name} ({u.symbol})</span>
-                                    {canEditGlobal && (
+                                    {isAdmin && (
                                         <div className="flex gap-2">
                                             <button onClick={() => { setUnitForm(u); setUnitModal(true); }} className="text-blue-500"><Pencil className="w-4 h-4" /></button>
                                             <button onClick={() => handleDeleteUnit(u.id)} className="text-red-500"><Trash2 className="w-4 h-4" /></button>
@@ -239,7 +239,7 @@ export default function ConfigPage() {
                                 <input type="checkbox" className="sr-only peer" checked={settings.useDecimals} onChange={async (e) => {
                                     const v = e.target.checked; setSettings({ ...settings, useDecimals: v });
                                     await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...settings, useDecimals: v }) });
-                                }} disabled={!canEditGlobal} />
+                                 }} disabled={!isAdmin} />
                                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                             </label>
                         </div>
@@ -250,7 +250,7 @@ export default function ConfigPage() {
                                 <input type="checkbox" className="sr-only peer" checked={settings.isClearingEnabled} onChange={async (e) => {
                                     const v = e.target.checked; setSettings({ ...settings, isClearingEnabled: v });
                                     await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...settings, isClearingEnabled: v }) });
-                                }} disabled={!canEditGlobal} />
+                                 }} disabled={!isAdmin} />
                                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                             </label>
                         </div>
@@ -261,7 +261,7 @@ export default function ConfigPage() {
                                 <input type="checkbox" className="sr-only peer" checked={settings.enableCustomerAccounts} onChange={async (e) => {
                                     const v = e.target.checked; setSettings({ ...settings, enableCustomerAccounts: v });
                                     await fetch("/api/settings", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...settings, enableCustomerAccounts: v }) });
-                                }} disabled={!canEditGlobal} />
+                                 }} disabled={!isAdmin} />
                                 <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-full"></div>
                             </label>
                         </div>

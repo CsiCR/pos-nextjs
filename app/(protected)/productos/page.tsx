@@ -153,6 +153,7 @@ function ProductosContent() {
   const userBranchId = (session?.user as any)?.branchId;
   const isSupervisor = role === "SUPERVISOR";
   const canDelete = role === "ADMIN" || role === "GERENTE";
+  const canImport = role === "ADMIN" || role === "GERENTE" || role === "SUPERVISOR";
 
   const { settings } = useSettings();
   const [products, setProducts] = useState<any[]>([]);
@@ -499,6 +500,11 @@ function ProductosContent() {
           <button onClick={handleExport} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Exportar CSV">
             <Download className="w-5 h-5" /> <span className="hidden sm:inline">Exportar</span>
           </button>
+          {canImport && (
+            <button onClick={() => setImportModal(true)} className="btn bg-white border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center gap-2 h-11 px-3 sm:px-4" title="Importar CSV">
+              <Upload className="w-5 h-5" /> <span className="hidden sm:inline">Importar</span>
+            </button>
+          )}
           <button onClick={() => setShowFilters(!showFilters)} className={`btn flex items-center gap-2 h-11 px-3 sm:px-4 ${showFilters ? 'bg-blue-600 text-white' : 'bg-white border-gray-200 text-gray-600'}`}>
             <Filter className="w-5 h-5" /> <span className="hidden sm:inline">{showFilters ? "Ocultar Filtros" : "Filtros"}</span>
           </button>
