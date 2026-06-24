@@ -16,7 +16,7 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
     };
 
     const handleWhatsApp = () => {
-        const message = `*Ticket de Control Interno - Multirubro 24*\n` +
+        const message = `*Ticket de Control Interno - Gaia*\n` +
             `--------------------------------\n` +
             `*Venta:* #${sale.number || sale.id.slice(-6).toUpperCase()}\n` +
             `*Fecha:* ${new Date(sale.createdAt).toLocaleString()}\n` +
@@ -27,7 +27,7 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
             `*TOTAL: $${sale.total.toLocaleString()}*\n` +
             `*Pago:* ${sale.paymentMethod}\n` +
             `--------------------------------\n` +
-            `¡Gracias por elegir Multirubro 24!`;
+            `¡Gracias por elegir Gaia!`;
 
         window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank");
     };
@@ -49,7 +49,7 @@ export const Ticket = ({ sale, onClose }: TicketProps) => {
                 <div className="flex-1 overflow-auto p-4 bg-gray-50 flex justify-center custom-scrollbar">
                     <div id="thermal-ticket" className="bg-white p-8 w-full shadow-sm border border-gray-100 font-mono text-black print:shadow-none print:border-none print:p-0" style={{ maxWidth: "80mm" }}>
                         <div className="text-center mb-6">
-                            <h1 className="text-3xl font-black mb-1">MULTIRUBRO 24</h1>
+                            <h1 className="text-3xl font-black mb-1">GAIA</h1>
                             <p className="text-[10px] leading-tight text-gray-500 uppercase">
                                 {sale.type === "REFUND" ? "NOTA DE CRÉDITO / DEVOLUCIÓN" : "Control Interno de Venta"}
                             </p>

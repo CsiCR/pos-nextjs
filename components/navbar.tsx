@@ -15,11 +15,14 @@ export function Navbar() {
 
   const links = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
-    { href: "/pos", label: "POS", icon: ShoppingCart },
-    { href: "/historial", label: "Historial", icon: Clock },
-    { href: "/verificador", label: "Precios", icon: Search },
     ...(isSupervisor ? [
-      { href: "/productos", label: "Stock", icon: Package },
+      { href: "/productos", label: "Stock", icon: Package }
+    ] : []),
+    { href: "/turnos", label: "Turnos", icon: Clock },
+    { href: "/pos", label: "POS", icon: ShoppingCart },
+    { href: "/verificador", label: "Precios", icon: Search },
+    { href: "/historial", label: "Historial", icon: Clock },
+    ...(isSupervisor ? [
       ...(settings.isClearingEnabled ? [
         { href: "/logistica", label: "Logística", icon: Truck },
         { href: "/clearing", label: "Clearing", icon: DollarSign }
@@ -29,7 +32,6 @@ export function Navbar() {
       ] : []),
       { href: "/configuracion", label: "Configuración", icon: Settings },
     ] : []),
-    { href: "/turnos", label: "Turnos", icon: Clock },
     { href: "/ayuda", label: "Ayuda", icon: HelpCircle },
   ];
 
@@ -39,7 +41,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           <Link href="/dashboard" className="flex items-center gap-2">
             <img src="/logo.png" alt="Logo" className="w-8 h-8 object-contain" />
-            <span className="text-blue-600 font-bold text-xl hidden sm:inline">Multirubro 24</span>
+            <span className="text-blue-600 font-bold text-xl hidden sm:inline">Gaia</span>
           </Link>
           <div className="hidden md:flex items-center gap-1">
             {links.map(l => (

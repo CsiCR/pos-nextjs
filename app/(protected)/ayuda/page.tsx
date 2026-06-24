@@ -207,7 +207,7 @@ export default function AyudaPage() {
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
                         <div className="text-center md:text-left">
                             <h2 className="text-2xl font-black mb-2 flex items-center justify-center md:justify-start gap-2">
-                                <Flag className="w-6 h-6" /> Ayuda Multirubro 24
+                                <Flag className="w-6 h-6" /> Ayuda Gaia
                             </h2>
                             <p className="text-blue-100 font-medium italic opacity-90 text-sm">
                                 "Pasa el cursor sobre los elementos para obtener más información técnica."

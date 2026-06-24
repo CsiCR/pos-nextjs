@@ -16,7 +16,7 @@ export function ProtectedContent({ children }: { children: ReactNode }) {
           </Suspense>
         </main>
         <footer className="text-center py-4 text-[10px] text-gray-400 uppercase tracking-widest">
-          <p>© {new Date().getFullYear()} Multirubro 24 - Sistema de Punto de Venta</p>
+          <p>© {new Date().getFullYear()} Gaia - Sistema de Punto de Venta</p>
           <p className="font-bold">VERSIÓN {APP_VERSION}</p>
           <div className="flex justify-center gap-4 mt-2 lowercase">
             <Link href="/legal" className="hover:text-gray-600 transition-colors">Términos y Condiciones</Link>

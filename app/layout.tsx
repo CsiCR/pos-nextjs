@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
-  title: "Multirubro 24 - Sistema POS",
+  metadataBase: new URL(process.env.NEXTAUTH_URL && process.env.NEXTAUTH_URL.trim() !== "" ? process.env.NEXTAUTH_URL : "http://localhost:3000"),
+  title: "Gaia - Sistema POS",
   description: "Sistema de punto de venta",
   icons: {
     icon: "/logo.png",

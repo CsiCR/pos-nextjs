@@ -24,7 +24,7 @@ export default function LegalPage() {
                     </div>
 
                     <div className="prose prose-blue max-w-none text-gray-600 space-y-4">
-                        <p>Los presentes Términos y Condiciones regulan el uso del sistema <strong>"Multirubro 24"</strong> (en adelante, el "Sistema").</p>
+                        <p>Los presentes Términos y Condiciones regulan el uso del sistema <strong>"Gaia"</strong> (en adelante, el "Sistema").</p>
 
                         <div className="space-y-4">
                             <div className="flex gap-4">
@@ -109,7 +109,7 @@ export default function LegalPage() {
                     </p>
                 </div>
                 <div className="flex flex-col items-center gap-2">
-                    <span className="text-[10px] uppercase font-black tracking-tighter text-gray-500">Multirubro 24 POS</span>
+                    <span className="text-[10px] uppercase font-black tracking-tighter text-gray-500">Gaia POS</span>
                     <img src="/logo.png" className="w-12 h-12 grayscale opacity-50" alt="Logo" />
                 </div>
             </div>

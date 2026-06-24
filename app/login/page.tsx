@@ -30,9 +30,9 @@ function LoginForm() {
       <div className="card w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex justify-center mb-4">
-            <img src="/logo.png" alt="Multirubro 24" className="w-24 h-24 object-contain" />
+            <img src="/logo.png" alt="Gaia" className="w-24 h-24 object-contain" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Multirubro 24</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Gaia</h1>
           <p className="text-gray-600 mt-2">Sistema de Punto de Venta</p>
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
