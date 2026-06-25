@@ -12,8 +12,8 @@ export const metadata: Metadata = {
   title: "Gaia - Sistema POS",
   description: "Sistema de punto de venta",
   icons: {
-    icon: "/logo.png",
-    shortcut: "/logo.png"
+    icon: "/favicon.svg?v=1",
+    shortcut: "/favicon.svg?v=1"
   },
   openGraph: {
     images: ["/og-image.png"]
