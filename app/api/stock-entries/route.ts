@@ -3,16 +3,34 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
+const INVENTORY_ROLES = new Set(["SUPERVISOR", "GERENTE", "ADMIN"]);
+
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+        const userRole = (session.user as any)?.role;
+        const userBranchId = (session.user as any)?.branchId;
+
+        if (!INVENTORY_ROLES.has(userRole)) {
+            return NextResponse.json({ error: "No autorizado para modificar stock" }, { status: 403 });
+        }
 
         const data = await req.json();
         const { branchId, supplierName, invoiceNumber, totalAmount, items, updateBasePrices, invoiceUrl, notes } = data;
 
         if (!branchId || !items || !items.length) {
             return NextResponse.json({ error: "Faltan datos obligatorios" }, { status: 400 });
+        }
+
+        if (userRole === "SUPERVISOR") {
+            if (!userBranchId) {
+                return NextResponse.json({ error: "El supervisor no tiene una sucursal asignada" }, { status: 403 });
+            }
+            if (branchId !== userBranchId) {
+                return NextResponse.json({ error: "Solo puedes modificar el stock de tu sucursal" }, { status: 403 });
+            }
         }
 
         const result = await prisma.$transaction(async (tx) => {

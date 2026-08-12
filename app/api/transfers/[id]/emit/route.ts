@@ -4,10 +4,18 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth-options";
 
+const INVENTORY_ROLES = new Set(["SUPERVISOR", "GERENTE", "ADMIN"]);
+
 export async function POST(req: Request, { params }: { params: { id: string } }) {
     try {
         const session = await getServerSession(authOptions);
         if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+
+        const userRole = (session.user as any)?.role;
+        const userBranchId = (session.user as any)?.branchId;
+        if (!INVENTORY_ROLES.has(userRole)) {
+            return NextResponse.json({ error: "No autorizado para emitir transferencias" }, { status: 403 });
+        }
 
         const { id } = params;
         const { justifications } = await req.json(); // { productId: "justification" }
@@ -19,6 +27,10 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
         if (!transfer) return NextResponse.json({ error: "Traspaso no encontrado" }, { status: 404 });
         if (transfer.status !== "PENDIENTE") return NextResponse.json({ error: "El traspaso ya ha sido emitido o cancelado" }, { status: 400 });
+
+        if (userRole === "SUPERVISOR" && (!userBranchId || transfer.sourceBranchId !== userBranchId)) {
+            return NextResponse.json({ error: "Solo puedes emitir transferencias desde tu sucursal" }, { status: 403 });
+        }
 
         // Validate if module is enabled
         const settings = (await prisma.systemSetting.findUnique({ where: { key: "global" } })) as any;
