@@ -193,7 +193,7 @@ export async function POST(req: Request) {
 
                     // Branch Ownership: Si el producto es compartido o de otra sucursal, hacerlo GLOBAL
                     if (product.branchId !== branchId) {
-                        commonData.branchId = null;
+                        commonData.branch = { disconnect: true };
                     }
 
                     try {
@@ -227,7 +227,7 @@ export async function POST(req: Request) {
                         product = await tx.product.create({
                             data: {
                                 code: productCode,
-                                branchId: null, // Los productos por importación son Globales por defecto para evitar problemas de visibilidad
+                                // Los productos por importación son Globales por defecto para evitar problemas de visibilidad
                                 ...commonData
                             }
                         });
