@@ -59,6 +59,8 @@ export async function GET(req: Request) {
       if ((userRole === "ADMIN" || userRole === "GERENTE") && !filterBranchId) {
         (exactMatch as any).displayStock = exactMatch.stocks?.reduce((acc: number, s: any) => acc + Number(s.quantity), 0) || 0;
       }
+      // General/Base is authoritative until the cashier explicitly selects a price list.
+      (exactMatch as any).displayPrice = Number(exactMatch.basePrice);
       return NextResponse.json({ products: [exactMatch], total: 1, page: 1, pageSize, totalPages: 1 });
     }
 
@@ -112,16 +114,13 @@ export async function GET(req: Request) {
         p.displayMinStock = branchStock ? Number(branchStock.minStock || 0) : Number(p.minStock || 0);
       }
 
-      if (contextBranchId) {
-        const branchPrice = p.prices?.find((pr: any) => pr.priceList?.branchId === contextBranchId);
-        p.displayPrice = branchPrice ? Number(branchPrice.price) : Number(p.basePrice);
-      } else {
-        p.displayPrice = Number(p.basePrice);
-      }
+      // The product search endpoint exposes the General/Base price by default.
+      // The POS applies ProductPrice only when a concrete price list is selected.
+      p.displayPrice = Number(p.basePrice);
 
-      p.priceLower = p.displayPrice < Number(p.basePrice);
-      p.priceHigher = p.displayPrice > Number(p.basePrice);
-      p.priceAlert = p.priceLower;
+      p.priceLower = false;
+      p.priceHigher = false;
+      p.priceAlert = false;
 
       let includeProduct = true;
       if (filterMode === "low_stock") includeProduct = p.displayStock > 0 && p.displayStock < p.displayMinStock;
@@ -132,8 +131,10 @@ export async function GET(req: Request) {
           return Number(s.quantity) <= 0 || Number(s.quantity) < branchMin;
         });
         includeProduct = p.displayStock > 5 && hasCriticalBranch;
-      } else if (filterMode === "price_mismatch") includeProduct = Math.round(Number(p.displayPrice)) !== Math.round(Number(p.basePrice));
-      else if (filterMode === "withStock") includeProduct = p.displayStock > 0;
+      } else if (filterMode === "price_mismatch") {
+        // A mismatch means at least one price list has a price different from the global base price.
+        includeProduct = p.prices?.some((pr: any) => Math.round(Number(pr.price)) !== Math.round(Number(p.basePrice))) || false;
+      } else if (filterMode === "withStock") includeProduct = p.displayStock > 0;
 
       return includeProduct ? p : null;
     }).filter(Boolean);
