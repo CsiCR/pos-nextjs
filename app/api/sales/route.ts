@@ -9,7 +9,6 @@ import { getZonedStartOfDay, getZonedEndOfDay } from "@/lib/utils";
 export async function GET(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !session.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
   const { searchParams } = new URL(req.url);
   const shiftId = searchParams.get("shiftId");
   const queryBranchId = searchParams.get("branchId");
@@ -17,65 +16,45 @@ export async function GET(req: Request) {
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
   const specificId = searchParams.get("id");
-
   const page = parseInt(searchParams.get("page") || "1");
   const pageSize = parseInt(searchParams.get("pageSize") || "100");
   const skip = (page - 1) * pageSize;
-
   const isSupervisor = (session.user as any).role === "SUPERVISOR";
   const isGlobalAdmin = (session.user as any).role === "ADMIN" || (session.user as any).role === "GERENTE";
-
   let targetBranchId = undefined;
   if (isSupervisor) targetBranchId = sessionBranchId;
   else if (isGlobalAdmin) targetBranchId = queryBranchId || undefined;
   else targetBranchId = sessionBranchId;
-
   const where: any = { AND: [] };
   if (specificId) where.AND.push({ id: specificId });
   else if (shiftId) where.AND.push({ shiftId });
   else if (targetBranchId) where.AND.push({ branchId: targetBranchId });
-
   const queryUserId = searchParams.get("userId");
   if (queryUserId) where.AND.push({ userId: queryUserId });
-
   const paymentMethod = searchParams.get("paymentMethod");
-  if (paymentMethod) {
-    where.AND.push({ paymentMethod: paymentMethod as string });
-  }
-
+  if (paymentMethod) where.AND.push({ paymentMethod });
   const isCajero = !isSupervisor && !isGlobalAdmin;
   if (isCajero && !specificId) where.AND.push({ userId: session.user.id });
-
   if ((startDate || endDate) && !specificId) {
     const dateRange: any = {};
     if (startDate) dateRange.gte = getZonedStartOfDay(startDate);
     if (endDate) dateRange.lte = getZonedEndOfDay(endDate);
     where.AND.push({ createdAt: dateRange });
   }
-
   const search = searchParams.get("search");
   if (search && !specificId) {
     const searchConditions: any[] = [
-      { user: { name: { contains: search, mode: 'insensitive' } } },
-      { customer: { name: { contains: search, mode: 'insensitive' } } },
-      { notes: { contains: search, mode: 'insensitive' } }
+      { user: { name: { contains: search, mode: "insensitive" } } },
+      { customer: { name: { contains: search, mode: "insensitive" } } },
+      { notes: { contains: search, mode: "insensitive" } }
     ];
-
-    // Only add numeric search if the input is a number
-    if (/^\d+$/.test(search)) {
-      searchConditions.push({ number: parseInt(search) });
-    }
-
-    where.AND.push({
-      OR: searchConditions
-    });
+    if (/^\d+$/.test(search)) searchConditions.push({ number: parseInt(search) });
+    where.AND.push({ OR: searchConditions });
   }
-
   const [totalSalesCount, totalSum] = await Promise.all([
     prisma.sale.count({ where }),
     prisma.sale.aggregate({ where, _sum: { total: true } })
   ]);
-
   const sales = await prisma.sale.findMany({
     where,
     include: {
@@ -85,95 +64,79 @@ export async function GET(req: Request) {
       customer: { select: { name: true, document: true } },
       paymentDetails: true
     },
-    orderBy: { createdAt: "desc" },
-    skip,
-    take: pageSize
+    orderBy: { createdAt: "desc" }, skip, take: pageSize
   });
-
   let payments: any[] = [];
   if (shiftId) {
     payments = await (prisma.customerTransaction as any).findMany({
       where: { shiftId, type: "PAYMENT" },
-      include: {
-        customer: { select: { name: true } },
-        paymentDetails: true
-      },
+      include: { customer: { select: { name: true } }, paymentDetails: true },
       orderBy: { createdAt: "desc" }
     });
   }
-
-  return NextResponse.json({
-    sales,
-    payments,
-    pagination: {
-      total: totalSalesCount,
-      pages: Math.ceil(totalSalesCount / pageSize),
-      currentPage: page,
-      pageSize,
-      totalAmount: Number(totalSum._sum?.total || 0)
-    }
-  });
+  return NextResponse.json({ sales, payments, pagination: { total: totalSalesCount, pages: Math.ceil(totalSalesCount / pageSize), currentPage: page, pageSize, totalAmount: Number(totalSum._sum?.total || 0) } });
 }
 
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-
     const userId = session.user.id;
-    const shift = await prisma.shift.findFirst({
-      where: { userId, closedAt: null },
-      select: { id: true, branchId: true }
-    });
+    const shift = await prisma.shift.findFirst({ where: { userId, closedAt: null }, select: { id: true, branchId: true } });
     if (!shift) return NextResponse.json({ error: "No hay turno abierto" }, { status: 400 });
-
     const branchId = shift.branchId || (session.user as any).branchId;
     if (!branchId) return NextResponse.json({ error: "Usuario sin sucursal asignada" }, { status: 400 });
 
     const body = await req.json();
-    const {
-      items,
-      paymentMethod,
-      cashReceived,
-      discount = 0,
-      priceListId,
-      adjustment = 0,
-      notes,
-      customerId,
-      paymentDetails = []
-    } = body;
-
+    const { items, paymentMethod, cashReceived, discount = 0, priceListId, adjustment = 0, notes, customerId, paymentDetails = [] } = body;
     if (!items?.length) return NextResponse.json({ error: "Carrito vacío" }, { status: 400 });
+
+    // The browser selects a list, but the server is authoritative for its scope and prices.
+    let selectedPriceList: any = null;
+    if (priceListId) {
+      selectedPriceList = await (prisma as any).priceList.findFirst({
+        where: { id: priceListId, active: true, OR: [{ branchId: null }, { branchId }] },
+        select: { id: true, branchId: true }
+      });
+      if (!selectedPriceList) {
+        return NextResponse.json({ error: "La lista de precios no es válida para la sucursal que realiza la venta" }, { status: 400 });
+      }
+    }
 
     const sale = await prisma.$transaction(async (tx) => {
       let total = new Prisma.Decimal(0);
       const settings = await tx.systemSetting.findFirst();
-
       const saleItems = [];
       const settlementsToCreate: any[] = [];
 
       for (const item of items) {
         const product = await tx.product.findUnique({ where: { id: item.productId } });
         if (!product) throw new Error(`Producto no encontrado: ${item.productId}`);
-
         const quantity = new Prisma.Decimal(item.quantity);
-        const itemPrice = new Prisma.Decimal(item.price || product.basePrice);
+        if (quantity.lte(0)) throw new Error(`Cantidad inválida para ${product.name}`);
+
+        let authoritativePrice = new Prisma.Decimal(product.basePrice);
+        if (selectedPriceList) {
+          const listPrice = await (tx as any).productPrice.findUnique({
+            where: { productId_priceListId: { productId: item.productId, priceListId: selectedPriceList.id } }
+          });
+          if (listPrice) authoritativePrice = new Prisma.Decimal(listPrice.price);
+        }
+
+        const submittedPrice = item.price !== undefined ? new Prisma.Decimal(item.price) : authoritativePrice;
+        if (!submittedPrice.equals(authoritativePrice)) {
+          throw new Error(`El precio enviado para ${product.name} no coincide con la lista de precios seleccionada`);
+        }
+
         const itemDiscount = new Prisma.Decimal(item.discount || 0);
-        const itemSubtotal = itemPrice.times(quantity).minus(itemDiscount);
-
+        const itemSubtotal = authoritativePrice.times(quantity).minus(itemDiscount);
         total = total.plus(itemSubtotal);
-
         saleItems.push({
-          productId: item.productId,
-          quantity,
-          price: itemPrice,
-          discount: itemDiscount,
-          subtotal: itemSubtotal,
-          unitId: item.unitId || product.baseUnitId
+          productId: item.productId, quantity, price: authoritativePrice, discount: itemDiscount,
+          subtotal: itemSubtotal, unitId: item.unitId || product.baseUnitId
         });
 
         const effectiveBranchId = item.originBranchId || branchId;
-
         await tx.stock.upsert({
           where: { productId_branchId: { productId: item.productId, branchId: effectiveBranchId } },
           update: { quantity: { decrement: quantity } },
@@ -182,84 +145,34 @@ export async function POST(req: Request) {
 
         if (settings?.isClearingEnabled && item.originBranchId && item.originBranchId !== branchId) {
           settlementsToCreate.push({
-            amount: itemSubtotal,
-            sourceBranchId: branchId,      // Sucursal que cobra (deudora en el clearing)
-            targetBranchId: item.originBranchId, // Sucursal dueña del stock (acreedora)
-            createdById: userId,
-            notes: `Venta inter-sucursal: ${quantity.toString()}x ${product.name}`
+            amount: itemSubtotal, sourceBranchId: branchId, targetBranchId: item.originBranchId,
+            createdById: userId, notes: `Venta inter-sucursal: ${quantity.toString()}x ${product.name}`
           });
         }
       }
 
       const finalTotal = total.minus(new Prisma.Decimal(discount));
-      const reqAdjustment = new Prisma.Decimal(adjustment);
-
       const saleData: any = {
-        userId,
-        branchId,
-        shiftId: shift.id,
-        priceListId,
-        total: finalTotal,
-        discount: new Prisma.Decimal(discount),
-        paymentMethod,
+        userId, branchId, shiftId: shift.id, priceListId: selectedPriceList?.id || null,
+        total: finalTotal, discount: new Prisma.Decimal(discount), paymentMethod,
         cashReceived: (paymentMethod === "EFECTIVO" || paymentMethod === "MIXTO") ? (cashReceived || 0) : null,
-        adjustment: reqAdjustment,
-        notes,
-        items: { create: saleItems },
-        customerId
+        adjustment: new Prisma.Decimal(adjustment), notes, items: { create: saleItems }, customerId
       };
-
-      // 1. Handle Payment Details (Mixed)
       if (paymentMethod === "MIXTO" && paymentDetails.length > 0) {
-        saleData.paymentDetails = {
-          create: paymentDetails.map((pd: any) => ({
-            method: pd.method,
-            amount: new Prisma.Decimal(pd.amount)
-          }))
-        };
+        saleData.paymentDetails = { create: paymentDetails.map((pd: any) => ({ method: pd.method, amount: new Prisma.Decimal(pd.amount) })) };
       }
-
-      const createdSale = await tx.sale.create({
-        data: saleData,
-        include: { items: true, paymentDetails: true }
-      });
-
+      const createdSale = await tx.sale.create({ data: saleData, include: { items: true, paymentDetails: true } });
       if (settlementsToCreate.length > 0) {
-        await tx.settlement.createMany({
-          data: settlementsToCreate.map(s => ({
-            ...s,
-            notes: `${s.notes} (Venta #${createdSale.number})`
-          }))
-        });
+        await tx.settlement.createMany({ data: settlementsToCreate.map(s => ({ ...s, notes: `${s.notes} (Venta #${createdSale.number})` })) });
       }
-
-      // 2. Handle Account Receivable (CUENTA_CORRIENTE)
       if (paymentMethod === "CUENTA_CORRIENTE" || (paymentMethod === "MIXTO" && paymentDetails.some((pd: any) => pd.method === "CUENTA_CORRIENTE"))) {
         if (!customerId) throw new Error("Cliente requerido para venta en cuenta corriente");
-
-        const debtAmount = paymentMethod === "CUENTA_CORRIENTE"
-          ? finalTotal
-          : new Prisma.Decimal(paymentDetails.find((pd: any) => pd.method === "CUENTA_CORRIENTE").amount);
-
-        await tx.customer.update({
-          where: { id: customerId },
-          data: { balance: { increment: debtAmount } }
-        });
-
-        await tx.customerTransaction.create({
-          data: {
-            customerId,
-            saleId: createdSale.id,
-            type: "SALE",
-            amount: debtAmount,
-            description: `Venta #${createdSale.number}`
-          }
-        });
+        const debtAmount = paymentMethod === "CUENTA_CORRIENTE" ? finalTotal : new Prisma.Decimal(paymentDetails.find((pd: any) => pd.method === "CUENTA_CORRIENTE").amount);
+        await tx.customer.update({ where: { id: customerId }, data: { balance: { increment: debtAmount } } });
+        await tx.customerTransaction.create({ data: { customerId, saleId: createdSale.id, type: "SALE", amount: debtAmount, description: `Venta #${createdSale.number}` } });
       }
-
       return createdSale;
     });
-
     return NextResponse.json(sale);
   } catch (error: any) {
     console.error("❌ Error en POST /api/sales:", error);
